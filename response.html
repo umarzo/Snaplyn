@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/response">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="nCPNtiqQvK5ubhLDBGdKdi_nt_fiAHPQ0O6SezeigVg" />
+    <!-- SEO Meta Tags -->
+    <meta name="title" content="Snaplyn Reaction Speed Test - Free Online Tool">
+    <meta name="description" content="Test your visual reflexes with Snaplyn's high-precision reaction speed tool. Accurate, free, and mobile-friendly.">
+    <meta name="keywords" content="reaction test, reflex test, speed test, cognitive test, snaplyn tools">
+    <meta name="robots" content="index, follow">
+    <title>Reaction Speed Test | Snaplyn Tools</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Snaplyn theme */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 6rem 0 3rem;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Game Container */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            padding: 2rem;
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-sm);
+            margin-top: 2rem;
+        }
+        
+        .game-info {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .round-indicator {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .instructions {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .warning-message {
+            color: var(--danger);
+            font-weight: 600;
+            height: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Shape Container - High Precision Version */
+        .shape-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .shape {
+            width: 150px;
+            height: 150px;
+            background-color: var(--gray);
+            opacity: 0.7;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            /* No transitions for instant response */
+            transition: none;
+            will-change: transform, background-color;
+        }
+        
+        .shape.ready {
+            background-color: var(--primary);
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .shape.clicked {
+            background-color: var(--success);
+            transform: scale(0.95);
+        }
+        
+        .shape.too-soon {
+            background-color: var(--danger);
+            animation: shake 0.5s ease;
+        }
+        
+        /* Shape Definitions */
+        .circle {
+            border-radius: 50%;
+        }
+        
+        .square {
+            border-radius: var(--rounded-md);
+        }
+        
+        .triangle {
+            width: 0;
+            height: 0;
+            background-color: transparent;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+            border-bottom: 150px solid var(--gray);
+        }
+        
+        .triangle.ready {
+            border-bottom-color: var(--primary);
+        }
+        
+        .triangle.clicked {
+            border-bottom-color: var(--success);
+        }
+        
+        .triangle.too-soon {
+            border-bottom-color: var(--danger);
+        }
+        
+        .star {
+            background-color: transparent;
+            position: relative;
+            width: 0;
+            height: 0;
+            color: var(--gray);
+        }
+        
+        .star::before {
+            content: '★';
+            font-size: 150px;
+            line-height: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .star.ready {
+            color: var(--primary);
+        }
+        
+        .star.clicked {
+            color: var(--success);
+        }
+        
+        .star.too-soon {
+            color: var(--danger);
+        }
+        
+        .hexagon {
+            width: 150px;
+            height: 86.6px;
+            background-color: transparent;
+            position: relative;
+        }
+        
+        .hexagon::before, .hexagon::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+        }
+        
+        .hexagon::before {
+            bottom: 100%;
+            border-bottom: 43.3px solid var(--gray);
+        }
+        
+        .hexagon::after {
+            top: 100%;
+            border-top: 43.3px solid var(--gray);
+        }
+        
+        .hexagon.ready::before {
+            border-bottom-color: var(--primary);
+        }
+        
+        .hexagon.ready::after {
+            border-top-color: var(--primary);
+        }
+        
+        .hexagon.clicked::before {
+            border-bottom-color: var(--success);
+        }
+        
+        .hexagon.clicked::after {
+            border-top-color: var(--success);
+        }
+        
+        .hexagon.too-soon::before {
+            border-bottom-color: var(--danger);
+        }
+        
+        .hexagon.too-soon::after {
+            border-top-color: var(--danger);
+        }
+        
+        /* Results Section */
+        .results-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-sm);
+            display: none;
+        }
+        
+        .results-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .average-time {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .performance-category {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--rounded-full);
+            display: inline-block;
+        }
+        
+        .lightning {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: #4cc9f0;
+        }
+        
+        .above-average {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .average {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: var(--gray);
+        }
+        
+        .below-average {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+        
+        .needs-focus {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+        
+        .feedback-message {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .fun-fact {
+            font-style: italic;
+            color: var(--gray);
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .round-results {
+            width: 100%;
+            max-width: 400px;
+            margin: 1.5rem auto;
+            border-collapse: collapse;
+        }
+        
+        .round-results th, .round-results td {
+            padding: 0.75rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .round-results th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+        
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        .disclaimer {
+            font-size: 0.85rem;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                width: 100%;
+                text-align: right;
+                padding: 1rem;
+                box-shadow: var(--shadow-md);
+                z-index: 999;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .section {
+                padding: 5rem 0 2rem;
+            }
+            
+            .shape-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .shape {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .triangle {
+                border-left: 60px solid transparent;
+                border-right: 60px solid transparent;
+                border-bottom: 120px solid var(--gray);
+            }
+            
+            .star::before {
+                font-size: 120px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .shape-container {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .shape {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .triangle {
+                border-left: 50px solid transparent;
+                border-right: 50px solid transparent;
+                border-bottom: 100px solid var(--gray);
+            }
+            
+            .star::before {
+                font-size: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="#" class="nav-link">Tools</a>
+                    <a href="#" class="nav-link">Features</a>
+                    <a href="#" class="nav-link">Pricing</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="section">
+            <h1 class="section-title">High-Precision Reaction Test</h1>
+            <p class="section-subtitle">Measure your visual reflexes with millisecond accuracy</p>
+            
+            <!-- Game Container -->
+            <div class="game-container" id="gameContainer">
+                <div class="game-info">
+                    <div class="round-indicator" id="roundIndicator">Round 1 of 5</div>
+                    <p class="instructions">Wait for the shape to turn blue, then tap as fast as you can!</p>
+                    <div class="warning-message" id="warningMessage"></div>
+                </div>
+                
+                <div class="shape-container">
+                    <div class="shape circle" id="shape"></div>
+                </div>
+                
+                <div class="text-center">
+                    <p>Your reaction time: <span id="reactionTime">-</span> ms</p>
+                </div>
+            </div>
+            
+            <!-- Results Container -->
+            <div class="results-container fade-in" id="resultsContainer">
+                <h2 class="results-title">Your Results</h2>
+                <div class="average-time" id="averageTime">0</div>
+                <div class="performance-category" id="performanceCategory"></div>
+                <p class="feedback-message" id="feedbackMessage"></p>
+                
+                <table class="round-results">
+                    <thead>
+                        <tr>
+                            <th>Round</th>
+                            <th>Time (ms)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTable">
+                        <!-- Results will be inserted here -->
+                    </tbody>
+                </table>
+                
+                <p class="fun-fact" id="funFact"></p>
+                
+                <div class="text-center" style="margin-top: 2rem;">
+                    <button class="btn btn-primary" id="retryButton">Try Again</button>
+                </div>
+            </div>
+            
+            <p class="disclaimer">This tool is for fun and cognitive training. Actual reaction speed can vary with mood, sleep, focus, and device delay.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one platform for free, fast, and useful digital tools.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                        <li class="footer-link"><a href="#">Utilities</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- High-Precision JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('show');
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('show');
+                        }
+                    }
+                });
+            });
+            
+            // Game Variables
+            const gameContainer = document.getElementById('gameContainer');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const shape = document.getElementById('shape');
+            const roundIndicator = document.getElementById('roundIndicator');
+            const warningMessage = document.getElementById('warningMessage');
+            const reactionTimeDisplay = document.getElementById('reactionTime');
+            const averageTimeDisplay = document.getElementById('averageTime');
+            const performanceCategory = document.getElementById('performanceCategory');
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const resultsTable = document.getElementById('resultsTable');
+            const retryButton = document.getElementById('retryButton');
+            const funFact = document.getElementById('funFact');
+            
+            let round = 1;
+            const totalRounds = 5;
+            let reactionTimes = [];
+            let startTime;
+            let timeoutId;
+            let rafId;
+            let isReady = false;
+            
+            // Shape types
+            const shapes = ['circle', 'square', 'triangle', 'star', 'hexagon'];
+            
+            // Fun facts
+            const funFacts = [
+                "Professional gamers typically have reaction times between 100-150ms.",
+                "The average human reaction time to visual stimuli is about 250ms.",
+                "Reaction times peak in your late 20s and gradually slow with age.",
+                "Caffeine can improve reaction times by 10-20% for some people.",
+                "Your brain processes visual information in about 13 milliseconds."
+            ];
+            
+            // Performance thresholds (ms)
+            const performanceLevels = [
+                { threshold: 150, class: 'lightning', label: 'Lightning Fast ⚡', 
+                 feedback: 'Exceptional reflexes! You react faster than 95% of people.' },
+                { threshold: 250, class: 'above-average', label: 'Above Average 🚀', 
+                 feedback: 'Great reaction time! Faster than most people.' },
+                { threshold: 350, class: 'average', label: 'Average 🧠', 
+                 feedback: 'Typical reaction speed. Practice can help improve.' },
+                { threshold: 500, class: 'below-average', label: 'Below Average 🐢', 
+                 feedback: 'Slower than average. Try focusing more intently.' },
+                { threshold: Infinity, class: 'needs-focus', label: 'Needs Focus 💤', 
+                 feedback: 'Very slow reactions. Are you tired or distracted?' }
+            ];
+            
+            // Initialize the game
+            initGame();
+            
+            // Use pointer events for lowest latency
+            shape.addEventListener('pointerdown', handleShapeInteraction, { passive: false });
+            retryButton.addEventListener('click', resetGame);
+            
+            function initGame() {
+                reactionTimes = [];
+                round = 1;
+                updateRoundIndicator();
+                setupRound();
+                gameContainer.style.display = 'flex';
+                resultsContainer.style.display = 'none';
+            }
+            
+            function setupRound() {
+                isReady = false;
+                warningMessage.textContent = '';
+                reactionTimeDisplay.textContent = '-';
+                
+                // Set shape for this round
+                const shapeType = shapes[round - 1];
+                shape.className = 'shape ' + shapeType;
+                
+                // Random delay between 1.5 and 5 seconds
+                const delay = Math.random() * 3500 + 1500;
+                
+                timeoutId = setTimeout(() => {
+                    // Schedule the color change to coincide with the next frame paint
+                    rafId = requestAnimationFrame(() => {
+                        // Force synchronous layout and style calculation
+                        shape.offsetHeight; // Trigger reflow
+                        
+                        // Make the visual change
+                        shape.classList.add('ready');
+                        
+                        // Start timing exactly when the change is visible
+                        startTime = performance.now();
+                        isReady = true;
+                    });
+                }, delay);
+            }
+            
+            function handleShapeInteraction(e) {
+                // Prevent default to avoid any browser delays
+                e.preventDefault();
+                
+                if (!isReady) {
+                    // Clicked too soon
+                    cancelAnimationFrame(rafId);
+                    clearTimeout(timeoutId);
+                    shape.classList.add('too-soon');
+                    warningMessage.textContent = 'Too soon! Wait for blue.';
+                    
+                    setTimeout(() => {
+                        shape.classList.remove('too-soon');
+                        setupRound();
+                    }, 1000);
+                    return;
+                }
+                
+                // Calculate reaction time with highest precision
+                const reactionTime = Math.round(performance.now() - startTime);
+                reactionTimes.push(reactionTime);
+                reactionTimeDisplay.textContent = reactionTime;
+                
+                // Visual feedback
+                shape.classList.remove('ready');
+                shape.classList.add('clicked');
+                
+                // Move to next round or show results
+                setTimeout(() => {
+                    shape.classList.remove('clicked');
+                    
+                    if (round < totalRounds) {
+                        round++;
+                        updateRoundIndicator();
+                        setupRound();
+                    } else {
+                        showResults();
+                    }
+                }, 800);
+            }
+            
+            function updateRoundIndicator() {
+                roundIndicator.textContent = `Round ${round} of ${totalRounds}`;
+            }
+            
+            function showResults() {
+                const average = Math.round(reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length);
+                averageTimeDisplay.textContent = average;
+                
+                // Determine performance level
+                const level = performanceLevels.find(l => average <= l.threshold);
+                
+                performanceCategory.textContent = level.label;
+                performanceCategory.className = 'performance-category ' + level.class;
+                feedbackMessage.textContent = level.feedback;
+                
+                // Populate results table
+                resultsTable.innerHTML = '';
+                reactionTimes.forEach((time, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${index + 1}</td><td>${time}</td>`;
+                    resultsTable.appendChild(row);
+                });
+                
+                // Show random fun fact
+                funFact.textContent = funFacts[Math.floor(Math.random() * funFacts.length)];
+                
+                // Show results container
+                gameContainer.style.display = 'none';
+                resultsContainer.style.display = 'block';
+                resultsContainer.classList.add('fade-in');
+            }
+            
+            function resetGame() {
+                initGame();
+            }
+            
+            // Clean up any pending animation frames when leaving
+            window.addEventListener('beforeunload', () => {
+                cancelAnimationFrame(rafId);
+                clearTimeout(timeoutId);
+            });
+        });
+    </script>
+</body>
+</html>

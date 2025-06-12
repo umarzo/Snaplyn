@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/namegenerator" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Name Generator | Snaplyn</title>
+    <meta name="description" content="Generate random names for various purposes - professional, gamer, fantasy, casual, or sci-fi. Customize length and style.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for easy theming */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Tool Section */
+        .tool-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-sm);
+            padding: 3rem;
+            margin-top: 2rem;
+        }
+        
+        .tool-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--rounded-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+        }
+        
+        .result-container {
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: var(--rounded-lg);
+            margin-bottom: 2rem;
+        }
+        
+        .generated-name {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-copy {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-copy:hover {
+            background-color: #3aa8d8;
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 1) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            background-color: white;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 0;
+            border-radius: var(--rounded-xl);
+            margin: 5rem auto;
+            max-width: calc(100% - 3rem);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .generated-name {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .tool-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .generated-name {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .tool-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .generated-name {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">All Tools</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="section" style="padding-top: 7rem;">
+        <div class="container">
+            <h1 class="section-title">Random Name Generator</h1>
+            <p class="section-subtitle">Create unique names for any purpose - professional, gaming, fantasy worlds, or sci-fi characters.</p>
+            
+            <div class="tool-container">
+                <form id="nameGeneratorForm" class="tool-form">
+                    <div class="form-group">
+                        <label for="nameType" class="form-label">Name Type</label>
+                        <select id="nameType" class="form-control form-select" required>
+                            <option value="professional">Professional</option>
+                            <option value="gamer">Gamer</option>
+                            <option value="fantasy">Fantasy</option>
+                            <option value="casual">Casual</option>
+                            <option value="sci-fi">Sci-Fi</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nameLength" class="form-label">Name Length</label>
+                        <select id="nameLength" class="form-control form-select" required>
+                            <option value="3">3 characters</option>
+                            <option value="4">4 characters</option>
+                            <option value="5">5 characters</option>
+                            <option value="6" selected>6 characters</option>
+                            <option value="7">7 characters</option>
+                            <option value="8">8 characters</option>
+                            <option value="9">9 characters</option>
+                            <option value="10">10 characters</option>
+                            <option value="11">11 characters</option>
+                            <option value="12">12 characters</option>
+                        </select>
+                    </div>
+                </form>
+                
+                <div class="result-container">
+                    <h3>Your Generated Name:</h3>
+                    <div id="generatedName" class="generated-name">Click Generate</div>
+                    <div class="action-buttons">
+                        <button id="generateBtn" class="btn btn-primary">Generate New Name</button>
+                        <button id="copyBtn" class="btn btn-copy">Copy to Clipboard</button>
+                    </div>
+                </div>
+                
+                <div class="how-it-works">
+                    <h3>How to use this tool:</h3>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">Select the type of name you need from the dropdown</li>
+                        <li style="margin-bottom: 0.5rem;">Choose your preferred name length</li>
+                        <li style="margin-bottom: 0.5rem;">Click "Generate New Name" to create a unique name</li>
+                        <li>Use "Copy to Clipboard" to save your favorite names</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CTA Section -->
+    <div class="container">
+        <div class="cta">
+            <h2 class="cta-title">Need More Powerful Tools?</h2>
+            <p class="cta-subtitle">Explore our full suite of free online tools to boost your productivity.</p>
+            <a href="#" class="btn cta-btn">View All Tools</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">Generators</a></li>
+                        <li class="footer-link"><a href="#">Utility Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.style.display = 'none';
+                        }
+                    }
+                });
+            });
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    navLinks.style.display = 'flex';
+                } else {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Name Generator Logic
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const nameTypeSelect = document.getElementById('nameType');
+            const nameLengthSelect = document.getElementById('nameLength');
+            const generatedNameElement = document.getElementById('generatedName');
+            
+            // Phonetic patterns for different name types
+            const patterns = {
+                professional: {
+                    vowels: ['a', 'e', 'i', 'o', 'u'],
+                    consonants: ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'],
+                    prefixes: ['Br', 'Cl', 'Dr', 'Fr', 'Gl', 'Gr', 'Kl', 'Kr', 'Ph', 'Pl', 'Pr', 'Sh', 'Sl', 'Sm', 'Sn', 'St', 'Tr', 'Wh', 'Wr'],
+                    suffixes: ['son', 'ton', 'man', 'ford', 'wood', 'berg', 'stein', 'field', 'worth', 'ville', 'ley', 'ner', 'der', 'ter', 'ver'],
+                    commonEndings: ['a', 'e', 'i', 'o', 'y']
+                },
+                gamer: {
+                    vowels: ['a', 'e', 'i', 'o', 'u'],
+                    consonants: ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'],
+                    numbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+                    prefixes: ['Dark', 'Shadow', 'Night', 'Storm', 'Blaze', 'Iron', 'Steel', 'Cyber', 'Neon', 'Phantom', 'Ghost', 'Wolf', 'Dragon', 'Viper'],
+                    suffixes: ['Slayer', 'Hunter', 'Killer', 'Master', 'Lord', 'King', 'X', 'Z', '99', 'Pro', 'HD', '4K', 'FX'],
+                    specialChars: ['x', 'z', 'v', 'q']
+                },
+                fantasy: {
+                    vowels: ['a', 'e', 'i', 'o', 'u', 'y', 'ae', 'ai', 'ao', 'au', 'ea', 'ei', 'eo', 'eu', 'ia', 'ie', 'io', 'iu', 'oa', 'oe', 'oi', 'ou', 'ua', 'ue', 'ui', 'uo'],
+                    consonants: ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'bh', 'ch', 'dh', 'gh', 'kh', 'ph', 'sh', 'th', 'zh', 'rh', 'sy', 'ty', 'vy'],
+                    prefixes: ['Al', 'El', 'Gal', 'Gil', 'Kal', 'Mal', 'Sal', 'Tal', 'Val', 'Zal', 'Aer', 'Ber', 'Cer', 'Der', 'Fer', 'Ger', 'Her', 'Jer', 'Ker', 'Ler', 'Mer', 'Ner', 'Per', 'Quer', 'Ser', 'Ter', 'Ver', 'Wer', 'Xer', 'Yer', 'Zer'],
+                    suffixes: ['dor', 'mir', 'nor', 'rion', 'thas', 'vian', 'wyn', 'thir', 'lith', 'reth', 'dil', 'mil', 'nil', 'ril', 'sil', 'til', 'vil', 'xil', 'zil'],
+                    apostrophes: true
+                },
+                casual: {
+                    vowels: ['a', 'e', 'i', 'o', 'u', 'y'],
+                    consonants: ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'],
+                    prefixes: ['Bo', 'Co', 'Do', 'Fo', 'Go', 'Ho', 'Jo', 'Ko', 'Lo', 'Mo', 'No', 'Po', 'Ro', 'So', 'To', 'Vo', 'Wo', 'Yo', 'Zo'],
+                    suffixes: ['by', 'dy', 'fy', 'gy', 'hy', 'jy', 'ky', 'ly', 'my', 'ny', 'py', 'ry', 'sy', 'ty', 'vy', 'wy', 'xy', 'zy'],
+                    commonEndings: ['a', 'e', 'i', 'o', 'y']
+                },
+                'sci-fi': {
+                    vowels: ['a', 'e', 'i', 'o', 'u', 'y'],
+                    consonants: ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'],
+                    prefixes: ['Xan', 'Zor', 'Qix', 'Vex', 'Nyx', 'Kry', 'Drax', 'Flux', 'Grix', 'Hax', 'Jyx', 'Lux', 'Mox', 'Pax', 'Rix', 'Six', 'Tox', 'Vix', 'Wex', 'Yix'],
+                    suffixes: ['on', 'ax', 'ex', 'ix', 'ox', 'ux', 'ar', 'er', 'ir', 'or', 'ur', 'ak', 'ek', 'ik', 'ok', 'uk', 'al', 'el', 'il', 'ol', 'ul'],
+                    numbers: ['7', '9', '13', '42', '99', '117', '2049', '3000'],
+                    specialChars: ['x', 'z', 'q']
+                }
+            };
+            
+            // Generate a random name based on selected type and length
+            function generateName() {
+                const type = nameTypeSelect.value;
+                const length = parseInt(nameLengthSelect.value);
+                const pattern = patterns[type];
+                
+                let name = '';
+                let attempts = 0;
+                const maxAttempts = 100;
+                
+                // Try to generate a name that meets the length requirement
+                while (name.length !== length && attempts < maxAttempts) {
+                    name = generateNameByType(type, pattern);
+                    attempts++;
+                    
+                    // If we can't get exact length, try to adjust
+                    if (attempts === maxAttempts && name.length !== length) {
+                        if (name.length < length) {
+                            // Add characters to reach desired length
+                            while (name.length < length) {
+                                const char = getRandomElement([...pattern.vowels, ...pattern.consonants]);
+                                name += char;
+                            }
+                        } else {
+                            // Trim to desired length
+                            name = name.substring(0, length);
+                        }
+                    }
+                }
+                
+                // Capitalize first letter
+                name = name.charAt(0).toUpperCase() + name.slice(1);
+                
+                // For gamer names, maybe add numbers or special chars
+                if (type === 'gamer' && Math.random() > 0.5) {
+                    if (length > 3) {
+                        const numPos = Math.floor(Math.random() * (length - 1)) + 1;
+                        const num = getRandomElement(pattern.numbers);
+                        name = name.substring(0, numPos) + num + name.substring(numPos + 1);
+                    }
+                }
+                
+                // For sci-fi names, maybe add special chars
+                if (type === 'sci-fi' && Math.random() > 0.6 && length > 4) {
+                    const specialPos = Math.floor(Math.random() * (length - 2)) + 1;
+                    const specialChar = getRandomElement(pattern.specialChars);
+                    name = name.substring(0, specialPos) + specialChar + name.substring(specialPos + 1);
+                }
+                
+                // Ensure name doesn't exceed max length
+                if (name.length > length) {
+                    name = name.substring(0, length);
+                }
+                
+                return name;
+            }
+            
+            function generateNameByType(type, pattern) {
+                let name = '';
+                
+                // Different generation strategies for different types
+                switch(type) {
+                    case 'professional':
+                        // Professional names often follow prefix + vowel + consonant patterns
+                        if (Math.random() > 0.3 && pattern.prefixes) {
+                            name = getRandomElement(pattern.prefixes);
+                            // Add vowel
+                            name += getRandomElement(pattern.vowels);
+                            // Add consonant or suffix
+                            if (Math.random() > 0.5 && pattern.suffixes) {
+                                name += getRandomElement(pattern.suffixes);
+                            } else {
+                                name += getRandomElement(pattern.consonants);
+                            }
+                        } else {
+                            // Alternate pattern: consonant + vowel + consonant
+                            name = getRandomElement(pattern.consonants).toUpperCase();
+                            name += getRandomElement(pattern.vowels);
+                            name += getRandomElement(pattern.consonants);
+                            
+                            // Maybe add another syllable
+                            if (Math.random() > 0.5) {
+                                name += getRandomElement(pattern.vowels);
+                                name += getRandomElement(pattern.consonants);
+                            }
+                        }
+                        break;
+                        
+                    case 'gamer':
+                        // Gamer names can be edgy with numbers/special chars
+                        if (Math.random() > 0.4 && pattern.prefixes) {
+                            name = getRandomElement(pattern.prefixes);
+                            if (Math.random() > 0.6) {
+                                name += getRandomElement(pattern.numbers);
+                            }
+                        } else {
+                            // Create a name with alternating consonants and vowels
+                            const startWithVowel = Math.random() > 0.5;
+                            let nextVowel = startWithVowel;
+                            
+                            for (let i = 0; i < 3 + Math.floor(Math.random() * 3); i++) {
+                                if (nextVowel) {
+                                    name += getRandomElement(pattern.vowels);
+                                } else {
+                                    name += getRandomElement(pattern.consonants);
+                                }
+                                nextVowel = !nextVowel;
+                            }
+                            
+                            // Maybe add a number at the end
+                            if (Math.random() > 0.5) {
+                                name += getRandomElement(pattern.numbers);
+                            }
+                        }
+                        break;
+                        
+                    case 'fantasy':
+                        // Fantasy names often have more complex syllables
+                        if (Math.random() > 0.3 && pattern.prefixes) {
+                            name = getRandomElement(pattern.prefixes);
+                            
+                            // Maybe add an apostrophe
+                            if (pattern.apostrophes && Math.random() > 0.7) {
+                                name += "'";
+                                name += getRandomElement(pattern.consonants).toLowerCase();
+                            }
+                            
+                            // Add suffix
+                            if (pattern.suffixes && Math.random() > 0.4) {
+                                name += getRandomElement(pattern.suffixes);
+                            } else {
+                                // Add vowel combination
+                                name += getRandomElement(pattern.vowels);
+                                // Add consonant
+                                name += getRandomElement(pattern.consonants);
+                            }
+                        } else {
+                            // Create a name with fantasy syllables
+                            const syllables = 2 + Math.floor(Math.random() * 2);
+                            for (let i = 0; i < syllables; i++) {
+                                if (Math.random() > 0.3) {
+                                    name += getRandomElement(pattern.consonants);
+                                }
+                                name += getRandomElement(pattern.vowels);
+                                if (Math.random() > 0.5) {
+                                    name += getRandomElement(pattern.consonants);
+                                }
+                            }
+                        }
+                        break;
+                        
+                    case 'casual':
+                        // Casual names are simple and friendly
+                        if (Math.random() > 0.4 && pattern.prefixes) {
+                            name = getRandomElement(pattern.prefixes);
+                            if (Math.random() > 0.5) {
+                                name += getRandomElement(pattern.vowels);
+                                name += getRandomElement(pattern.consonants);
+                            }
+                        } else {
+                            // Simple consonant-vowel-consonant pattern
+                            name = getRandomElement(pattern.consonants).toUpperCase();
+                            name += getRandomElement(pattern.vowels);
+                            name += getRandomElement(pattern.consonants);
+                            
+                            // Maybe add a 'y' ending
+                            if (Math.random() > 0.5 && pattern.commonEndings) {
+                                name += getRandomElement(pattern.commonEndings);
+                            }
+                        }
+                        break;
+                        
+                    case 'sci-fi':
+                        // Sci-fi names often have x, z, q and numbers
+                        if (Math.random() > 0.4 && pattern.prefixes) {
+                            name = getRandomElement(pattern.prefixes);
+                            if (Math.random() > 0.6) {
+                                name += getRandomElement(pattern.numbers);
+                            } else if (pattern.suffixes && Math.random() > 0.5) {
+                                name += getRandomElement(pattern.suffixes);
+                            }
+                        } else {
+                            // Create a name with sci-fi sounding syllables
+                            const syllables = 1 + Math.floor(Math.random() * 2);
+                            for (let i = 0; i < syllables; i++) {
+                                if (Math.random() > 0.3) {
+                                    const consonant = getRandomElement([...pattern.consonants, ...(pattern.specialChars || [])]);
+                                    name += i === 0 ? consonant.toUpperCase() : consonant;
+                                }
+                                name += getRandomElement(pattern.vowels);
+                                if (Math.random() > 0.5) {
+                                    name += getRandomElement([...pattern.consonants, ...(pattern.specialChars || [])]);
+                                }
+                            }
+                            
+                            // Maybe add a number at the end
+                            if (Math.random() > 0.4 && pattern.numbers) {
+                                name += getRandomElement(pattern.numbers);
+                            }
+                        }
+                        break;
+                }
+                
+                return name.toLowerCase();
+            }
+            
+            // Helper function to get random element from array
+            function getRandomElement(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+            
+            // Generate name when button is clicked
+            generateBtn.addEventListener('click', function() {
+                const name = generateName();
+                generatedNameElement.textContent = name;
+            });
+            
+            // Copy to clipboard functionality
+            copyBtn.addEventListener('click', function() {
+                const name = generatedNameElement.textContent;
+                if (name && name !== 'Click Generate') {
+                    navigator.clipboard.writeText(name).then(function() {
+                        // Change button text temporarily
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = 'Copied!';
+                        copyBtn.style.backgroundColor = '#2ecc71';
+                        
+                        setTimeout(function() {
+                            copyBtn.textContent = originalText;
+                            copyBtn.style.backgroundColor = '';
+                        }, 2000);
+                    }).catch(function(err) {
+                        console.error('Could not copy text: ', err);
+                    });
+                }
+            });
+            
+            // Generate a name on page load
+            generateBtn.click();
+        });
+    </script>
+</body>
+</html>

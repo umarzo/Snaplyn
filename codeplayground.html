@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/codeplayground" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Playground | Snaplyn</title>
+    <meta name="description" content="Test and run HTML, CSS, and JavaScript code in real-time with Snaplyn's free online code playground. No signup required.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables (identical to homepage) */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles (identical to homepage) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #3aa8d8;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles (identical to homepage) */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Tool Hero Section */
+        .tool-hero {
+            min-height: 40vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(248, 249, 250, 1) 100%);
+            padding-top: 5rem;
+        }
+        
+        .tool-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .tool-hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--dark);
+        }
+        
+        .tool-hero-title span {
+            color: var(--primary);
+        }
+        
+        .tool-hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+        }
+        
+        /* Code Playground Container */
+        .playground-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin: -3rem auto 5rem;
+            max-width: 1100px;
+        }
+        
+        /* Code Tabs */
+        .code-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.02);
+            padding: 0.5rem;
+            border-radius: var(--rounded-md);
+        }
+        
+        .code-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--rounded-sm);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            background-color: transparent;
+            color: var(--gray);
+        }
+        
+        .code-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .code-tab:not(.active):hover {
+            color: var(--primary);
+        }
+        
+        /* Editor Containers */
+        .editor-container {
+            display: none;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .editor-container.active {
+            display: block;
+        }
+        
+        .editor-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .editor-label i {
+            color: var(--primary);
+        }
+        
+        .editor {
+            width: 100%;
+            height: 250px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--rounded-lg);
+            padding: 1rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            resize: vertical;
+            transition: var(--transition);
+        }
+        
+        .editor:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        /* Output Container */
+        .output-container {
+            width: 100%;
+            height: 400px;
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+        
+        .output-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .output-title {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .output-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .output-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray);
+            font-size: 0.9rem;
+            transition: var(--transition);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--rounded-sm);
+        }
+        
+        .output-btn:hover {
+            color: var(--primary);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .output-iframe {
+            width: 100%;
+            height: calc(100% - 42px);
+            border: none;
+        }
+        
+        /* Footer (identical to homepage) */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .tool-hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .playground-container {
+                padding: 1.5rem;
+            }
+            
+            .code-tabs {
+                flex-direction: column;
+            }
+            
+            .editor {
+                height: 200px;
+            }
+            
+            .output-container {
+                height: 300px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .tool-hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .editor {
+                height: 150px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="about.html">About</a>
+                    <a href="index.html#features">Tools</a>
+                    <a href="index.html#how-it-works">How It Works</a>
+                    <a href="index.html#testimonials">Testimonials</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Tool Hero Section -->
+    <section class="tool-hero">
+        <div class="container">
+            <div class="tool-hero-content">
+                <h1 class="tool-hero-title">Code <span>Playground</span></h1>
+                <p class="tool-hero-subtitle">Test and run HTML, CSS, and JavaScript code in real-time with Snaplyn's powerful online editor.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Playground Container -->
+    <div class="container">
+        <div class="playground-container">
+            <!-- Code Tabs -->
+            <div class="code-tabs">
+                <button class="code-tab active" data-tab="html">
+                    <i class="fab fa-html5"></i> HTML
+                </button>
+                <button class="code-tab" data-tab="css">
+                    <i class="fab fa-css3-alt"></i> CSS
+                </button>
+                <button class="code-tab" data-tab="js">
+                    <i class="fab fa-js"></i> JavaScript
+                </button>
+            </div>
+            
+            <!-- HTML Editor -->
+            <div class="editor-container active" id="html-editor">
+                <div class="editor-label">
+                    <i class="fas fa-code"></i>
+                    <span>HTML Editor</span>
+                </div>
+                <textarea id="htmlCode" class="editor" placeholder="<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+</head>
+<body>
+    <!-- Your HTML code here -->
+</body>
+</html>"></textarea>
+            </div>
+            
+            <!-- CSS Editor -->
+            <div class="editor-container" id="css-editor">
+                <div class="editor-label">
+                    <i class="fas fa-paint-brush"></i>
+                    <span>CSS Editor</span>
+                </div>
+                <textarea id="cssCode" class="editor" placeholder="/* Your CSS styles here */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}"></textarea>
+            </div>
+            
+            <!-- JavaScript Editor -->
+            <div class="editor-container" id="js-editor">
+                <div class="editor-label">
+                    <i class="fas fa-magic"></i>
+                    <span>JavaScript Editor</span>
+                </div>
+                <textarea id="jsCode" class="editor" placeholder="// Your JavaScript code here
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded!');
+});"></textarea>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="run-btn">
+                    <i class="fas fa-play"></i> Run Code
+                </button>
+                <button class="btn btn-outline" id="reset-btn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+                <button class="btn btn-success" id="download-btn">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+            
+            <!-- Output Container -->
+            <div class="output-container">
+                <div class="output-header">
+                    <div class="output-title">Live Output</div>
+                    <div class="output-actions">
+                        <button class="output-btn" id="refresh-output">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="output-btn" id="fullscreen-output">
+                            <i class="fas fa-expand"></i> Fullscreen
+                        </button>
+                    </div>
+                </div>
+                <iframe id="output" class="output-iframe" title="Live Output"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="text-to-pdf.html">Text to PDF</a></li>
+                        <li class="footer-link"><a href="code-playground.html">Code Playground</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="index.html">Home</a></li>
+                        <li class="footer-link"><a href="about.html">About</a></li>
+                        <li class="footer-link"><a href="index.html#mission">Mission</a></li>
+                        <li class="footer-link"><a href="index.html#values">Values</a></li>
+                        <li class="footer-link"><a href="index.html#future">Future</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved. Proudly built by Umar.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const htmlEditor = document.getElementById('html-editor');
+            const cssEditor = document.getElementById('css-editor');
+            const jsEditor = document.getElementById('js-editor');
+            const htmlCode = document.getElementById('htmlCode');
+            const cssCode = document.getElementById('cssCode');
+            const jsCode = document.getElementById('jsCode');
+            const runBtn = document.getElementById('run-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const refreshBtn = document.getElementById('refresh-output');
+            const fullscreenBtn = document.getElementById('fullscreen-output');
+            const output = document.getElementById('output');
+            const tabs = document.querySelectorAll('.code-tab');
+            
+            // Default starter code
+            const defaultHTML = `<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #4361ee;
+        }
+        .btn {
+            background-color: #4361ee;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #3f37c9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Snaplyn!</h1>
+    <p>Edit this code to see live changes in the output.</p>
+    <button class="btn" onclick="alert('Hello from Snaplyn!')">Click Me</button>
+</body>
+</html>`;
+            
+            const defaultCSS = `/* Add your CSS styles here */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #4361ee;
+}
+
+.btn {
+    background-color: #4361ee;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #3f37c9;
+}`;
+            
+            const defaultJS = `// Add your JavaScript here
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Document loaded!');
+});`;
+            
+            // Initialize editors with default code
+            htmlCode.value = defaultHTML;
+            cssCode.value = defaultCSS;
+            jsCode.value = defaultJS;
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs and editors
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.editor-container').forEach(editor => {
+                        editor.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked tab and corresponding editor
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-editor`).classList.add('active');
+                });
+            });
+            
+            // Run code
+            function runCode() {
+                const html = htmlCode.value;
+                const css = cssCode.value;
+                const js = jsCode.value;
+                
+                const iframeDoc = output.contentDocument || output.contentWindow.document;
+                
+                iframeDoc.open();
+                iframeDoc.write(html);
+                iframeDoc.close();
+                
+                // Add CSS
+                const style = iframeDoc.createElement('style');
+                style.textContent = css;
+                iframeDoc.head.appendChild(style);
+                
+                // Add JavaScript
+                const script = iframeDoc.createElement('script');
+                script.textContent = js;
+                iframeDoc.body.appendChild(script);
+            }
+            
+            runBtn.addEventListener('click', runCode);
+            
+            // Refresh output
+            refreshBtn.addEventListener('click', runCode);
+            
+            // Fullscreen output
+            fullscreenBtn.addEventListener('click', function() {
+                if (output.requestFullscreen) {
+                    output.requestFullscreen();
+                } else if (output.webkitRequestFullscreen) {
+                    output.webkitRequestFullscreen();
+                } else if (output.msRequestFullscreen) {
+                    output.msRequestFullscreen();
+                }
+            });
+            
+            // Reset code
+            resetBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to reset all code to default?')) {
+                    htmlCode.value = defaultHTML;
+                    cssCode.value = defaultCSS;
+                    jsCode.value = defaultJS;
+                    runCode();
+                }
+            });
+            
+            // Download code
+            downloadBtn.addEventListener('click', function() {
+                // Create HTML file
+                const htmlBlob = new Blob([htmlCode.value], { type: 'text/html' });
+                const htmlUrl = URL.createObjectURL(htmlBlob);
+                const htmlLink = document.createElement('a');
+                htmlLink.href = htmlUrl;
+                htmlLink.download = 'index.html';
+                document.body.appendChild(htmlLink);
+                htmlLink.click();
+                document.body.removeChild(htmlLink);
+                
+                // Create CSS file
+                const cssBlob = new Blob([cssCode.value], { type: 'text/css' });
+                const cssUrl = URL.createObjectURL(cssBlob);
+                const cssLink = document.createElement('a');
+                cssLink.href = cssUrl;
+                cssLink.download = 'styles.css';
+                document.body.appendChild(cssLink);
+                cssLink.click();
+                document.body.removeChild(cssLink);
+                
+                // Create JS file
+                const jsBlob = new Blob([jsCode.value], { type: 'application/javascript' });
+                const jsUrl = URL.createObjectURL(jsBlob);
+                const jsLink = document.createElement('a');
+                jsLink.href = jsUrl;
+                jsLink.download = 'script.js';
+                document.body.appendChild(jsLink);
+                jsLink.click();
+                document.body.removeChild(jsLink);
+                
+                // Revoke object URLs after download
+                setTimeout(() => {
+                    URL.revokeObjectURL(htmlUrl);
+                    URL.revokeObjectURL(cssUrl);
+                    URL.revokeObjectURL(jsUrl);
+                }, 100);
+            });
+            
+            // Run code on initial load
+            runCode();
+            
+            // Mobile menu toggle (same as homepage)
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    navLinks.style.display = 'flex';
+                } else {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/cssify" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSSify - Professional CSS Generator | Snaplyn Tools</title>
+    <meta name="description" content="Generate clean, professional CSS code for any HTML element with Snaplyn's CSSify tool. Live preview, customizable options, and production-ready output.">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables from Snaplyn */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-lighter: rgba(72, 149, 239, 0.1);
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --darker: #12121a;
+            --light: #f8f9fa;
+            --lighter: #fefefe;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --shadow-primary: 0 5px 15px rgba(67, 97, 238, 0.3);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-fast: all 0.2s ease;
+            --transition-slow: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-top: 80px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section {
+            padding: 3rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+            line-height: 1.2;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 1.75rem;
+            color: var(--primary-light);
+        }
+        
+        /* Tool Container */
+        .tool-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* Configuration Panel */
+        .config-panel {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .config-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-light);
+            padding-bottom: 0.5rem;
+            overflow-x: auto;
+        }
+        
+        .config-tab {
+            padding: 0.5rem 1rem;
+            border-radius: var(--rounded-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            white-space: nowrap;
+        }
+        
+        .config-tab.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+        
+        .config-tab:hover:not(.active) {
+            background-color: var(--gray-light);
+        }
+        
+        .config-content {
+            display: none;
+        }
+        
+        .config-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--rounded-md);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+        }
+        
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .color-input {
+            width: 50px;
+            height: 40px;
+            padding: 0.25rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--rounded-sm);
+            cursor: pointer;
+        }
+        
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--gray-light);
+            border-radius: 4px;
+            outline: none;
+            margin-top: 0.5rem;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .range-slider::-webkit-slider-thumb:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .range-value {
+            display: inline-block;
+            margin-left: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        /* Preview Panel */
+        .preview-panel {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .preview-title {
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .preview-bg-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .preview-bg-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-fast);
+        }
+        
+        .preview-bg-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .preview-bg-btn.active {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        .preview-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-radius: var(--rounded-md);
+            background-color: var(--light);
+            margin-bottom: 1.5rem;
+            min-height: 200px;
+        }
+        
+        /* Code Output */
+        .code-panel {
+            grid-column: 1 / -1;
+            background-color: var(--darker);
+            border-radius: var(--rounded-xl);
+            padding: 2rem;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .code-title {
+            font-weight: 700;
+            color: white;
+        }
+        
+        .code-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .code-btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--rounded-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+        
+        .code-btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .code-btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .code-btn-outline {
+            background-color: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .code-btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .code-content {
+            background-color: var(--dark);
+            border-radius: var(--rounded-md);
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            tab-size: 2;
+        }
+        
+        .code-block {
+            margin-bottom: 1.5rem;
+        }
+        
+        .code-block-title {
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .code-block-content {
+            color: #f8f9fa;
+        }
+        
+        .token.comment {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .token.property {
+            color: #f8f9fa;
+        }
+        
+        .token.selector {
+            color: #4cc9f0;
+        }
+        
+        .token.value {
+            color: #f8961e;
+        }
+        
+        /* Element Selector */
+        .element-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .element-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.5rem 1rem;
+            border-radius: var(--rounded-md);
+            background-color: white;
+            border: 1px solid var(--gray-light);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-align: center;
+        }
+        
+        .element-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .element-option.active {
+            border-color: var(--primary);
+            background-color: var(--primary-lighter);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .element-icon {
+            font-size: 1.75rem;
+            color: var(--primary);
+        }
+        
+        .element-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .tool-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+            
+            .section {
+                padding: 2rem 0;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .element-selector {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+            
+            .code-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            
+            .element-selector {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+            
+            .element-icon {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                <div>
+                    <span class="logo">CSSify</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="section">
+            <div class="section-header">
+                <h1 class="section-title">CSSify</h1>
+                <p class="section-subtitle">Generate clean, professional CSS for any HTML element with live preview and customizable options. <br> Note: Use desktop view on mobiles for best experience!</p>
+            </div>
+            
+            <!-- Element Selector -->
+            <div class="form-group">
+                <label class="form-label">Choose an HTML element to style:</label>
+                <div class="element-selector" id="elementSelector">
+                    <div class="element-option active" data-element="button">
+                        <i class="fas fa-square element-icon"></i>
+                        <span class="element-name">Button</span>
+                    </div>
+                    <div class="element-option" data-element="heading">
+                        <i class="fas fa-heading element-icon"></i>
+                        <span class="element-name">Heading</span>
+                    </div>
+                    <div class="element-option" data-element="paragraph">
+                        <i class="fas fa-paragraph element-icon"></i>
+                        <span class="element-name">Paragraph</span>
+                    </div>
+                    <div class="element-option" data-element="div">
+                        <i class="fas fa-square-full element-icon"></i>
+                        <span class="element-name">Div/Container</span>
+                    </div>
+                    <div class="element-option" data-element="input">
+                        <i class="fas fa-font element-icon"></i>
+                        <span class="element-name">Input</span>
+                    </div>
+                    <div class="element-option" data-element="textarea">
+                        <i class="fas fa-align-left element-icon"></i>
+                        <span class="element-name">Textarea</span>
+                    </div>
+                    <div class="element-option" data-element="image">
+                        <i class="fas fa-image element-icon"></i>
+                        <span class="element-name">Image</span>
+                    </div>
+                    <div class="element-option" data-element="link">
+                        <i class="fas fa-link element-icon"></i>
+                        <span class="element-name">Link</span>
+                    </div>
+                    <div class="element-option" data-element="label">
+                        <i class="fas fa-tag element-icon"></i>
+                        <span class="element-name">Label</span>
+                    </div>
+                    <div class="element-option" data-element="custom">
+                        <i class="fas fa-code element-icon"></i>
+                        <span class="element-name">Custom Box</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tool Container -->
+            <div class="tool-container">
+                <!-- Configuration Panel -->
+                <div class="config-panel">
+                    <div class="config-tabs">
+                        <div class="config-tab active" data-tab="colors">Colors & Borders</div>
+                        <div class="config-tab" data-tab="typography">Typography</div>
+                        <div class="config-tab" data-tab="layout">Layout & Box</div>
+                        <div class="config-tab" data-tab="animation">Animation</div>
+                        <div class="config-tab" data-tab="extras">Snaplyn Extras</div>
+                    </div>
+                    
+                    <!-- Colors & Borders Tab -->
+                    <div class="config-content active" id="colors-content">
+                        <div class="form-group">
+                            <label class="form-label">Text Color</label>
+                            <div class="color-picker">
+                                <input type="color" class="color-input" id="textColor" value="#1a1a2e">
+                                <input type="text" class="form-control" id="textColorValue" value="#1a1a2e">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Background Color</label>
+                            <div class="color-picker">
+                                <input type="color" class="color-input" id="bgColor" value="#ffffff">
+                                <input type="text" class="form-control" id="bgColorValue" value="#ffffff">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Border Style</label>
+                            <select class="form-control form-select" id="borderStyle">
+                                <option value="none">None</option>
+                                <option value="solid" selected>Solid</option>
+                                <option value="dashed">Dashed</option>
+                                <option value="dotted">Dotted</option>
+                                <option value="double">Double</option>
+                                <option value="groove">Groove</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Border Width</label>
+                            <input type="range" class="range-slider" id="borderWidth" min="0" max="10" value="1">
+                            <span class="range-value" id="borderWidthValue">1px</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Border Color</label>
+                            <div class="color-picker">
+                                <input type="color" class="color-input" id="borderColor" value="#4361ee">
+                                <input type="text" class="form-control" id="borderColorValue" value="#4361ee">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Border Radius</label>
+                            <input type="range" class="range-slider" id="borderRadius" min="0" max="50" value="8">
+                            <span class="range-value" id="borderRadiusValue">8px</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Typography Tab -->
+                    <div class="config-content" id="typography-content">
+                        <div class="form-group">
+                            <label class="form-label">Font Family</label>
+                            <select class="form-control form-select" id="fontFamily">
+                                <option value="'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif" selected>System UI (Default)</option>
+                                <option value="'Inter', sans-serif">Inter</option>
+                                <option value="'Roboto', sans-serif">Roboto</option>
+                                <option value="'Open Sans', sans-serif">Open Sans</option>
+                                <option value="'Montserrat', sans-serif">Montserrat</option>
+                                <option value="'Poppins', sans-serif">Poppins</option>
+                                <option value="'Lato', sans-serif">Lato</option>
+                                <option value="'Playfair Display', serif">Playfair Display</option>
+                                <option value="'Georgia', serif">Georgia</option>
+                                <option value="'Courier New', monospace">Courier New</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Font Size</label>
+                            <input type="range" class="range-slider" id="fontSize" min="10" max="72" value="16">
+                            <span class="range-value" id="fontSizeValue">16px</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Font Weight</label>
+                            <select class="form-control form-select" id="fontWeight">
+                                <option value="100">Thin (100)</option>
+                                <option value="200">Extra Light (200)</option>
+                                <option value="300">Light (300)</option>
+                                <option value="400" selected>Normal (400)</option>
+                                <option value="500">Medium (500)</option>
+                                <option value="600">Semi Bold (600)</option>
+                                <option value="700">Bold (700)</option>
+                                <option value="800">Extra Bold (800)</option>
+                                <option value="900">Black (900)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Letter Spacing</label>
+                            <input type="range" class="range-slider" id="letterSpacing" min="-2" max="10" value="0" step="0.1">
+                            <span class="range-value" id="letterSpacingValue">0px</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Text Alignment</label>
+                            <select class="form-control form-select" id="textAlign">
+                                <option value="left" selected>Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                                <option value="justify">Justify</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Text Transform</label>
+                            <select class="form-control form-select" id="textTransform">
+                                <option value="none" selected>None</option>
+                                <option value="uppercase">Uppercase</option>
+                                <option value="lowercase">Lowercase</option>
+                                <option value="capitalize">Capitalize</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Layout & Box Tab -->
+                    <div class="config-content" id="layout-content">
+                        <div class="form-group">
+                            <label class="form-label">Padding</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Top</label>
+                                    <input type="range" class="range-slider" id="paddingTop" min="0" max="50" value="12">
+                                    <span class="range-value" id="paddingTopValue">12px</span>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Right</label>
+                                    <input type="range" class="range-slider" id="paddingRight" min="0" max="50" value="12">
+                                    <span class="range-value" id="paddingRightValue">12px</span>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Bottom</label>
+                                    <input type="range" class="range-slider" id="paddingBottom" min="0" max="50" value="12">
+                                    <span class="range-value" id="paddingBottomValue">12px</span>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Left</label>
+                                    <input type="range" class="range-slider" id="paddingLeft" min="0" max="50" value="12">
+                                    <span class="range-value" id="paddingLeftValue">12px</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Margin</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Top</label>
+                                    <input type="range" class="range-slider" id="marginTop" min="0" max="50" value="0">
+                                    <span class="range-value" id="marginTopValue">0px</span>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Right</label>
+                                    <input type="range" class="range-slider" id="marginRight" min="0" max="50" value="0">
+                                    <span class="range-value" id="marginRightValue">0px</span>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Bottom</label>
+                                    <input type="range" class="range-slider" id="marginBottom" min="0" max="50" value="0">
+                                    <span class="range-value" id="marginBottomValue">0px</span>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 0.25rem;">Left</label>
+                                    <input type="range" class="range-slider" id="marginLeft" min="0" max="50" value="0">
+                                    <span class="range-value" id="marginLeftValue">0px</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Width</label>
+                            <select class="form-control form-select" id="widthType">
+                                <option value="auto">Auto</option>
+                                <option value="full">Full Width</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <div id="widthCustomContainer" style="margin-top: 0.5rem; display: none;">
+                                <input type="range" class="range-slider" id="widthCustom" min="100" max="800" value="200">
+                                <span class="range-value" id="widthCustomValue">200px</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Height</label>
+                            <select class="form-control form-select" id="heightType">
+                                <option value="auto">Auto</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <div id="heightCustomContainer" style="margin-top: 0.5rem; display: none;">
+                                <input type="range" class="range-slider" id="heightCustom" min="20" max="200" value="40">
+                                <span class="range-value" id="heightCustomValue">40px</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Display</label>
+                            <select class="form-control form-select" id="display">
+                                <option value="block">Block</option>
+                                <option value="inline-block">Inline Block</option>
+                                <option value="inline">Inline</option>
+                                <option value="flex">Flex</option>
+                                <option value="grid">Grid</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Animation Tab -->
+                    <div class="config-content" id="animation-content">
+                        <div class="form-group">
+                            <label class="form-label">Hover Effects</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" id="hoverScale">
+                                <label for="hoverScale">Scale (Grow on hover)</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" id="hoverShadow">
+                                <label for="hoverShadow">Add Shadow on hover</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" id="hoverColorChange">
+                                <label for="hoverColorChange">Change Color on hover</label>
+                            </div>
+                            
+                            <div id="hoverColorOptions" style="margin-top: 1rem; display: none;">
+                                <label class="form-label">Hover Text Color</label>
+                                <div class="color-picker">
+                                    <input type="color" class="color-input" id="hoverTextColor" value="#4361ee">
+                                    <input type="text" class="form-control" id="hoverTextColorValue" value="#4361ee">
+                                </div>
+                                
+                                <label class="form-label" style="margin-top: 1rem;">Hover Background Color</label>
+                                <div class="color-picker">
+                                    <input type="color" class="color-input" id="hoverBgColor" value="#f8f9fa">
+                                    <input type="text" class="form-control" id="hoverBgColorValue" value="#f8f9fa">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Transition Duration</label>
+                            <input type="range" class="range-slider" id="transitionDuration" min="0" max="1000" value="200" step="50">
+                            <span class="range-value" id="transitionDurationValue">200ms</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">On-load Animation</label>
+                            <select class="form-control form-select" id="loadAnimation">
+                                <option value="none" selected>None</option>
+                                <option value="fade">Fade In</option>
+                                <option value="slide-up">Slide Up</option>
+                                <option value="slide-down">Slide Down</option>
+                                <option value="slide-left">Slide Left</option>
+                                <option value="slide-right">Slide Right</option>
+                                <option value="bounce">Bounce</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Animation Duration</label>
+                            <input type="range" class="range-slider" id="animationDuration" min="100" max="2000" value="500" step="50">
+                            <span class="range-value" id="animationDurationValue">500ms</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Snaplyn Extras Tab -->
+                    <div class="config-content" id="extras-content">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" id="snapGlow" checked>
+                                <label for="snapGlow">Enable SnapGlow™ Effect</label>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.25rem;">Adds a subtle glow and shadow effect for enhanced visual appeal.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" id="darkOptimized">
+                                <label for="darkOptimized">Auto-optimize for Dark Backgrounds</label>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.25rem;">Adjusts colors for better visibility on dark backgrounds.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" id="addComments" checked>
+                                <label for="addComments">Add Commented Code Blocks</label>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.25rem;">Includes helpful comments explaining each CSS section.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="checkbox-input" id="accessibility" checked>
+                                <label for="accessibility">Add Accessibility Features</label>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.25rem;">Includes focus states and ARIA attributes where applicable.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Custom Class Name</label>
+                            <input type="text" class="form-control" id="customClassName" placeholder="e.g., primary-button">
+                            <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.25rem;">Optional: Add a custom class name for your element.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Preview Panel -->
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <h3 class="preview-title">Live Preview</h3>
+                        <div class="preview-bg-selector">
+                            <div class="preview-bg-btn active" style="background-color: #f8f9fa;" data-bg="light"></div>
+                            <div class="preview-bg-btn" style="background-color: #1a1a2e;" data-bg="dark"></div>
+                            <div class="preview-bg-btn" style="background: linear-gradient(135deg, #4361ee, #3f37c9);" data-bg="gradient"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-content" id="previewContent">
+                        <!-- Preview element will be inserted here by JavaScript -->
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Preview Text (Editable)</label>
+                        <input type="text" class="form-control" id="previewText" value="Click Me" placeholder="Edit this text to see changes">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Code Output Panel -->
+            <div class="code-panel">
+                <div class="code-header">
+                    <h3 class="code-title">Generated Code</h3>
+                    <div class="code-actions">
+                        <button class="code-btn code-btn-outline" id="resetBtn">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <button class="code-btn code-btn-primary" id="copyHtmlBtn">
+                            <i class="far fa-copy"></i> Copy HTML
+                        </button>
+                        <button class="code-btn code-btn-primary" id="copyCssBtn">
+                            <i class="far fa-copy"></i> Copy CSS
+                        </button>
+                        <button class="code-btn code-btn-primary" id="downloadBtn">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="code-content">
+                    <div class="code-block">
+                        <div class="code-block-title">HTML:</div>
+                        <pre class="code-block-content" id="htmlOutput"><code class="language-html">&lt;button class="styled-element"&gt;Click Me&lt;/button&gt;</code></pre>
+                    </div>
+                    
+                    <div class="code-block">
+                        <div class="code-block-title">CSS:</div>
+                        <pre class="code-block-content" id="cssOutput"><code class="language-css">.styled-element {
+  color: #1a1a2e;
+  background-color: #ffffff;
+  border: 1px solid #4361ee;
+  border-radius: 8px;
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const elementSelector = document.getElementById('elementSelector');
+            const previewContent = document.getElementById('previewContent');
+            const previewText = document.getElementById('previewText');
+            const previewBgBtns = document.querySelectorAll('.preview-bg-btn');
+            const configTabs = document.querySelectorAll('.config-tab');
+            const configContents = document.querySelectorAll('.config-content');
+            const resetBtn = document.getElementById('resetBtn');
+            const copyHtmlBtn = document.getElementById('copyHtmlBtn');
+            const copyCssBtn = document.getElementById('copyCssBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const htmlOutput = document.getElementById('htmlOutput');
+            const cssOutput = document.getElementById('cssOutput');
+            
+            // Form elements
+            const textColor = document.getElementById('textColor');
+            const textColorValue = document.getElementById('textColorValue');
+            const bgColor = document.getElementById('bgColor');
+            const bgColorValue = document.getElementById('bgColorValue');
+            const borderStyle = document.getElementById('borderStyle');
+            const borderWidth = document.getElementById('borderWidth');
+            const borderWidthValue = document.getElementById('borderWidthValue');
+            const borderColor = document.getElementById('borderColor');
+            const borderColorValue = document.getElementById('borderColorValue');
+            const borderRadius = document.getElementById('borderRadius');
+            const borderRadiusValue = document.getElementById('borderRadiusValue');
+            const fontFamily = document.getElementById('fontFamily');
+            const fontSize = document.getElementById('fontSize');
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            const fontWeight = document.getElementById('fontWeight');
+            const letterSpacing = document.getElementById('letterSpacing');
+            const letterSpacingValue = document.getElementById('letterSpacingValue');
+            const textAlign = document.getElementById('textAlign');
+            const textTransform = document.getElementById('textTransform');
+            const paddingTop = document.getElementById('paddingTop');
+            const paddingTopValue = document.getElementById('paddingTopValue');
+            const paddingRight = document.getElementById('paddingRight');
+            const paddingRightValue = document.getElementById('paddingRightValue');
+            const paddingBottom = document.getElementById('paddingBottom');
+            const paddingBottomValue = document.getElementById('paddingBottomValue');
+            const paddingLeft = document.getElementById('paddingLeft');
+            const paddingLeftValue = document.getElementById('paddingLeftValue');
+            const marginTop = document.getElementById('marginTop');
+            const marginTopValue = document.getElementById('marginTopValue');
+            const marginRight = document.getElementById('marginRight');
+            const marginRightValue = document.getElementById('marginRightValue');
+            const marginBottom = document.getElementById('marginBottom');
+            const marginBottomValue = document.getElementById('marginBottomValue');
+            const marginLeft = document.getElementById('marginLeft');
+            const marginLeftValue = document.getElementById('marginLeftValue');
+            const widthType = document.getElementById('widthType');
+            const widthCustom = document.getElementById('widthCustom');
+            const widthCustomValue = document.getElementById('widthCustomValue');
+            const widthCustomContainer = document.getElementById('widthCustomContainer');
+            const heightType = document.getElementById('heightType');
+            const heightCustom = document.getElementById('heightCustom');
+            const heightCustomValue = document.getElementById('heightCustomValue');
+            const heightCustomContainer = document.getElementById('heightCustomContainer');
+            const display = document.getElementById('display');
+            const hoverScale = document.getElementById('hoverScale');
+            const hoverShadow = document.getElementById('hoverShadow');
+            const hoverColorChange = document.getElementById('hoverColorChange');
+            const hoverTextColor = document.getElementById('hoverTextColor');
+            const hoverTextColorValue = document.getElementById('hoverTextColorValue');
+            const hoverBgColor = document.getElementById('hoverBgColor');
+            const hoverBgColorValue = document.getElementById('hoverBgColorValue');
+            const hoverColorOptions = document.getElementById('hoverColorOptions');
+            const transitionDuration = document.getElementById('transitionDuration');
+            const transitionDurationValue = document.getElementById('transitionDurationValue');
+            const loadAnimation = document.getElementById('loadAnimation');
+            const animationDuration = document.getElementById('animationDuration');
+            const animationDurationValue = document.getElementById('animationDurationValue');
+            const snapGlow = document.getElementById('snapGlow');
+            const darkOptimized = document.getElementById('darkOptimized');
+            const addComments = document.getElementById('addComments');
+            const accessibility = document.getElementById('accessibility');
+            const customClassName = document.getElementById('customClassName');
+            
+            // State
+            let currentElement = 'button';
+            let previewBg = 'light';
+            
+            // Initialize
+            createPreviewElement();
+            updateCodeOutput();
+            setupEventListeners();
+            
+            // Functions
+            function createPreviewElement() {
+                let element;
+                
+                switch(currentElement) {
+                    case 'button':
+                        element = document.createElement('button');
+                        element.textContent = previewText.value;
+                        element.className = 'styled-element';
+                        break;
+                    case 'heading':
+                        element = document.createElement('h1');
+                        element.textContent = previewText.value;
+                        element.className = 'styled-element';
+                        break;
+                    case 'paragraph':
+                        element = document.createElement('p');
+                        element.textContent = 'This is a styled paragraph. ' + previewText.value;
+                        element.className = 'styled-element';
+                        break;
+                    case 'div':
+                        element = document.createElement('div');
+                        element.innerHTML = `<div class="styled-element" style="padding: 1rem;">${previewText.value}</div>`;
+                        break;
+                    case 'input':
+                        element = document.createElement('input');
+                        element.className = 'styled-element';
+                        element.type = 'text';
+                        element.placeholder = previewText.value;
+                        break;
+                    case 'textarea':
+                        element = document.createElement('textarea');
+                        element.className = 'styled-element';
+                        element.placeholder = previewText.value;
+                        element.rows = 3;
+                        break;
+                    case 'image':
+                        element = document.createElement('div');
+                        element.className = 'styled-element';
+                        element.innerHTML = `
+                            <img src="https://via.placeholder.com/300x200?text=${encodeURIComponent(previewText.value)}" 
+                                 alt="Preview Image" 
+                                 style="max-width: 100%; height: auto; display: block;">
+                        `;
+                        break;
+                    case 'link':
+                        element = document.createElement('a');
+                        element.href = '#';
+                        element.textContent = previewText.value;
+                        element.className = 'styled-element';
+                        break;
+                    case 'label':
+                        element = document.createElement('label');
+                        element.textContent = previewText.value;
+                        element.className = 'styled-element';
+                        element.setAttribute('for', 'preview-input');
+                        element.innerHTML += '<input type="checkbox" id="preview-input" style="margin-left: 0.5rem;">';
+                        break;
+                    case 'custom':
+                        element = document.createElement('div');
+                        element.className = 'styled-element';
+                        element.setAttribute('role', 'region');
+                        element.setAttribute('aria-label', 'Custom box');
+                        element.textContent = previewText.value;
+                        break;
+                    default:
+                        element = document.createElement('div');
+                        element.textContent = 'Element not supported';
+                }
+                
+                previewContent.innerHTML = '';
+                previewContent.appendChild(element);
+                applyStyles();
+            }
+            
+            function applyStyles() {
+                const element = previewContent.querySelector('.styled-element') || previewContent.firstElementChild;
+                if (!element) return;
+                
+                // Basic styles
+                element.style.color = textColor.value;
+                element.style.backgroundColor = bgColor.value;
+                element.style.borderStyle = borderStyle.value;
+                element.style.borderWidth = borderWidth.value + 'px';
+                element.style.borderColor = borderColor.value;
+                element.style.borderRadius = borderRadius.value + 'px';
+                element.style.fontFamily = fontFamily.value;
+                element.style.fontSize = fontSize.value + 'px';
+                element.style.fontWeight = fontWeight.value;
+                element.style.letterSpacing = letterSpacing.value + 'px';
+                element.style.textAlign = textAlign.value;
+                element.style.textTransform = textTransform.value;
+                
+                // Padding
+                element.style.paddingTop = paddingTop.value + 'px';
+                element.style.paddingRight = paddingRight.value + 'px';
+                element.style.paddingBottom = paddingBottom.value + 'px';
+                element.style.paddingLeft = paddingLeft.value + 'px';
+                
+                // Margin
+                element.style.marginTop = marginTop.value + 'px';
+                element.style.marginRight = marginRight.value + 'px';
+                element.style.marginBottom = marginBottom.value + 'px';
+                element.style.marginLeft = marginLeft.value + 'px';
+                
+                // Width
+                if (widthType.value === 'full') {
+                    element.style.width = '100%';
+                } else if (widthType.value === 'custom') {
+                    element.style.width = widthCustom.value + 'px';
+                } else {
+                    element.style.width = '';
+                }
+                
+                // Height
+                if (heightType.value === 'custom') {
+                    element.style.height = heightCustom.value + 'px';
+                } else {
+                    element.style.height = '';
+                }
+                
+                // Display
+                element.style.display = display.value;
+                
+                // Transition
+                if (hoverScale.checked || hoverShadow.checked || hoverColorChange.checked) {
+                    element.style.transition = `all ${transitionDuration.value}ms ease`;
+                } else {
+                    element.style.transition = '';
+                }
+                
+                // Hover effects
+                if (hoverScale.checked) {
+                    element.addEventListener('mouseenter', () => {
+                        element.style.transform = 'scale(1.05)';
+                    });
+                    element.addEventListener('mouseleave', () => {
+                        element.style.transform = '';
+                    });
+                }
+                
+                if (hoverShadow.checked) {
+                    element.addEventListener('mouseenter', () => {
+                        element.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+                    });
+                    element.addEventListener('mouseleave', () => {
+                        element.style.boxShadow = '';
+                    });
+                }
+                
+                if (hoverColorChange.checked) {
+                    element.addEventListener('mouseenter', () => {
+                        element.style.color = hoverTextColor.value;
+                        element.style.backgroundColor = hoverBgColor.value;
+                    });
+                    element.addEventListener('mouseleave', () => {
+                        element.style.color = textColor.value;
+                        element.style.backgroundColor = bgColor.value;
+                    });
+                }
+                
+                // SnapGlow effect
+                if (snapGlow.checked) {
+                    element.style.boxShadow = `0 0 10px ${borderColor.value}33`;
+                }
+                
+                // Update preview background
+                switch(previewBg) {
+                    case 'light':
+                        previewContent.style.backgroundColor = '#f8f9fa';
+                        break;
+                    case 'dark':
+                        previewContent.style.backgroundColor = '#1a1a2e';
+                        break;
+                    case 'gradient':
+                        previewContent.style.background = 'linear-gradient(135deg, #4361ee, #3f37c9)';
+                        break;
+                }
+                
+                // Apply load animation
+                if (loadAnimation.value !== 'none') {
+                    element.style.animation = `${loadAnimation.value}-in ${animationDuration.value}ms ease`;
+                    
+                    // Define keyframes dynamically
+                    const style = document.createElement('style');
+                    style.id = 'dynamic-animations';
+                    document.head.appendChild(style);
+                    
+                    let keyframes = '';
+                    switch(loadAnimation.value) {
+                        case 'fade':
+                            keyframes = `
+                                @keyframes fade-in {
+                                    from { opacity: 0; }
+                                    to { opacity: 1; }
+                                }
+                            `;
+                            break;
+                        case 'slide-up':
+                            keyframes = `
+                                @keyframes slide-up-in {
+                                    from { transform: translateY(20px); opacity: 0; }
+                                    to { transform: translateY(0); opacity: 1; }
+                                }
+                            `;
+                            break;
+                        case 'slide-down':
+                            keyframes = `
+                                @keyframes slide-down-in {
+                                    from { transform: translateY(-20px); opacity: 0; }
+                                    to { transform: translateY(0); opacity: 1; }
+                                }
+                            `;
+                            break;
+                        case 'slide-left':
+                            keyframes = `
+                                @keyframes slide-left-in {
+                                    from { transform: translateX(20px); opacity: 0; }
+                                    to { transform: translateX(0); opacity: 1; }
+                                }
+                            `;
+                            break;
+                        case 'slide-right':
+                            keyframes = `
+                                @keyframes slide-right-in {
+                                    from { transform: translateX(-20px); opacity: 0; }
+                                    to { transform: translateX(0); opacity: 1; }
+                                }
+                            `;
+                            break;
+                        case 'bounce':
+                            keyframes = `
+                                @keyframes bounce-in {
+                                    0% { transform: scale(0.8); opacity: 0; }
+                                    50% { transform: scale(1.1); opacity: 1; }
+                                    70% { transform: scale(0.9); }
+                                    100% { transform: scale(1); }
+                                }
+                            `;
+                            break;
+                    }
+                    
+                    style.innerHTML = keyframes;
+                }
+            }
+            
+            function updateCodeOutput() {
+                const className = customClassName.value || 'styled-element';
+                
+                // Generate HTML
+                let htmlCode = '';
+                switch(currentElement) {
+                    case 'button':
+                        htmlCode = `&lt;button class="${className}"&gt;${previewText.value}&lt;/button&gt;`;
+                        break;
+                    case 'heading':
+                        htmlCode = `&lt;h1 class="${className}"&gt;${previewText.value}&lt;/h1&gt;`;
+                        break;
+                    case 'paragraph':
+                        htmlCode = `&lt;p class="${className}"&gt;${previewText.value}&lt;/p&gt;`;
+                        break;
+                    case 'div':
+                        htmlCode = `&lt;div class="${className}"&gt;\n  ${previewText.value}\n&lt;/div&gt;`;
+                        break;
+                    case 'input':
+                        htmlCode = `&lt;input type="text" class="${className}" placeholder="${previewText.value}"&gt;`;
+                        break;
+                    case 'textarea':
+                        htmlCode = `&lt;textarea class="${className}" placeholder="${previewText.value}" rows="3"&gt;&lt;/textarea&gt;`;
+                        break;
+                    case 'image':
+                        htmlCode = `&lt;img src="your-image.jpg" alt="${previewText.value}" class="${className}"&gt;`;
+                        break;
+                    case 'link':
+                        htmlCode = `&lt;a href="#" class="${className}"&gt;${previewText.value}&lt;/a&gt;`;
+                        break;
+                    case 'label':
+                        htmlCode = `&lt;label for="input-id" class="${className}"&gt;${previewText.value}&lt;/label&gt;\n&lt;input type="checkbox" id="input-id"&gt;`;
+                        break;
+                    case 'custom':
+                        htmlCode = `&lt;div class="${className}" role="region" aria-label="Custom box"&gt;\n  ${previewText.value}\n&lt;/div&gt;`;
+                        break;
+                }
+                
+                // Generate CSS
+                let cssCode = '';
+                
+                if (addComments.checked) {
+                    cssCode += `/* ${className} - Base Styles */\n`;
+                }
+                
+                cssCode += `.${className} {\n`;
+                cssCode += `  color: ${textColor.value};\n`;
+                cssCode += `  background-color: ${bgColor.value};\n`;
+                
+                if (borderStyle.value !== 'none') {
+                    cssCode += `  border: ${borderWidth.value}px ${borderStyle.value} ${borderColor.value};\n`;
+                } else {
+                    cssCode += `  border: none;\n`;
+                }
+                
+                cssCode += `  border-radius: ${borderRadius.value}px;\n`;
+                cssCode += `  font-family: ${fontFamily.value};\n`;
+                cssCode += `  font-size: ${fontSize.value}px;\n`;
+                cssCode += `  font-weight: ${fontWeight.value};\n`;
+                cssCode += `  letter-spacing: ${letterSpacing.value}px;\n`;
+                cssCode += `  text-align: ${textAlign.value};\n`;
+                cssCode += `  text-transform: ${textTransform.value};\n`;
+                
+                // Padding
+                if (paddingTop.value === paddingRight.value && 
+                    paddingRight.value === paddingBottom.value && 
+                    paddingBottom.value === paddingLeft.value) {
+                    cssCode += `  padding: ${paddingTop.value}px;\n`;
+                } else {
+                    cssCode += `  padding: ${paddingTop.value}px ${paddingRight.value}px ${paddingBottom.value}px ${paddingLeft.value}px;\n`;
+                }
+                
+                // Margin
+                if (marginTop.value || marginRight.value || marginBottom.value || marginLeft.value) {
+                    if (marginTop.value === marginRight.value && 
+                        marginRight.value === marginBottom.value && 
+                        marginBottom.value === marginLeft.value) {
+                        cssCode += `  margin: ${marginTop.value}px;\n`;
+                    } else {
+                        cssCode += `  margin: ${marginTop.value}px ${marginRight.value}px ${marginBottom.value}px ${marginLeft.value}px;\n`;
+                    }
+                }
+                
+                // Width
+                if (widthType.value === 'full') {
+                    cssCode += `  width: 100%;\n`;
+                } else if (widthType.value === 'custom') {
+                    cssCode += `  width: ${widthCustom.value}px;\n`;
+                }
+                
+                // Height
+                if (heightType.value === 'custom') {
+                    cssCode += `  height: ${heightCustom.value}px;\n`;
+                }
+                
+                // Display
+                cssCode += `  display: ${display.value};\n`;
+                
+                // SnapGlow effect
+                if (snapGlow.checked) {
+                    cssCode += `  box-shadow: 0 0 10px ${borderColor.value}33;\n`;
+                }
+                
+                // Transition
+                if (hoverScale.checked || hoverShadow.checked || hoverColorChange.checked) {
+                    cssCode += `  transition: all ${transitionDuration.value}ms ease;\n`;
+                }
+                
+                cssCode += `}\n\n`;
+                
+                // Hover effects
+                if (hoverScale.checked || hoverShadow.checked || hoverColorChange.checked) {
+                    if (addComments.checked) {
+                        cssCode += `/* ${className} - Hover Effects */\n`;
+                    }
+                    
+                    cssCode += `.${className}:hover {\n`;
+                    
+                    if (hoverScale.checked) {
+                        cssCode += `  transform: scale(1.05);\n`;
+                    }
+                    
+                    if (hoverShadow.checked) {
+                        cssCode += `  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);\n`;
+                    }
+                    
+                    if (hoverColorChange.checked) {
+                        cssCode += `  color: ${hoverTextColor.value};\n`;
+                        cssCode += `  background-color: ${hoverBgColor.value};\n`;
+                    }
+                    
+                    cssCode += `}\n\n`;
+                }
+                
+                // Focus styles for accessibility
+                if (accessibility.checked && (currentElement === 'button' || currentElement === 'input' || currentElement === 'textarea' || currentElement === 'link')) {
+                    if (addComments.checked) {
+                        cssCode += `/* ${className} - Accessibility Focus Styles */\n`;
+                    }
+                    
+                    cssCode += `.${className}:focus {\n`;
+                    cssCode += `  outline: 2px solid ${borderColor.value};\n`;
+                    cssCode += `  outline-offset: 2px;\n`;
+                    cssCode += `}\n\n`;
+                }
+                
+                // Load animation
+                if (loadAnimation.value !== 'none') {
+                    if (addComments.checked) {
+                        cssCode += `/* ${className} - Load Animation */\n`;
+                    }
+                    
+                    cssCode += `.${className} {\n`;
+                    cssCode += `  animation: ${loadAnimation.value}-in ${animationDuration.value}ms ease;\n`;
+                    cssCode += `}\n\n`;
+                    
+                    // Add keyframes
+                    if (addComments.checked) {
+                        cssCode += `/* Animation Keyframes */\n`;
+                    }
+                    
+                    switch(loadAnimation.value) {
+                        case 'fade':
+                            cssCode += `@keyframes fade-in {\n`;
+                            cssCode += `  from { opacity: 0; }\n`;
+                            cssCode += `  to { opacity: 1; }\n`;
+                            cssCode += `}\n`;
+                            break;
+                        case 'slide-up':
+                            cssCode += `@keyframes slide-up-in {\n`;
+                            cssCode += `  from { transform: translateY(20px); opacity: 0; }\n`;
+                            cssCode += `  to { transform: translateY(0); opacity: 1; }\n`;
+                            cssCode += `}\n`;
+                            break;
+                        case 'slide-down':
+                            cssCode += `@keyframes slide-down-in {\n`;
+                            cssCode += `  from { transform: translateY(-20px); opacity: 0; }\n`;
+                            cssCode += `  to { transform: translateY(0); opacity: 1; }\n`;
+                            cssCode += `}\n`;
+                            break;
+                        case 'slide-left':
+                            cssCode += `@keyframes slide-left-in {\n`;
+                            cssCode += `  from { transform: translateX(20px); opacity: 0; }\n`;
+                            cssCode += `  to { transform: translateX(0); opacity: 1; }\n`;
+                            cssCode += `}\n`;
+                            break;
+                        case 'slide-right':
+                            cssCode += `@keyframes slide-right-in {\n`;
+                            cssCode += `  from { transform: translateX(-20px); opacity: 0; }\n`;
+                            cssCode += `  to { transform: translateX(0); opacity: 1; }\n`;
+                            cssCode += `}\n`;
+                            break;
+                        case 'bounce':
+                            cssCode += `@keyframes bounce-in {\n`;
+                            cssCode += `  0% { transform: scale(0.8); opacity: 0; }\n`;
+                            cssCode += `  50% { transform: scale(1.1); opacity: 1; }\n`;
+                            cssCode += `  70% { transform: scale(0.9); }\n`;
+                            cssCode += `  100% { transform: scale(1); }\n`;
+                            cssCode += `}\n`;
+                            break;
+                    }
+                }
+                
+                // Dark mode optimization
+                if (darkOptimized.checked) {
+                    if (addComments.checked) {
+                        cssCode += `\n/* Dark Mode Optimization */\n`;
+                    }
+                    
+                    cssCode += `@media (prefers-color-scheme: dark) {\n`;
+                    cssCode += `  .${className} {\n`;
+                    
+                    // Adjust text color for dark background
+                    if (textColor.value === '#1a1a2e' || textColor.value === '#000000') {
+                        cssCode += `    color: #f8f9fa;\n`;
+                    }
+                    
+                    // Adjust background color for dark background
+                    if (bgColor.value === '#ffffff') {
+                        cssCode += `    background-color: #1a1a2e;\n`;
+                    }
+                    
+                    // Adjust border color for dark background
+                    if (borderColor.value === '#4361ee') {
+                        cssCode += `    border-color: #4895ef;\n`;
+                    }
+                    
+                    cssCode += `  }\n`;
+                    
+                    // Adjust hover colors for dark background
+                    if (hoverColorChange.checked) {
+                        cssCode += `  .${className}:hover {\n`;
+                        
+                        if (hoverTextColor.value === '#4361ee') {
+                            cssCode += `    color: #4895ef;\n`;
+                        }
+                        
+                        if (hoverBgColor.value === '#f8f9fa') {
+                            cssCode += `    background-color: #12121a;\n`;
+                        }
+                        
+                        cssCode += `  }\n`;
+                    }
+                    
+                    cssCode += `}\n`;
+                }
+                
+                // Update the output
+                htmlOutput.innerHTML = htmlCode;
+                cssOutput.innerHTML = cssCode;
+                
+                // Syntax highlighting (basic)
+                highlightSyntax();
+            }
+            
+            function highlightSyntax() {
+                // Simple syntax highlighting for HTML
+                let html = htmlOutput.textContent;
+                html = html.replace(/&lt;(.*?)&gt;/g, '&lt;<span class="token tag">$1</span>&gt;');
+                html = html.replace(/class=/g, '<span class="token attr">class</span>=');
+                html = html.replace(/".*?"/g, '<span class="token value">$&</span>');
+                htmlOutput.innerHTML = html;
+                
+                // Simple syntax highlighting for CSS
+                let css = cssOutput.textContent;
+                
+                // Comments
+                css = css.replace(/\/\*.*?\*\//gs, '<span class="token comment">$&</span>');
+                
+                // Selectors
+                css = css.replace(/\..*?(?=\{)/g, '<span class="token selector">$&</span>');
+                
+                // Properties
+                css = css.replace(/([a-zA-Z-]+)(?=:)/g, '<span class="token property">$&</span>');
+                
+                // Values
+                css = css.replace(/(:.*?)(?=;|\n|$)/g, function(match) {
+                    return match.replace(/(:)(.*)/, function(m, p1, p2) {
+                        return p1 + '<span class="token value">' + p2 + '</span>';
+                    });
+                });
+                
+                // Keyframes
+                css = css.replace(/@keyframes.*?(?=\{)/g, '<span class="token selector">$&</span>');
+                
+                cssOutput.innerHTML = css;
+            }
+            
+            function setupEventListeners() {
+                // Element selection
+                elementSelector.addEventListener('click', function(e) {
+                    const elementOption = e.target.closest('.element-option');
+                    if (!elementOption) return;
+                    
+                    document.querySelectorAll('.element-option').forEach(option => {
+                        option.classList.remove('active');
+                    });
+                    
+                    elementOption.classList.add('active');
+                    currentElement = elementOption.dataset.element;
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                // Preview text change
+                previewText.addEventListener('input', function() {
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                // Preview background change
+                previewBgBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        previewBgBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        previewBg = this.dataset.bg;
+                        applyStyles();
+                    });
+                });
+                
+                // Tab switching
+                configTabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        configTabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        const contentId = this.dataset.tab + '-content';
+                        configContents.forEach(content => {
+                            content.classList.remove('active');
+                            if (content.id === contentId) {
+                                content.classList.add('active');
+                            }
+                        });
+                    });
+                });
+                
+                // Color inputs
+                textColor.addEventListener('input', function() {
+                    textColorValue.value = this.value;
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                textColorValue.addEventListener('input', function() {
+                    textColor.value = this.value;
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                bgColor.addEventListener('input', function() {
+                    bgColorValue.value = this.value;
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                bgColorValue.addEventListener('input', function() {
+                    bgColor.value = this.value;
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                borderColor.addEventListener('input', function() {
+                    borderColorValue.value = this.value;
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                borderColorValue.addEventListener('input', function() {
+                    borderColor.value = this.value;
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                // Range inputs
+                borderWidth.addEventListener('input', function() {
+                    borderWidthValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                borderRadius.addEventListener('input', function() {
+                    borderRadiusValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                fontSize.addEventListener('input', function() {
+                    fontSizeValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                letterSpacing.addEventListener('input', function() {
+                    letterSpacingValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                // Padding
+                paddingTop.addEventListener('input', function() {
+                    paddingTopValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                paddingRight.addEventListener('input', function() {
+                    paddingRightValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                paddingBottom.addEventListener('input', function() {
+                    paddingBottomValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                paddingLeft.addEventListener('input', function() {
+                    paddingLeftValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                // Margin
+                marginTop.addEventListener('input', function() {
+                    marginTopValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                marginRight.addEventListener('input', function() {
+                    marginRightValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                marginBottom.addEventListener('input', function() {
+                    marginBottomValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                marginLeft.addEventListener('input', function() {
+                    marginLeftValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                // Width/Height
+                widthType.addEventListener('change', function() {
+                    widthCustomContainer.style.display = this.value === 'custom' ? 'block' : 'none';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                widthCustom.addEventListener('input', function() {
+                    widthCustomValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                heightType.addEventListener('change', function() {
+                    heightCustomContainer.style.display = this.value === 'custom' ? 'block' : 'none';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                heightCustom.addEventListener('input', function() {
+                    heightCustomValue.textContent = this.value + 'px';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                // Select inputs
+                const selectInputs = [
+                    borderStyle, fontFamily, fontWeight, textAlign, textTransform, 
+                    display, loadAnimation
+                ];
+                
+                selectInputs.forEach(select => {
+                    select.addEventListener('change', function() {
+                        applyStyles();
+                        updateCodeOutput();
+                    });
+                });
+                
+                // Checkbox inputs
+                hoverScale.addEventListener('change', function() {
+                    createPreviewElement(); // Need to recreate to reset event listeners
+                    updateCodeOutput();
+                });
+                
+                hoverShadow.addEventListener('change', function() {
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                hoverColorChange.addEventListener('change', function() {
+                    hoverColorOptions.style.display = this.checked ? 'block' : 'none';
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                // Hover color inputs
+                hoverTextColor.addEventListener('input', function() {
+                    hoverTextColorValue.value = this.value;
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                hoverTextColorValue.addEventListener('input', function() {
+                    hoverTextColor.value = this.value;
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                hoverBgColor.addEventListener('input', function() {
+                    hoverBgColorValue.value = this.value;
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                hoverBgColorValue.addEventListener('input', function() {
+                    hoverBgColor.value = this.value;
+                    createPreviewElement();
+                    updateCodeOutput();
+                });
+                
+                // Transition duration
+                transitionDuration.addEventListener('input', function() {
+                    transitionDurationValue.textContent = this.value + 'ms';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                // Animation duration
+                animationDuration.addEventListener('input', function() {
+                    animationDurationValue.textContent = this.value + 'ms';
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                // Snaplyn extras
+                snapGlow.addEventListener('change', function() {
+                    applyStyles();
+                    updateCodeOutput();
+                });
+                
+                darkOptimized.addEventListener('change', function() {
+                    updateCodeOutput();
+                });
+                
+                addComments.addEventListener('change', function() {
+                    updateCodeOutput();
+                });
+                
+                accessibility.addEventListener('change', function() {
+                    updateCodeOutput();
+                });
+                
+                customClassName.addEventListener('input', function() {
+                    updateCodeOutput();
+                });
+                
+                // Action buttons
+                resetBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to reset all settings?')) {
+                        location.reload();
+                    }
+                });
+                
+                copyHtmlBtn.addEventListener('click', function() {
+                    const html = htmlOutput.textContent;
+                    navigator.clipboard.writeText(html).then(() => {
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    });
+                });
+                
+                copyCssBtn.addEventListener('click', function() {
+                    const css = cssOutput.textContent;
+                    navigator.clipboard.writeText(css).then(() => {
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    });
+                });
+                
+                downloadBtn.addEventListener('click', function() {
+                    const html = htmlOutput.textContent;
+                    const css = cssOutput.textContent;
+                    const combined = `<!-- HTML -->\n${html}\n\n<!-- CSS -->\n<style>\n${css}\n</style>`;
+                    
+                    const blob = new Blob([combined], { type: 'text/css' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${customClassName.value || 'styled-element'}.css`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

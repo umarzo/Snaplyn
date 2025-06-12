@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="nCPNtiqQvK5ubhLDBGdKdi_nt_fiAHPQ0O6SezeigVg" />
+    <!-- SEO Meta Tags -->
+    <meta name="title" content="Snaplyn Vault - Secure File Encryption Tool">
+    <meta name="description" content="Encrypt any file with a passphrase and custom verification questions. All processing happens securely in your browser with no server upload.">
+    <meta name="keywords" content="file encryption, secure vault, password protection, snaplyn, offline encryption, aes encryption">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://snaplyn.xyz/vault">
+    <title>Snaplyn Vault - Secure File Encryption</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for easy theming */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Tool Container */
+        .tool-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-top: 6rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 1rem;
+        }
+        
+        .tool-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .tool-title-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .tool-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: var(--rounded-lg);
+            padding: 0.25rem;
+        }
+        
+        .tool-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--rounded-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .tool-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tool-tab:not(.active):hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Tool Content */
+        .tool-content {
+            display: none;
+        }
+        
+        .tool-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed rgba(67, 97, 238, 0.3);
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .file-upload-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .file-upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload-text {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-upload-subtext {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: var(--rounded-md);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .file-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .file-details {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            word-break: break-all;
+        }
+        
+        .file-size {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .file-remove {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--danger);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .file-remove:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--rounded-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .password-toggle {
+            position: relative;
+        }
+        
+        .password-toggle-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+        }
+        
+        /* Question Cards */
+        .question-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .question-card-title {
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .question-card-icon {
+            color: var(--primary);
+        }
+        
+        .question-card-remove {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #3aa8d8;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e5177a;
+        }
+        
+        /* Status Messages */
+        .status-message {
+            padding: 1rem;
+            border-radius: var(--rounded-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .status-message.success {
+            background-color: rgba(76, 201, 240, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--dark);
+        }
+        
+        .status-message.error {
+            background-color: rgba(247, 37, 133, 0.1);
+            border-left: 4px solid var(--danger);
+            color: var(--dark);
+        }
+        
+        .status-message-icon {
+            font-size: 1.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Security Disclaimer */
+        .security-disclaimer {
+            background-color: rgba(248, 150, 30, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            border-radius: var(--rounded-md);
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .security-disclaimer-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .tool-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .tool-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .tool-tabs {
+                width: 100%;
+            }
+            
+            .tool-tab {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .file-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        /* Mobile Navigation */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                width: 100%;
+                text-align: right;
+                padding: 1rem;
+                box-shadow: var(--shadow-md);
+                z-index: 999;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #eee;
+            }
+        }
+
+        /* ==================== */
+        /* SNAPLYN VAULT v2 CSS */
+        /* ==================== */
+
+        /* Lockout Timer */
+        .lockout-timer {
+            background-color: rgba(247, 37, 133, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 1rem;
+            border-radius: var(--rounded-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .lockout-timer-icon {
+            font-size: 1.5rem;
+            color: var(--danger);
+        }
+
+        .lockout-timer-text {
+            font-weight: 600;
+        }
+
+        /* Additional Action Buttons */
+        .secondary-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--rounded-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast-success {
+            background-color: var(--success);
+        }
+
+        .toast-error {
+            background-color: var(--danger);
+        }
+
+        .toast-warning {
+            background-color: var(--warning);
+        }
+
+        /* Tooltips */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .tooltip-icon {
+            color: var(--gray);
+            cursor: help;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: var(--rounded-sm);
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Form Label Enhancements */
+        .form-label-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Encryption Receipt */
+        .receipt-container {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: rgba(76, 201, 240, 0.1);
+            border-radius: var(--rounded-md);
+            border-left: 4px solid var(--success);
+        }
+
+        .receipt-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Tools</a>
+                    <a href="#" class="nav-link">Features</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1 class="tool-title">
+                    <i class="fas fa-lock tool-title-icon"></i>
+                    Snaplyn Vault
+                </h1>
+                <div class="tool-tabs">
+                    <div class="tool-tab active" data-tab="encrypt">Encrypt File</div>
+                    <div class="tool-tab" data-tab="decrypt">Decrypt File</div>
+                </div>
+            </div>
+            
+            <!-- Encryption Panel -->
+            <div id="encrypt-panel" class="tool-content active">
+                <div class="file-upload" id="encrypt-upload">
+                    <input type="file" id="encrypt-file-input" class="file-upload-input">
+                    <div class="file-upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3 class="file-upload-text">Choose a file to encrypt</h3>
+                    <p class="file-upload-subtext">Or drag and drop file here</p>
+                </div>
+                
+                <div id="encrypt-file-info" class="file-info" style="display: none;">
+                    <i class="fas fa-file file-icon"></i>
+                    <div class="file-details">
+                        <div class="file-name" id="encrypt-file-name">No file selected</div>
+                        <div class="file-size" id="encrypt-file-size">0 KB</div>
+                    </div>
+                    <button class="file-remove" id="encrypt-file-remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="encrypt-form">
+                    <div class="form-group">
+                        <div class="form-label-container">
+                            <label for="encrypt-password" class="form-label">Set Passphrase</label>
+                            <div class="tooltip-container">
+                                <i class="fas fa-info-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Create a strong password that will be required to decrypt this file</span>
+                            </div>
+                        </div>
+                        <div class="password-toggle">
+                            <input type="password" id="encrypt-password" class="form-input" placeholder="Enter a strong passphrase" required>
+                            <button type="button" class="password-toggle-btn" id="encrypt-toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="encrypt-confirm-password" class="form-label">Confirm Passphrase</label>
+                        <div class="password-toggle">
+                            <input type="password" id="encrypt-confirm-password" class="form-input" placeholder="Re-enter your passphrase" required>
+                            <button type="button" class="password-toggle-btn" id="encrypt-toggle-confirm-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="encrypt-label" class="form-label">File Label (Optional)</label>
+                        <input type="text" id="encrypt-label" class="form-input" placeholder="e.g., 'Tax Documents 2023'">
+                    </div>
+                    
+                    <div id="questions-container">
+                        <!-- Questions will be added here dynamically -->
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline btn-block" id="add-question-btn">
+                        <i class="fas fa-plus"></i> Add Verification Question
+                    </button>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary" id="encrypt-btn">
+                            <i class="fas fa-lock"></i> Encrypt & Download
+                        </button>
+                    </div>
+
+                    <!-- Vault v2 Download Button -->
+                    <div class="secondary-actions">
+                        <button type="button" class="btn btn-secondary" id="download-vault-btn">
+                            <i class="fas fa-download"></i> Download Snaplyn Vault App
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Encryption Receipt (shown after successful encryption) -->
+                <div id="receipt-container" class="receipt-container" style="display: none;">
+                    <div class="receipt-title">
+                        <i class="fas fa-receipt"></i> Encryption Successful
+                    </div>
+                    <p>Your file has been encrypted and downloaded. You can now:</p>
+                    <div class="secondary-actions">
+                        <button type="button" class="btn btn-secondary" id="download-receipt-btn">
+                            <i class="fas fa-file-alt"></i> Download Vault Receipt
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="security-disclaimer">
+                    <div class="security-disclaimer-title">
+                        <i class="fas fa-shield-alt"></i> Security Notice
+                    </div>
+                    <p>Snaplyn Vault performs client-side AES encryption and stores your data fully offline. It is secure for personal and general professional use, but not intended for military-grade or enterprise-critical encryption.</p>
+                </div>
+            </div>
+            
+            <!-- Decryption Panel -->
+            <div id="decrypt-panel" class="tool-content">
+                <div class="file-upload" id="decrypt-upload">
+                    <input type="file" id="decrypt-file-input" class="file-upload-input" accept=".snapvault">
+                    <div class="file-upload-icon">
+                        <i class="fas fa-file-archive"></i>
+                    </div>
+                    <h3 class="file-upload-text">Upload your .snapvault file</h3>
+                    <p class="file-upload-subtext">Only files encrypted with Snaplyn Vault can be decrypted</p>
+                </div>
+                
+                <div id="decrypt-file-info" class="file-info" style="display: none;">
+                    <i class="fas fa-file-archive file-icon"></i>
+                    <div class="file-details">
+                        <div class="file-name" id="decrypt-file-name">No file selected</div>
+                        <div class="file-size" id="decrypt-file-size">0 KB</div>
+                    </div>
+                    <button class="file-remove" id="decrypt-file-remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="decrypt-form">
+                    <!-- Lockout message will be inserted here when needed -->
+                    
+                    <div id="decrypt-questions-container">
+                        <!-- Questions will be added here dynamically from the vault file -->
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-label-container">
+                            <label for="decrypt-password" class="form-label">Enter Passphrase</label>
+                            <div class="tooltip-container">
+                                <i class="fas fa-info-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Enter the password you used when encrypting this file</span>
+                            </div>
+                        </div>
+                        <div class="password-toggle">
+                            <input type="password" id="decrypt-password" class="form-input" placeholder="Enter the passphrase used for encryption" required>
+                            <button type="button" class="password-toggle-btn" id="decrypt-toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="decrypt-status" class="status-message" style="display: none;">
+                        <i class="fas fa-info-circle status-message-icon"></i>
+                        <div class="status-message-text"></div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-success" id="decrypt-btn">
+                            <i class="fas fa-unlock"></i> Decrypt File
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Vault v2 Download Button -->
+                <div class="secondary-actions">
+                    <button type="button" class="btn btn-secondary" id="download-vault-btn-decrypt">
+                        <i class="fas fa-download"></i> Download Snaplyn Vault App
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                        <li class="footer-link"><a href="#">Utility Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+                <p>Snaplyn Vault v2 now includes lockout protection, portable HTML support, and downloadable encryption receipts. Your data is still never stored or uploaded.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('show');
+            });
+            
+            // Tab switching
+            const tabs = document.querySelectorAll('.tool-tab');
+            const panels = document.querySelectorAll('.tool-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs and panels
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding panel
+                    this.classList.add('active');
+                    const panelId = this.getAttribute('data-tab') + '-panel';
+                    document.getElementById(panelId).classList.add('active');
+                });
+            });
+            
+            // File upload for encryption
+            const encryptFileInput = document.getElementById('encrypt-file-input');
+            const encryptFileInfo = document.getElementById('encrypt-file-info');
+            const encryptFileName = document.getElementById('encrypt-file-name');
+            const encryptFileSize = document.getElementById('encrypt-file-size');
+            const encryptFileRemove = document.getElementById('encrypt-file-remove');
+            
+            encryptFileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    encryptFileName.textContent = file.name;
+                    encryptFileSize.textContent = formatFileSize(file.size);
+                    encryptFileInfo.style.display = 'flex';
+                }
+            });
+            
+            encryptFileRemove.addEventListener('click', function() {
+                encryptFileInput.value = '';
+                encryptFileInfo.style.display = 'none';
+            });
+            
+            // File upload for decryption
+            const decryptFileInput = document.getElementById('decrypt-file-input');
+            const decryptFileInfo = document.getElementById('decrypt-file-info');
+            const decryptFileName = document.getElementById('decrypt-file-name');
+            const decryptFileSize = document.getElementById('decrypt-file-size');
+            const decryptFileRemove = document.getElementById('decrypt-file-remove');
+            
+            decryptFileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    decryptFileName.textContent = file.name;
+                    decryptFileSize.textContent = formatFileSize(file.size);
+                    decryptFileInfo.style.display = 'flex';
+                    
+                    // Try to read the vault file and extract questions
+                    readVaultFile(file).then(vaultData => {
+                        if (vaultData && vaultData.questions) {
+                            populateDecryptQuestions(vaultData.questions);
+                        }
+                    }).catch(error => {
+                        showStatusMessage('error', 'Invalid Snaplyn Vault file. Please upload a file encrypted with Snaplyn Vault.');
+                    });
+                }
+            });
+            
+            decryptFileRemove.addEventListener('click', function() {
+                decryptFileInput.value = '';
+                decryptFileInfo.style.display = 'none';
+                document.getElementById('decrypt-questions-container').innerHTML = '';
+            });
+            
+            // Password toggle
+            setupPasswordToggle('encrypt');
+            setupPasswordToggle('decrypt');
+            
+            // Add question button
+            const addQuestionBtn = document.getElementById('add-question-btn');
+            const questionsContainer = document.getElementById('questions-container');
+            let questionCount = 0;
+            
+            addQuestionBtn.addEventListener('click', function() {
+                if (questionCount >= 3) {
+                    showToast('error', 'Maximum of 3 verification questions allowed.');
+                    return;
+                }
+                
+                questionCount++;
+                const questionId = `question-${questionCount}`;
+                
+                const questionHTML = `
+                    <div class="question-card" id="${questionId}">
+                        <div class="question-card-header">
+                            <h3 class="question-card-title">
+                                <i class="fas fa-question-circle question-card-icon"></i>
+                                Verification Question ${questionCount}
+                            </h3>
+                            <button type="button" class="question-card-remove" data-question-id="${questionId}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label for="${questionId}-text" class="form-label">Question</label>
+                            <input type="text" id="${questionId}-text" class="form-input" placeholder="e.g., What was your first pet's name?" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-container">
+                                <label for="${questionId}-answer" class="form-label">Answer</label>
+                                <div class="tooltip-container">
+                                    <i class="fas fa-info-circle tooltip-icon"></i>
+                                    <span class="tooltip-text">This answer will be required to decrypt the file. Make it memorable but not easy to guess.</span>
+                                </div>
+                            </div>
+                            <input type="text" id="${questionId}-answer" class="form-input" placeholder="Your secret answer" required>
+                        </div>
+                    </div>
+                `;
+                
+                questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+                
+                // Add event listener to remove button
+                document.querySelector(`[data-question-id="${questionId}"]`).addEventListener('click', function() {
+                    document.getElementById(questionId).remove();
+                    questionCount--;
+                });
+            });
+            
+            // Encryption form submission
+            const encryptForm = document.getElementById('encrypt-form');
+            encryptForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Validate form
+                if (!encryptFileInput.files || encryptFileInput.files.length === 0) {
+                    showToast('error', 'Please select a file to encrypt.');
+                    return;
+                }
+                
+                const password = document.getElementById('encrypt-password').value;
+                const confirmPassword = document.getElementById('encrypt-confirm-password').value;
+                
+                if (password !== confirmPassword) {
+                    showToast('error', 'Passwords do not match.');
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    showToast('error', 'Password must be at least 8 characters long.');
+                    return;
+                }
+                
+                // Collect questions and answers
+                const questions = [];
+                const questionCards = document.querySelectorAll('.question-card');
+                
+                if (questionCards.length === 0) {
+                    showToast('error', 'Please add at least one verification question.');
+                    return;
+                }
+                
+                questionCards.forEach(card => {
+                    const questionId = card.id;
+                    const question = document.getElementById(`${questionId}-text`).value;
+                    const answer = document.getElementById(`${questionId}-answer`).value;
+                    
+                    if (!question || !answer) {
+                        showToast('error', 'Please fill in all question and answer fields.');
+                        return;
+                    }
+                    
+                    questions.push({ question, answer });
+                });
+                
+                // Encrypt the file
+                try {
+                    const file = encryptFileInput.files[0];
+                    const fileLabel = document.getElementById('encrypt-label').value || file.name;
+                    const encryptedData = await encryptFile(file, password, questions);
+                    
+                    // Add file label to vault data
+                    encryptedData.fileLabel = fileLabel;
+                    encryptedData.originalFileSize = file.size;
+                    encryptedData.encryptionDate = new Date().toISOString();
+                    encryptedData.version = 'v2';
+                    
+                    // Create download link
+                    const blob = new Blob([JSON.stringify(encryptedData)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${fileLabel}.snapvault`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    // Show success message and receipt options
+                    showToast('success', 'File encrypted successfully!');
+                    document.getElementById('receipt-container').style.display = 'block';
+                    
+                    // Store receipt data for later download
+                    document.getElementById('download-receipt-btn').dataset.receiptData = JSON.stringify({
+                        fileName: file.name,
+                        fileLabel: fileLabel,
+                        fileSize: file.size,
+                        encryptionDate: new Date().toLocaleString(),
+                        questions: questions.map(q => q.question),
+                        version: 'v2'
+                    });
+                    
+                    // Reset form (except questions which might be reused)
+                    encryptFileInput.value = '';
+                    encryptFileInfo.style.display = 'none';
+                    document.getElementById('encrypt-password').value = '';
+                    document.getElementById('encrypt-confirm-password').value = '';
+                    document.getElementById('encrypt-label').value = '';
+                } catch (error) {
+                    console.error('Encryption error:', error);
+                    showToast('error', 'An error occurred during encryption. Please try again.');
+                }
+            });
+            
+            // Decryption form submission
+            const decryptForm = document.getElementById('decrypt-form');
+            decryptForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Check if user is locked out
+                const lockoutUntil = localStorage.getItem('snaplynVaultLockoutUntil');
+                if (lockoutUntil && new Date(lockoutUntil) > new Date()) {
+                    const remainingSeconds = Math.ceil((new Date(lockoutUntil) - new Date()) / 1000);
+                    showStatusMessage('error', `Too many failed attempts. Please wait ${remainingSeconds} seconds before trying again.`);
+                    return;
+                }
+                
+                if (!decryptFileInput.files || decryptFileInput.files.length === 0) {
+                    showStatusMessage('error', 'Please select a .snapvault file to decrypt.');
+                    return;
+                }
+                
+                const password = document.getElementById('decrypt-password').value;
+                
+                try {
+                    const file = decryptFileInput.files[0];
+                    const vaultData = await readVaultFile(file);
+                    
+                    if (!vaultData) {
+                        showStatusMessage('error', 'Invalid Snaplyn Vault file format.');
+                        return;
+                    }
+                    
+                    // Verify answers
+                    const answerInputs = document.querySelectorAll('[id^="decrypt-answer-"]');
+                    let allAnswersCorrect = true;
+                    
+                    for (let i = 0; i < answerInputs.length; i++) {
+                        const userAnswer = answerInputs[i].value;
+                        const hashedUserAnswer = await hashString(userAnswer);
+                        
+                        if (hashedUserAnswer !== vaultData.questions[i].hashedAnswer) {
+                            allAnswersCorrect = false;
+                            break;
+                        }
+                    }
+                    
+                    if (!allAnswersCorrect) {
+                        handleFailedAttempt();
+                        showStatusMessage('error', 'One or more answers are incorrect. Please try again.');
+                        return;
+                    }
+                    
+                    // Decrypt the file
+                    const decryptedFile = await decryptFile(vaultData, password);
+                    
+                    // Create download link
+                    const blob = new Blob([decryptedFile], { type: vaultData.fileType });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = vaultData.fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    // Reset failed attempts counter on successful decryption
+                    localStorage.removeItem('snaplynVaultFailedAttempts');
+                    localStorage.removeItem('snaplynVaultLockoutUntil');
+                    
+                    showStatusMessage('success', 'File decrypted successfully! Your original file has been downloaded.');
+                    showToast('success', 'File decrypted successfully!');
+                } catch (error) {
+                    console.error('Decryption error:', error);
+                    handleFailedAttempt();
+                    showStatusMessage('error', 'Decryption failed. Incorrect password or corrupted file.');
+                    showToast('error', 'Incorrect password or answers.');
+                }
+            });
+            
+            // Download Vault HTML button
+            document.getElementById('download-vault-btn').addEventListener('click', downloadVaultHTML);
+            document.getElementById('download-vault-btn-decrypt').addEventListener('click', downloadVaultHTML);
+            
+            // Download Receipt button
+            document.getElementById('download-receipt-btn').addEventListener('click', function() {
+                const receiptData = JSON.parse(this.dataset.receiptData);
+                const receiptText = generateReceiptText(receiptData);
+                
+                const blob = new Blob([receiptText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `SnaplynVaultReceipt_${receiptData.fileLabel.replace(/[^a-z0-9]/gi, '_')}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showToast('success', 'Encryption receipt downloaded.');
+            });
+            
+            // ==================== //
+            // SNAPLYN VAULT v2 JS  //
+            // ==================== //
+            
+            /**
+             * Handle failed decryption attempts with lockout after 3 tries
+             */
+            function handleFailedAttempt() {
+                let failedAttempts = parseInt(localStorage.getItem('snaplynVaultFailedAttempts')) || 0;
+                failedAttempts++;
+                localStorage.setItem('snaplynVaultFailedAttempts', failedAttempts.toString());
+                
+                if (failedAttempts >= 3) {
+                    // Set lockout for 60 seconds
+                    const lockoutUntil = new Date(Date.now() + 60000);
+                    localStorage.setItem('snaplynVaultLockoutUntil', lockoutUntil.toISOString());
+                    
+                    // Show lockout message
+                    showLockoutTimer(60);
+                    showToast('error', 'Too many failed attempts. Locked out for 60 seconds.');
+                }
+            }
+            
+            /**
+             * Show lockout timer countdown
+             * @param {number} seconds - Number of seconds to count down from
+             */
+            function showLockoutTimer(seconds) {
+                const decryptForm = document.getElementById('decrypt-form');
+                let existingLockout = document.querySelector('.lockout-timer');
+                
+                if (!existingLockout) {
+                    existingLockout = document.createElement('div');
+                    existingLockout.className = 'lockout-timer';
+                    existingLockout.innerHTML = `
+                        <i class="fas fa-lock lockout-timer-icon"></i>
+                        <div class="lockout-timer-text"></div>
+                    `;
+                    decryptForm.insertBefore(existingLockout, decryptForm.firstChild);
+                }
+                
+                const timerText = existingLockout.querySelector('.lockout-timer-text');
+                let remaining = seconds;
+                
+                timerText.textContent = `Too many failed attempts. Please wait ${remaining} seconds before trying again.`;
+                
+                const interval = setInterval(() => {
+                    remaining--;
+                    timerText.textContent = `Too many failed attempts. Please wait ${remaining} seconds before trying again.`;
+                    
+                    if (remaining <= 0) {
+                        clearInterval(interval);
+                        existingLockout.remove();
+                        localStorage.removeItem('snaplynVaultFailedAttempts');
+                        localStorage.removeItem('snaplynVaultLockoutUntil');
+                    }
+                }, 1000);
+            }
+            
+            /**
+             * Download the current HTML as a standalone vault tool
+             */
+            function downloadVaultHTML() {
+                // Get current HTML content
+                const htmlContent = `<!DOCTYPE html>${document.documentElement.outerHTML}`;
+                
+                // Create download link
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'SnaplynVault.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showToast('success', 'Snaplyn Vault app downloaded. Use it offline to unlock your files.');
+            }
+            
+            /**
+             * Generate receipt text for download
+             * @param {object} data - Receipt data
+             * @returns {string} Formatted receipt text
+             */
+            function generateReceiptText(data) {
+                return `=== Snaplyn Vault Encryption Receipt ===
+
+File Name: ${data.fileName}
+File Label: ${data.fileLabel}
+Original Size: ${formatFileSize(data.fileSize)}
+Encryption Date: ${data.encryptionDate}
+Snaplyn Vault Version: ${data.version}
+
+Security Questions:
+${data.questions.map((q, i) => `  ${i+1}. ${q}`).join('\n')}
+
+=== Important Notes ===
+
+1. This receipt does NOT contain your passphrase or answers
+2. Keep this receipt in a secure place
+3. You'll need to remember your passphrase and answers to decrypt
+4. The encrypted file is saved as: ${data.fileLabel}.snapvault
+
+Security Reminder:
+- Never share your passphrase or answers
+- Store your .snapvault file and this receipt separately
+- Use the downloaded SnaplynVault.html for offline decryption`;
+            }
+            
+            /**
+             * Show a toast notification
+             * @param {string} type - 'success', 'error', or 'warning'
+             * @param {string} message - Message to display
+             */
+            function showToast(type, message) {
+                const toastContainer = document.getElementById('toast-container');
+                const toastId = `toast-${Date.now()}`;
+                
+                const toast = document.createElement('div');
+                toast.id = toastId;
+                toast.className = `toast toast-${type}`;
+                toast.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'} toast-icon"></i>
+                    <div>${message}</div>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Show toast
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                }, 5000);
+            }
+            
+            // Helper functions
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function setupPasswordToggle(prefix) {
+                const passwordInput = document.getElementById(`${prefix}-password`);
+                const toggleBtn = document.getElementById(`${prefix}-toggle-password`);
+                
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+            
+            function showStatusMessage(type, message) {
+                const statusElement = document.getElementById('decrypt-status');
+                statusElement.className = `status-message ${type}`;
+                statusElement.style.display = 'flex';
+                statusElement.querySelector('.status-message-icon').className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} status-message-icon`;
+                statusElement.querySelector('.status-message-text').textContent = message;
+                
+                // Scroll to message
+                statusElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            
+            async function readVaultFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        try {
+                            const content = e.target.result;
+                            const vaultData = JSON.parse(content);
+                            resolve(vaultData);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    reader.onerror = reject;
+                    reader.readAsText(file);
+                });
+            }
+            
+            function populateDecryptQuestions(questions) {
+                const container = document.getElementById('decrypt-questions-container');
+                container.innerHTML = '';
+                
+                questions.forEach((q, index) => {
+                    const questionHTML = `
+                        <div class="form-group">
+                            <label for="decrypt-question-${index}" class="form-label">${q.question}</label>
+                            <input type="text" id="decrypt-answer-${index}" class="form-input" placeholder="Your answer" required>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', questionHTML);
+                });
+            }
+            
+            async function encryptFile(file, password, questions) {
+                // First, hash the answers
+                const questionsWithHashes = [];
+                for (const q of questions) {
+                    const hashedAnswer = await hashString(q.answer);
+                    questionsWithHashes.push({
+                        question: q.question,
+                        hashedAnswer: hashedAnswer
+                    });
+                }
+                
+                // Generate a random salt
+                const salt = window.crypto.getRandomValues(new Uint8Array(16));
+                
+                // Derive encryption key from password
+                const keyMaterial = await getKeyMaterial(password);
+                const key = await deriveKey(keyMaterial, salt);
+                
+                // Generate random IV
+                const iv = window.crypto.getRandomValues(new Uint8Array(12));
+                
+                // Read file as ArrayBuffer
+                const fileBuffer = await readFileAsArrayBuffer(file);
+                
+                // Encrypt the file
+                const encryptedContent = await window.crypto.subtle.encrypt(
+                    {
+                        name: "AES-GCM",
+                        iv: iv
+                    },
+                    key,
+                    fileBuffer
+                );
+                
+                // Prepare vault data
+                return {
+                    version: 1,
+                    fileName: file.name,
+                    fileType: file.type,
+                    encryptedData: arrayBufferToBase64(encryptedContent),
+                    salt: arrayBufferToBase64(salt),
+                    iv: arrayBufferToBase64(iv),
+                    questions: questionsWithHashes
+                };
+            }
+            
+            async function decryptFile(vaultData, password) {
+                // Derive encryption key from password
+                const keyMaterial = await getKeyMaterial(password);
+                const salt = base64ToArrayBuffer(vaultData.salt);
+                const key = await deriveKey(keyMaterial, salt);
+                
+                // Get IV and encrypted data
+                const iv = base64ToArrayBuffer(vaultData.iv);
+                const encryptedData = base64ToArrayBuffer(vaultData.encryptedData);
+                
+                // Decrypt the file
+                const decryptedContent = await window.crypto.subtle.decrypt(
+                    {
+                        name: "AES-GCM",
+                        iv: iv
+                    },
+                    key,
+                    encryptedData
+                );
+                
+                return new Uint8Array(decryptedContent);
+            }
+            
+            async function getKeyMaterial(password) {
+                const enc = new TextEncoder();
+                return await window.crypto.subtle.importKey(
+                    "raw",
+                    enc.encode(password),
+                    { name: "PBKDF2" },
+                    false,
+                    ["deriveBits", "deriveKey"]
+                );
+            }
+            
+            async function deriveKey(keyMaterial, salt) {
+                return await window.crypto.subtle.deriveKey(
+                    {
+                        name: "PBKDF2",
+                        salt: salt,
+                        iterations: 100000,
+                        hash: "SHA-256"
+                    },
+                    keyMaterial,
+                    { name: "AES-GCM", length: 256 },
+                    false,
+                    ["encrypt", "decrypt"]
+                );
+            }
+            
+            async function hashString(str) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(str);
+                const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+                return arrayBufferToBase64(hashBuffer);
+            }
+            
+            function readFileAsArrayBuffer(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+            
+            function arrayBufferToBase64(buffer) {
+                let binary = '';
+                const bytes = new Uint8Array(buffer);
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            }
+            
+            function base64ToArrayBuffer(base64) {
+                const binaryString = window.atob(base64);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes;
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

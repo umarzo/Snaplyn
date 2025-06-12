@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/sleep">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Score Optimizer | Snaplyn Tools</title>
+    <meta name="description" content="Evaluate your sleep quality and get personalized improvement recommendations with our science-based Sleep Score Optimizer.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Snaplyn Theme */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Tool Specific Styles */
+        .sleep-tool-container {
+            margin-top: 100px;
+            padding: 2rem 0;
+        }
+        
+        .sleep-tool-card {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+        
+        .question-group {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .question-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .question-group-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .question {
+            margin-bottom: 1.75rem;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+        
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        .option-btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--rounded-md);
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 0.95rem;
+        }
+        
+        .option-btn:hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+        
+        .option-btn.selected {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .slider-container {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: var(--rounded-full);
+            background: rgba(67, 97, 238, 0.2);
+            outline: none;
+            margin-bottom: 1rem;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .slider-value {
+            font-weight: 600;
+            color: var(--primary);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            max-width: 500px;
+            height: 10px;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: var(--rounded-full);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            border-radius: var(--rounded-full);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            margin-left: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Results Section */
+        .results-container {
+            display: none;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0%, var(--light) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            background-color: white;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--dark);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .score-label {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .score-description {
+            font-size: 1rem;
+            color: var(--gray);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .recommendations-container {
+            margin-top: 3rem;
+        }
+        
+        .recommendation-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .routine-container {
+            margin-top: 2rem;
+        }
+        
+        .routine-step {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: var(--rounded-md);
+            margin-bottom: 0.75rem;
+        }
+        
+        .routine-time {
+            font-weight: 600;
+            min-width: 80px;
+            color: var(--primary);
+        }
+        
+        .routine-action {
+            flex-grow: 1;
+        }
+        
+        .fun-fact-card {
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--primary-light);
+        }
+        
+        .fun-fact-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .fun-fact-text {
+            color: var(--gray);
+        }
+        
+        .reset-btn {
+            display: block;
+            margin: 2rem auto 0;
+            padding: 0.75rem 2rem;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .zzz {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.3;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .zzz:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .zzz:nth-child(2) {
+            top: 60%;
+            left: 80%;
+            animation-delay: 0.5s;
+        }
+        
+        .zzz:nth-child(3) {
+            top: 30%;
+            left: 70%;
+            animation-delay: 1s;
+        }
+        
+        .zzz:nth-child(4) {
+            top: 70%;
+            left: 20%;
+            animation-delay: 1.5s;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                width: 100%;
+                text-align: right;
+                padding: 1rem;
+                box-shadow: var(--shadow-md);
+                z-index: 999;
+            }
+            
+            .nav-links.show {
+                display: flex;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .sleep-tool-container {
+                margin-top: 80px;
+            }
+            
+            .sleep-tool-card {
+                padding: 1.5rem;
+            }
+            
+            .question-group-title {
+                font-size: 1.25rem;
+            }
+            
+            .options-container {
+                flex-direction: column;
+            }
+            
+            .option-btn {
+                width: 100%;
+            }
+            
+            .score-circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .score-value {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Tools</a>
+                    <a href="#" class="nav-link">About</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sleep Tool Container -->
+    <div class="container sleep-tool-container">
+        <h1 class="section-title">Sleep Score Optimizer</h1>
+        <p class="section-subtitle">Evaluate your sleep quality and get personalized recommendations to improve your rest.</p>
+        
+        <div class="sleep-tool-card">
+            <!-- Survey Progress -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0% Complete</div>
+            </div>
+            
+            <!-- Survey Form -->
+            <form id="sleepSurveyForm">
+                <!-- Sleep Duration Group -->
+                <div class="question-group">
+                    <h2 class="question-group-title">
+                        <i class="fas fa-clock"></i> Sleep Duration
+                    </h2>
+                    
+                    <div class="question">
+                        <p class="question-text">1. How many hours do you sleep on average?</p>
+                        <div class="slider-container">
+                            <input type="range" min="3" max="12" value="7" step="0.5" class="slider" id="sleepHours">
+                            <div class="slider-value" id="sleepHoursValue">7 hours</div>
+                        </div>
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">2. Do you have a fixed bedtime/wake time?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="sometimes">Sometimes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="fixedSchedule" id="fixedSchedule">
+                    </div>
+                </div>
+                
+                <!-- Sleep Quality Group -->
+                <div class="question-group">
+                    <h2 class="question-group-title">
+                        <i class="fas fa-bed"></i> Sleep Quality
+                    </h2>
+                    
+                    <div class="question">
+                        <p class="question-text">3. How often do you wake up during the night?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="never">Never</button>
+                            <button type="button" class="option-btn" data-value="occasionally">Occasionally</button>
+                            <button type="button" class="option-btn" data-value="frequently">Frequently</button>
+                        </div>
+                        <input type="hidden" name="nightWakeups" id="nightWakeups">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">4. Do you wake up feeling rested?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="always">Always</button>
+                            <button type="button" class="option-btn" data-value="sometimes">Sometimes</button>
+                            <button type="button" class="option-btn" data-value="never">Never</button>
+                        </div>
+                        <input type="hidden" name="wakeRested" id="wakeRested">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">5. Do you have vivid dreams or nightmares?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="often">Often</button>
+                            <button type="button" class="option-btn" data-value="rarely">Rarely</button>
+                            <button type="button" class="option-btn" data-value="never">Never</button>
+                        </div>
+                        <input type="hidden" name="dreams" id="dreams">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">6. Do you snore loudly or have diagnosed sleep apnea?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                            <button type="button" class="option-btn" data-value="unsure">Unsure</button>
+                        </div>
+                        <input type="hidden" name="snoring" id="snoring">
+                    </div>
+                </div>
+                
+                <!-- Pre-Bed Routine Group -->
+                <div class="question-group">
+                    <h2 class="question-group-title">
+                        <i class="fas fa-moon"></i> Pre-Bed Routine
+                    </h2>
+                    
+                    <div class="question">
+                        <p class="question-text">7. Do you use screens 1 hour before sleep?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="always">Always</button>
+                            <button type="button" class="option-btn" data-value="sometimes">Sometimes</button>
+                            <button type="button" class="option-btn" data-value="never">Never</button>
+                        </div>
+                        <input type="hidden" name="screenUse" id="screenUse">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">8. Do you consume caffeine after 4PM?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="caffeine" id="caffeine">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">9. Do you eat heavy meals within 2 hours of sleep?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="heavyMeals" id="heavyMeals">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">10. Do you exercise at night?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="nightExercise" id="nightExercise">
+                    </div>
+                </div>
+                
+                <!-- Environment Group -->
+                <div class="question-group">
+                    <h2 class="question-group-title">
+                        <i class="fas fa-home"></i> Sleep Environment
+                    </h2>
+                    
+                    <div class="question">
+                        <p class="question-text">11. Is your room dark while sleeping?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="sometimes">Sometimes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="roomDark" id="roomDark">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">12. Is your room cool or well-ventilated?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="roomCool" id="roomCool">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">13. Is your bed/mattress comfortable?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="somewhat">Somewhat</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="bedComfort" id="bedComfort">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">14. Noise levels at night?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="silent">Silent</button>
+                            <button type="button" class="option-btn" data-value="occasional">Occasional</button>
+                            <button type="button" class="option-btn" data-value="loud">Loud</button>
+                        </div>
+                        <input type="hidden" name="noiseLevel" id="noiseLevel">
+                    </div>
+                </div>
+                
+                <!-- Lifestyle Factors Group -->
+                <div class="question-group">
+                    <h2 class="question-group-title">
+                        <i class="fas fa-heartbeat"></i> Lifestyle Factors
+                    </h2>
+                    
+                    <div class="question">
+                        <p class="question-text">15. Do you wake naturally or with an alarm?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="natural">Natural</button>
+                            <button type="button" class="option-btn" data-value="alarm">Alarm</button>
+                        </div>
+                        <input type="hidden" name="wakeMethod" id="wakeMethod">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">16. Do you take naps longer than 30 mins?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="yes">Yes</button>
+                            <button type="button" class="option-btn" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="longNaps" id="longNaps">
+                    </div>
+                    
+                    <div class="question">
+                        <p class="question-text">17. Do you feel sleepy during the day?</p>
+                        <div class="options-container">
+                            <button type="button" class="option-btn" data-value="rarely">Rarely</button>
+                            <button type="button" class="option-btn" data-value="sometimes">Sometimes</button>
+                            <button type="button" class="option-btn" data-value="often">Often</button>
+                        </div>
+                        <input type="hidden" name="daytimeSleepiness" id="daytimeSleepiness">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Calculate My Sleep Score</button>
+            </form>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="sleep-tool-card results-container" id="resultsContainer">
+            <div class="zzz">💤</div>
+            <div class="zzz">😴</div>
+            <div class="zzz">💤</div>
+            <div class="zzz">😴</div>
+            
+            <div class="score-display">
+                <div class="score-circle" id="scoreCircle">
+                    <div class="score-value" id="scoreValue">0</div>
+                </div>
+                <h2 class="score-label" id="scoreLabel">Your Sleep Score</h2>
+                <p class="score-description" id="scoreDescription"></p>
+            </div>
+            
+            <div class="recommendations-container">
+                <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 1.5rem;">Your Personalized Sleep Plan</h2>
+                
+                <div id="recommendationsList">
+                    <!-- Recommendations will be inserted here by JavaScript -->
+                </div>
+                
+                <div class="routine-container" id="routineContainer">
+                    <h3 class="recommendation-title">
+                        <i class="fas fa-calendar-check"></i> Suggested Evening Routine
+                    </h3>
+                    <div id="routineSteps">
+                        <!-- Routine steps will be inserted here by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="fun-fact-card">
+                    <h3 class="fun-fact-title">
+                        <i class="fas fa-lightbulb"></i> Did You Know?
+                    </h3>
+                    <p class="fun-fact-text" id="funFactText"></p>
+                </div>
+                
+                <button type="button" class="btn btn-outline reset-btn" id="resetBtn">
+                    <i class="fas fa-redo"></i> Retake Assessment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                        <li class="footer-link"><a href="#">Health Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+                <p><small>Disclaimer: This tool offers general sleep wellness advice. It does not replace medical diagnosis or treatment for serious sleep disorders.</small></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('show');
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('show');
+                        }
+                    }
+                });
+            });
+            
+            // Sleep Hours Slider
+            const sleepHoursSlider = document.getElementById('sleepHours');
+            const sleepHoursValue = document.getElementById('sleepHoursValue');
+            
+            sleepHoursSlider.addEventListener('input', function() {
+                sleepHoursValue.textContent = `${this.value} hours`;
+            });
+            
+            // Option Button Selection
+            const optionButtons = document.querySelectorAll('.option-btn');
+            
+            optionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove selected class from siblings
+                    const parentContainer = this.parentElement;
+                    const siblings = parentContainer.querySelectorAll('.option-btn');
+                    siblings.forEach(sib => sib.classList.remove('selected'));
+                    
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    
+                    // Update corresponding hidden input
+                    const inputId = parentContainer.parentElement.querySelector('input[type="hidden"]').id;
+                    document.getElementById(inputId).value = this.dataset.value;
+                    
+                    // Update progress
+                    updateProgress();
+                });
+            });
+            
+            // Update progress bar
+            function updateProgress() {
+                const totalQuestions = 17;
+                let answeredQuestions = 0;
+                
+                // Check each question group for answers
+                document.querySelectorAll('input[type="hidden"]').forEach(input => {
+                    if (input.value) answeredQuestions++;
+                });
+                
+                // Count sleep hours as answered (always has a value)
+                answeredQuestions++;
+                
+                const progressPercentage = Math.round((answeredQuestions / totalQuestions) * 100);
+                document.getElementById('progressFill').style.width = `${progressPercentage}%`;
+                document.getElementById('progressText').textContent = `${progressPercentage}% Complete`;
+            }
+            
+            // Form submission
+            const sleepSurveyForm = document.getElementById('sleepSurveyForm');
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            sleepSurveyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate all questions are answered
+                let allAnswered = true;
+                document.querySelectorAll('input[type="hidden"]').forEach(input => {
+                    if (!input.value) allAnswered = false;
+                });
+                
+                if (!allAnswered) {
+                    alert('Please answer all questions before submitting.');
+                    return;
+                }
+                
+                // Calculate sleep score
+                const sleepScore = calculateSleepScore();
+                
+                // Display results
+                displayResults(sleepScore);
+                
+                // Scroll to results
+                resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Calculate sleep score (0-100)
+            function calculateSleepScore() {
+                // Get all values from the form
+                const sleepHours = parseFloat(document.getElementById('sleepHours').value);
+                const fixedSchedule = document.getElementById('fixedSchedule').value;
+                const nightWakeups = document.getElementById('nightWakeups').value;
+                const wakeRested = document.getElementById('wakeRested').value;
+                const dreams = document.getElementById('dreams').value;
+                const snoring = document.getElementById('snoring').value;
+                const screenUse = document.getElementById('screenUse').value;
+                const caffeine = document.getElementById('caffeine').value;
+                const heavyMeals = document.getElementById('heavyMeals').value;
+                const nightExercise = document.getElementById('nightExercise').value;
+                const roomDark = document.getElementById('roomDark').value;
+                const roomCool = document.getElementById('roomCool').value;
+                const bedComfort = document.getElementById('bedComfort').value;
+                const noiseLevel = document.getElementById('noiseLevel').value;
+                const wakeMethod = document.getElementById('wakeMethod').value;
+                const longNaps = document.getElementById('longNaps').value;
+                const daytimeSleepiness = document.getElementById('daytimeSleepiness').value;
+                
+                // Initialize score (max possible is 100)
+                let score = 0;
+                
+                // Sleep Duration (Max 20 points)
+                if (sleepHours >= 7 && sleepHours <= 9) score += 20;
+                else if (sleepHours >= 6 && sleepHours < 7) score += 15;
+                else if (sleepHours > 9 && sleepHours <= 10) score += 15;
+                else if (sleepHours >= 5 && sleepHours < 6) score += 10;
+                else if (sleepHours > 10 && sleepHours <= 11) score += 10;
+                else score += 5;
+                
+                // Fixed Schedule (Max 10 points)
+                if (fixedSchedule === 'yes') score += 10;
+                else if (fixedSchedule === 'sometimes') score += 5;
+                
+                // Night Wakeups (Max 10 points)
+                if (nightWakeups === 'never') score += 10;
+                else if (nightWakeups === 'occasionally') score += 7;
+                else score += 3;
+                
+                // Wake Rested (Max 10 points)
+                if (wakeRested === 'always') score += 10;
+                else if (wakeRested === 'sometimes') score += 6;
+                else score += 2;
+                
+                // Dreams/Nightmares (Max 5 points)
+                if (dreams === 'rarely') score += 5;
+                else if (dreams === 'never') score += 4;
+                else score += 2;
+                
+                // Snoring/Sleep Apnea (Max 5 points)
+                if (snoring === 'no') score += 5;
+                else if (snoring === 'unsure') score += 3;
+                else score += 1;
+                
+                // Screen Use (Max 10 points)
+                if (screenUse === 'never') score += 10;
+                else if (screenUse === 'sometimes') score += 6;
+                else score += 2;
+                
+                // Caffeine (Max 5 points)
+                if (caffeine === 'no') score += 5;
+                else score += 1;
+                
+                // Heavy Meals (Max 5 points)
+                if (heavyMeals === 'no') score += 5;
+                else score += 1;
+                
+                // Night Exercise (Max 5 points)
+                if (nightExercise === 'no') score += 5;
+                else score += 1;
+                
+                // Room Dark (Max 5 points)
+                if (roomDark === 'yes') score += 5;
+                else if (roomDark === 'sometimes') score += 3;
+                else score += 1;
+                
+                // Room Cool (Max 5 points)
+                if (roomCool === 'yes') score += 5;
+                else score += 1;
+                
+                // Bed Comfort (Max 5 points)
+                if (bedComfort === 'yes') score += 5;
+                else if (bedComfort === 'somewhat') score += 3;
+                else score += 1;
+                
+                // Noise Level (Max 5 points)
+                if (noiseLevel === 'silent') score += 5;
+                else if (noiseLevel === 'occasional') score += 3;
+                else score += 1;
+                
+                // Wake Method (Max 5 points)
+                if (wakeMethod === 'natural') score += 5;
+                else score += 2;
+                
+                // Long Naps (Max 5 points)
+                if (longNaps === 'no') score += 5;
+                else score += 2;
+                
+                // Daytime Sleepiness (Max 5 points)
+                if (daytimeSleepiness === 'rarely') score += 5;
+                else if (daytimeSleepiness === 'sometimes') score += 3;
+                else score += 1;
+                
+                // Ensure score is between 0-100
+                return Math.min(Math.max(Math.round(score), 0), 100);
+            }
+            
+            // Display results with recommendations
+            function displayResults(score) {
+                // Show results container
+                resultsContainer.style.display = 'block';
+                document.getElementById('sleepSurveyForm').style.display = 'none';
+                
+                // Update score display
+                document.getElementById('scoreValue').textContent = score;
+                document.getElementById('scoreCircle').style.background = `conic-gradient(${getScoreColor(score)} ${score}%, var(--light) ${score}%)`;
+                
+                // Set score description
+                const scoreDescription = document.getElementById('scoreDescription');
+                if (score >= 90) {
+                    document.getElementById('scoreLabel').textContent = 'Sleep God Mode 😴';
+                    scoreDescription.textContent = 'Your sleep habits are excellent! Keep up the good work and maintain these healthy routines.';
+                } else if (score >= 70) {
+                    document.getElementById('scoreLabel').textContent = 'Strong Sleeper 🛏️';
+                    scoreDescription.textContent = 'You have good sleep habits overall, with some areas that could be improved for even better rest.';
+                } else if (score >= 50) {
+                    document.getElementById('scoreLabel').textContent = 'Unstable Sleeper 🌘';
+                    scoreDescription.textContent = 'Your sleep could use some improvement. Focus on the recommendations below to enhance your sleep quality.';
+                } else {
+                    document.getElementById('scoreLabel').textContent = 'Sleep in Danger Zone ⚠️';
+                    scoreDescription.textContent = 'Your sleep habits need significant improvement. Consider implementing the recommendations below and consult a healthcare professional if sleep issues persist.';
+                }
+                
+                // Generate recommendations based on answers
+                generateRecommendations();
+                
+                // Generate suggested routine
+                generateSuggestedRoutine();
+                
+                // Show random fun fact
+                showFunFact();
+            }
+            
+            // Get color based on score
+            function getScoreColor(score) {
+                if (score >= 90) return '#4cc9f0'; // Success color
+                if (score >= 70) return '#4895ef'; // Primary light
+                if (score >= 50) return '#f8961e'; // Warning
+                return '#f72585'; // Danger
+            }
+            
+            // Generate personalized recommendations
+            function generateRecommendations() {
+                const recommendationsList = document.getElementById('recommendationsList');
+                recommendationsList.innerHTML = '';
+                
+                const sleepHours = parseFloat(document.getElementById('sleepHours').value);
+                const fixedSchedule = document.getElementById('fixedSchedule').value;
+                const nightWakeups = document.getElementById('nightWakeups').value;
+                const wakeRested = document.getElementById('wakeRested').value;
+                const screenUse = document.getElementById('screenUse').value;
+                const caffeine = document.getElementById('caffeine').value;
+                const heavyMeals = document.getElementById('heavyMeals').value;
+                const roomDark = document.getElementById('roomDark').value;
+                const roomCool = document.getElementById('roomCool').value;
+                const bedComfort = document.getElementById('bedComfort').value;
+                const noiseLevel = document.getElementById('noiseLevel').value;
+                const wakeMethod = document.getElementById('wakeMethod').value;
+                const longNaps = document.getElementById('longNaps').value;
+                
+                // Sleep duration recommendation
+                if (sleepHours < 7 || sleepHours > 9) {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-clock"></i> Optimize Sleep Duration
+                        </h3>
+                        <p>Aim for ${sleepHours < 7 ? '7-9 hours' : '7-9 hours'} of sleep per night. ${sleepHours < 7 ? 'Insufficient sleep' : 'Excessive sleep'} can affect your energy levels and cognitive function.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Consistent schedule recommendation
+                if (fixedSchedule !== 'yes') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-calendar-alt"></i> Establish a Consistent Schedule
+                        </h3>
+                        <p>Try to go to bed and wake up at the same time every day, even on weekends. This helps regulate your body's internal clock.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Screen time recommendation
+                if (screenUse !== 'never') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-mobile-screen"></i> Reduce Screen Time Before Bed
+                        </h3>
+                        <p>Avoid screens for at least 1 hour before bedtime. The blue light emitted can disrupt your natural sleep-wake cycle. Consider using blue light filters if you must use devices.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Caffeine recommendation
+                if (caffeine === 'yes') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-coffee"></i> Limit Late-Day Caffeine
+                        </h3>
+                        <p>Avoid caffeine after 4PM as it can stay in your system for hours and make it harder to fall asleep.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Heavy meals recommendation
+                if (heavyMeals === 'yes') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-utensils"></i> Avoid Heavy Meals Before Bed
+                        </h3>
+                        <p>Try to finish eating 2-3 hours before bedtime. Heavy meals can cause discomfort and disrupt sleep.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Room environment recommendations
+                if (roomDark !== 'yes') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-lightbulb"></i> Darken Your Sleep Environment
+                        </h3>
+                        <p>Use blackout curtains or an eye mask to block out light, which can interfere with melatonin production.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                if (roomCool !== 'yes') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-temperature-low"></i> Cool Your Bedroom
+                        </h3>
+                        <p>Keep your bedroom between 18-20°C (65-68°F) for optimal sleep. A cooler environment promotes better sleep quality.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Bed comfort recommendation
+                if (bedComfort !== 'yes') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-bed"></i> Improve Bed Comfort
+                        </h3>
+                        <p>Consider investing in a better mattress or pillows. Comfort is crucial for uninterrupted sleep.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Noise recommendation
+                if (noiseLevel !== 'silent') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-volume-up"></i> Minimize Noise Disturbances
+                        </h3>
+                        <p>Use earplugs, a white noise machine, or a fan to mask disruptive sounds that might wake you during the night.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Wake method recommendation
+                if (wakeMethod !== 'natural') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-bell"></i> Reduce Alarm Dependency
+                        </h3>
+                        <p>Try to wake up naturally by going to bed earlier. If you must use an alarm, consider a gradual sunrise alarm or gentle sounds.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // Naps recommendation
+                if (longNaps === 'yes') {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-sun"></i> Limit Long Naps
+                        </h3>
+                        <p>Keep naps to 20-30 minutes and avoid napping late in the day, as this can interfere with nighttime sleep.</p>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+                
+                // If no specific recommendations (high score), show general tips
+                if (recommendationsList.children.length === 0) {
+                    const rec = document.createElement('div');
+                    rec.className = 'recommendation-card';
+                    rec.innerHTML = `
+                        <h3 class="recommendation-title">
+                            <i class="fas fa-check-circle"></i> Maintain Your Excellent Habits
+                        </h3>
+                        <p>Your sleep habits are already excellent! Continue with your current routine and consider these bonus tips for even better sleep:</p>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">Try meditation or deep breathing exercises before bed</li>
+                            <li style="margin-bottom: 0.5rem;">Keep a sleep journal to track patterns</li>
+                            <li>Consider a magnesium supplement (consult your doctor first)</li>
+                        </ul>
+                    `;
+                    recommendationsList.appendChild(rec);
+                }
+            }
+            
+            // Generate suggested evening routine
+            function generateSuggestedRoutine() {
+                const routineSteps = document.getElementById('routineSteps');
+                routineSteps.innerHTML = '';
+                
+                const sleepHours = parseFloat(document.getElementById('sleepHours').value);
+                const screenUse = document.getElementById('screenUse').value;
+                const caffeine = document.getElementById('caffeine').value;
+                const heavyMeals = document.getElementById('heavyMeals').value;
+                
+                // Calculate target bedtime (assuming user wants to wake at 7am)
+                const targetBedtime = 19 - sleepHours;
+                const bedtimeHour = targetBedtime >= 12 ? targetBedtime - 12 : targetBedtime;
+                const bedtimePeriod = targetBedtime >= 12 ? 'PM' : 'AM';
+                
+                // Add routine steps
+                addRoutineStep(routineSteps, `${bedtimeHour - 2}:30${bedtimePeriod}`, 'Finish any caffeine consumption');
+                
+                if (heavyMeals === 'yes') {
+                    addRoutineStep(routineSteps, `${bedtimeHour - 1}:30${bedtimePeriod}`, 'Have a light, healthy dinner');
+                } else {
+                    addRoutineStep(routineSteps, `${bedtimeHour - 1}:30${bedtimePeriod}`, 'Enjoy your evening meal');
+                }
+                
+                if (screenUse !== 'never') {
+                    addRoutineStep(routineSteps, `${bedtimeHour - 1}:00${bedtimePeriod}`, 'Begin reducing screen time, enable blue light filters');
+                }
+                
+                addRoutineStep(routineSteps, `${bedtimeHour - 0.5}:00${bedtimePeriod}`, 'Relaxing activity: reading, meditation, or light stretching');
+                addRoutineStep(routineSteps, `${bedtimeHour}:00${bedtimePeriod}`, 'Lights out - time to sleep');
+            }
+            
+            // Add a routine step
+            function addRoutineStep(container, time, action) {
+                const step = document.createElement('div');
+                step.className = 'routine-step';
+                step.innerHTML = `
+                    <div class="routine-time">${time}</div>
+                    <div class="routine-action">${action}</div>
+                `;
+                container.appendChild(step);
+            }
+            
+            // Show random fun fact
+            function showFunFact() {
+                const funFacts = [
+                    "Lack of sleep affects decision-making worse than alcohol.",
+                    "Humans are the only species that delay sleep on purpose.",
+                    "The record for longest period without sleep is 11 days, but serious health effects occur much sooner.",
+                    "Sleeping less than 7 hours per night reduces life expectancy.",
+                    "Your brain cleans itself of toxins during deep sleep.",
+                    "Dreams may help with problem-solving and emotional processing.",
+                    "The ideal nap duration is 20-30 minutes for optimal alertness.",
+                    "Sleep deprivation increases hunger hormones, leading to weight gain.",
+                    "The 'sleep debt' concept suggests lost sleep can't fully be recovered.",
+                    "Temperature drops at night help initiate sleep - a cool room (18-20°C) is ideal."
+                ];
+                
+                const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
+                document.getElementById('funFactText').textContent = randomFact;
+            }
+            
+            // Reset button
+            const resetBtn = document.getElementById('resetBtn');
+            resetBtn.addEventListener('click', function() {
+                // Reset form
+                document.getElementById('sleepSurveyForm').reset();
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                document.querySelectorAll('input[type="hidden"]').forEach(input => {
+                    input.value = '';
+                });
+                
+                // Reset progress
+                document.getElementById('progressFill').style.width = '0%';
+                document.getElementById('progressText').textContent = '0% Complete';
+                
+                // Hide results, show form
+                resultsContainer.style.display = 'none';
+                document.getElementById('sleepSurveyForm').style.display = 'block';
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

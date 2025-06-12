@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/typetest">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Analysis | Snaplyn</title>
+    <meta name="description" content="Analyze and improve your typing speed and accuracy with Snaplyn's enhanced typing analysis tool.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables (identical to homepage) */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles (identical to homepage) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #3aa8d8;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles (identical to homepage) */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Tool Hero Section */
+        .tool-hero {
+            min-height: 40vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(248, 249, 250, 1) 100%);
+            padding-top: 5rem;
+        }
+        
+        .tool-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .tool-hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--dark);
+        }
+        
+        .tool-hero-title span {
+            color: var(--primary);
+        }
+        
+        .tool-hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+        }
+        
+        /* Typing Analysis Container */
+        .typing-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-md);
+            padding: 3rem;
+            margin: -3rem auto 5rem;
+            max-width: 900px;
+        }
+        
+        /* Test Options */
+        .test-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option-group {
+            margin-bottom: 1rem;
+        }
+        
+        .option-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .option-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--rounded-md);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .option-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Custom Text Input */
+        .custom-text-group {
+            display: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .custom-text-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--rounded-lg);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .custom-text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Test Area */
+        .test-area {
+            margin-bottom: 2rem;
+        }
+        
+        .test-text-container {
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.02);
+            padding: 1.5rem;
+            border-radius: var(--rounded-lg);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        .test-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .test-text span {
+            position: relative;
+            transition: all 0.1s ease;
+        }
+        
+        .test-text span.current {
+            background-color: rgba(67, 97, 238, 0.2);
+            border-left: 2px solid var(--primary);
+        }
+        
+        .test-text span.correct {
+            color: var(--success);
+        }
+        
+        .test-text span.incorrect {
+            color: var(--danger);
+            text-decoration: underline;
+        }
+        
+        .test-text span.extra {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+        
+        .typing-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: var(--rounded-lg);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+            resize: none;
+            min-height: 120px;
+        }
+        
+        .typing-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: var(--rounded-full);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: var(--rounded-full);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Stats Container */
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-box {
+            flex: 1;
+            min-width: 150px;
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* Results Section */
+        .results-section {
+            display: none;
+            background-color: rgba(76, 201, 240, 0.1);
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .results-section.active {
+            display: block;
+        }
+        
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            text-align: center;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .result-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .accuracy-meter {
+            height: 10px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: var(--rounded-full);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .accuracy-fill {
+            height: 100%;
+            background-color: var(--success);
+            border-radius: var(--rounded-full);
+            transition: width 0.5s ease;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(67, 97, 238, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            margin: 0 auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-text {
+            margin-top: 0.5rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        /* Footer (identical to homepage) */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .tool-hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .typing-container {
+                padding: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+            }
+            
+            .stat-box {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .tool-hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .test-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="about.html">About</a>
+                    <a href="index.html#features">Tools</a>
+                    <a href="index.html#how-it-works">How It Works</a>
+                    <a href="index.html#testimonials">Testimonials</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Tool Hero Section -->
+    <section class="tool-hero">
+        <div class="container">
+            <div class="tool-hero-content">
+                <h1 class="tool-hero-title">Typing <span>Analysis</span></h1>
+                <p class="tool-hero-subtitle">Measure and improve your typing speed, accuracy, and efficiency with Snaplyn's enhanced analysis tool.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Typing Analysis Container -->
+    <div class="container">
+        <div class="typing-container">
+            <!-- Test Options -->
+            <div class="test-options">
+                <div class="option-group">
+                    <label for="test-duration" class="option-label">Test Duration</label>
+                    <select id="test-duration" class="option-select">
+                        <option value="30">30 seconds</option>
+                        <option value="60" selected>1 minute</option>
+                        <option value="120">2 minutes</option>
+                        <option value="180">3 minutes</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label for="difficulty" class="option-label">Difficulty Level</label>
+                    <select id="difficulty" class="option-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label for="content-type" class="option-label">Content Type</label>
+                    <select id="content-type" class="option-select">
+                        <option value="random">Random Text</option>
+                        <option value="quotes" selected>Famous Quotes</option>
+                        <option value="code">Programming Code</option>
+                        <option value="custom">Custom Text</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Custom Text Input -->
+            <div class="custom-text-group" id="custom-text-group">
+                <label for="custom-text" class="option-label">Custom Text</label>
+                <textarea id="custom-text" class="custom-text-input" placeholder="Enter your custom text here..."></textarea>
+            </div>
+            
+            <!-- Test Area -->
+            <div class="test-area">
+                <div class="test-text-container">
+                    <div class="test-text" id="test-text"></div>
+                </div>
+                <textarea class="typing-input" id="typing-input" placeholder="Start typing here... The timer will begin when you start typing."></textarea>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <!-- Loading Animation -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p class="loading-text">Generating test text...</p>
+            </div>
+            
+            <!-- Stats Container -->
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-value" id="wpm-stat">0</div>
+                    <div class="stat-label">Words Per Minute</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="accuracy-stat">100%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="time-left">1:00</div>
+                    <div class="stat-label">Time Remaining</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="chars-stat">0</div>
+                    <div class="stat-label">Characters Typed</div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="start-btn">
+                    <i class="fas fa-play"></i> Start Test
+                </button>
+                <button class="btn btn-outline" id="reset-btn" disabled>
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="results-section" id="results-section">
+                <h3 class="results-title">Test Results</h3>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="final-wpm">0</div>
+                        <div class="result-label">Words Per Minute</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="final-accuracy">100%</div>
+                        <div class="result-label">Accuracy</div>
+                        <div class="accuracy-meter">
+                            <div class="accuracy-fill" id="accuracy-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="final-chars">0</div>
+                        <div class="result-label">Characters Typed</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="final-errors">0</div>
+                        <div class="result-label">Total Errors</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="retry-btn">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="text-to-pdf.html">Text to PDF</a></li>
+                        <li class="footer-link"><a href="code-playground.html">Code Playground</a></li>
+                        <li class="footer-link"><a href="qr-generator.html">QR Generator</a></li>
+                        <li class="footer-link"><a href="typing-analysis.html">Typing Analysis</a></li>
+                        <li class="footer-link"><a href="#">More Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="index.html">Home</a></li>
+                        <li class="footer-link"><a href="about.html">About</a></li>
+                        <li class="footer-link"><a href="index.html#mission">Mission</a></li>
+                        <li class="footer-link"><a href="index.html#values">Values</a></li>
+                        <li class="footer-link"><a href="index.html#future">Future</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved. Proudly built by Umar.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const testDuration = document.getElementById('test-duration');
+            const difficulty = document.getElementById('difficulty');
+            const contentType = document.getElementById('content-type');
+            const customTextGroup = document.getElementById('custom-text-group');
+            const customText = document.getElementById('custom-text');
+            const testText = document.getElementById('test-text');
+            const typingInput = document.getElementById('typing-input');
+            const startBtn = document.getElementById('start-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const retryBtn = document.getElementById('retry-btn');
+            const resultsSection = document.getElementById('results-section');
+            const progressBar = document.getElementById('progress-bar');
+            const loading = document.getElementById('loading');
+            
+            // Stats elements
+            const wpmStat = document.getElementById('wpm-stat');
+            const accuracyStat = document.getElementById('accuracy-stat');
+            const timeLeft = document.getElementById('time-left');
+            const charsStat = document.getElementById('chars-stat');
+            
+            // Results elements
+            const finalWpm = document.getElementById('final-wpm');
+            const finalAccuracy = document.getElementById('final-accuracy');
+            const finalChars = document.getElementById('final-chars');
+            const finalErrors = document.getElementById('final-errors');
+            const accuracyFill = document.getElementById('accuracy-fill');
+            
+            // Test variables
+            let timer;
+            let timeRemaining;
+            let testActive = false;
+            let startTime;
+            let endTime;
+            let correctChars = 0;
+            let totalChars = 0;
+            let errors = 0;
+            let currentText = '';
+            let currentPosition = 0;
+            let lastKeyWasCorrect = true;
+            
+            // Sample texts for different difficulty levels and content types
+            const sampleTexts = {
+                easy: {
+                    random: [
+                        "The sun is shining brightly today. I enjoy walking in the park with my friends.",
+                        "Learning new things every day helps us grow. Knowledge is power for everyone.",
+                        "My favorite season is summer because I love swimming and eating ice cream."
+                    ],
+                    quotes: [
+                        "The only way to do great work is to love what you do. - Steve Jobs",
+                        "Life is what happens when you're busy making other plans. - John Lennon",
+                        "In the middle of every difficulty lies opportunity. - Albert Einstein"
+                    ],
+                    code: [
+                        "function hello() { console.log('Hello World!'); }",
+                        "let x = 5; let y = 10; let sum = x + y;",
+                        "for (let i = 0; i < 5; i++) { console.log(i); }"
+                    ]
+                },
+                medium: {
+                    random: [
+                        "The complexity of modern software systems requires careful planning and architecture. Developers must consider scalability and maintainability.",
+                        "Critical thinking skills are essential for problem solving in today's rapidly changing technological landscape.",
+                        "Effective communication between team members can significantly improve project outcomes and reduce misunderstandings."
+                    ],
+                    quotes: [
+                        "It is not the strongest of the species that survives, nor the most intelligent, but the one most responsive to change. - Charles Darwin",
+                        "The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela",
+                        "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt"
+                    ],
+                    code: [
+                        "const user = { name: 'John', age: 30, city: 'New York' }; console.log(user.name);",
+                        "function factorial(n) { return n <= 1 ? 1 : n * factorial(n - 1); }",
+                        "const numbers = [1, 2, 3]; const doubled = numbers.map(n => n * 2);"
+                    ]
+                },
+                hard: {
+                    random: [
+                        "Quantum computing represents a paradigm shift in information processing, leveraging quantum mechanical phenomena like superposition and entanglement to perform computations.",
+                        "The anthropological perspective emphasizes the importance of cultural relativism when examining social norms and practices across different societies.",
+                        "Neuroscientific research has demonstrated the remarkable plasticity of the human brain, which can reorganize itself by forming new neural connections throughout life."
+                    ],
+                    quotes: [
+                        "I have not failed. I've just found 10,000 ways that won't work. - Thomas Edison",
+                        "The mind is everything. What you think you become. - Buddha",
+                        "Logic will get you from A to B. Imagination will take you everywhere. - Albert Einstein"
+                    ],
+                    code: [
+                        "class Person { constructor(name) { this.name = name; } greet() { return `Hello, ${this.name}`; } }",
+                        "const fetchData = async () => { const response = await fetch('api/data'); return response.json(); }",
+                        "const memoize = fn => { const cache = {}; return (...args) => { const key = JSON.stringify(args); return cache[key] || (cache[key] = fn(...args)); }; };"
+                    ]
+                },
+                expert: {
+                    random: [
+                        "The epistemological foundations of postmodern thought challenge traditional notions of objective truth, positing instead that knowledge is socially constructed and inherently perspectival.",
+                        "Paleoclimatological evidence derived from ice core samples and sediment layers reveals intricate patterns of climatic variability spanning millennia.",
+                        "The ontological argument for the existence of God, first formulated by Anselm of Canterbury, posits that God exists by definition as that than which nothing greater can be conceived."
+                    ],
+                    quotes: [
+                        "The unexamined life is not worth living. - Socrates",
+                        "We are what we repeatedly do. Excellence, then, is not an act, but a habit. - Aristotle",
+                        "Reality is merely an illusion, albeit a very persistent one. - Albert Einstein"
+                    ],
+                    code: [
+                        "const curry = fn => (...args) => args.length >= fn.length ? fn(...args) : (...more) => curry(fn)(...args, ...more);",
+                        "const debounce = (fn, delay) => { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => fn(...args), delay); }; };",
+                        "const deepClone = obj => { if (obj === null || typeof obj !== 'object') return obj; const temp = new obj.constructor(); for (const key in obj) { if (obj.hasOwnProperty(key)) { temp[key] = deepClone(obj[key]); } } return temp; };"
+                    ]
+                }
+            };
+            
+            // Event Listeners
+            contentType.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customTextGroup.style.display = 'block';
+                    generateTestText();
+                } else {
+                    customTextGroup.style.display = 'none';
+                    generateTestText();
+                }
+            });
+            
+            difficulty.addEventListener('change', generateTestText);
+            customText.addEventListener('input', function() {
+                if (contentType.value === 'custom') {
+                    generateTestText();
+                }
+            });
+            
+            startBtn.addEventListener('click', startTest);
+            resetBtn.addEventListener('click', resetTest);
+            retryBtn.addEventListener('click', retryTest);
+            
+            typingInput.addEventListener('input', checkTyping);
+            typingInput.addEventListener('keydown', function(e) {
+                // Prevent backspace from going beyond current position
+                if (e.key === 'Backspace' && typingInput.selectionStart <= currentPosition) {
+                    e.preventDefault();
+                }
+            });
+            
+            typingInput.addEventListener('focus', function() {
+                if (!testActive && !typingInput.disabled) {
+                    startTest();
+                }
+            });
+            
+            // Generate test text based on selected options
+            function generateTestText() {
+                loading.classList.add('active');
+                
+                setTimeout(() => {
+                    if (contentType.value === 'custom') {
+                        currentText = customText.value.trim() || "Please enter some custom text to begin your typing test.";
+                    } else {
+                        const difficultyLevel = difficulty.value;
+                        const contentCategory = contentType.value;
+                        const texts = sampleTexts[difficultyLevel][contentCategory];
+                        currentText = texts[Math.floor(Math.random() * texts.length)];
+                    }
+                    
+                    renderTestText();
+                    loading.classList.remove('active');
+                }, 300);
+            }
+            
+            // Render the test text with spans for each character
+            function renderTestText() {
+                testText.innerHTML = '';
+                currentText.split('').forEach((char, index) => {
+                    const span = document.createElement('span');
+                    span.id = `char-${index}`;
+                    span.textContent = char;
+                    testText.appendChild(span);
+                });
+                
+                // Highlight the first character
+                if (testText.firstChild) {
+                    testText.firstChild.classList.add('current');
+                }
+            }
+            
+            // Start the typing test
+            function startTest() {
+                if (testActive) return;
+                
+                // Generate new text if custom text was changed
+                if (contentType.value === 'custom' && customText.value.trim() !== currentText) {
+                    generateTestText();
+                    return;
+                }
+                
+                testActive = true;
+                timeRemaining = parseInt(testDuration.value);
+                startTime = new Date();
+                correctChars = 0;
+                totalChars = 0;
+                errors = 0;
+                currentPosition = 0;
+                
+                // Update UI
+                startBtn.disabled = true;
+                resetBtn.disabled = false;
+                typingInput.disabled = false;
+                typingInput.value = '';
+                typingInput.focus();
+                resultsSection.classList.remove('active');
+                progressBar.style.width = '0%';
+                
+                // Clear previous highlights and set initial position
+                document.querySelectorAll('#test-text span').forEach(span => {
+                    span.className = '';
+                });
+                
+                if (testText.firstChild) {
+                    testText.firstChild.classList.add('current');
+                }
+                
+                // Start timer
+                updateTimer();
+                timer = setInterval(updateTimer, 1000);
+            }
+            
+            // Update timer display
+            function updateTimer() {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timeLeft.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeRemaining <= 0) {
+                    endTest();
+                } else {
+                    timeRemaining--;
+                    
+                    // Calculate and update WPM
+                    if (totalChars > 0) {
+                        const minutesElapsed = (parseInt(testDuration.value) - timeRemaining) / 60;
+                        const words = (correctChars / 5);
+                        const wpm = Math.round(words / minutesElapsed);
+                        wpmStat.textContent = wpm;
+                    }
+                }
+            }
+            
+            // Check typing progress
+            function checkTyping() {
+                if (!testActive) return;
+                
+                const inputText = typingInput.value;
+                totalChars = inputText.length;
+                charsStat.textContent = totalChars;
+                
+                // Update progress bar
+                const progress = (currentPosition / currentText.length) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                // Check if text is completed
+                if (currentPosition >= currentText.length) {
+                    endTest();
+                    return;
+                }
+                
+                // Get current character position
+                const currentCharSpan = document.getElementById(`char-${currentPosition}`);
+                
+                // Check if current character matches
+                if (inputText.length > 0 && currentPosition < currentText.length) {
+                    const inputChar = inputText[inputText.length - 1];
+                    const targetChar = currentText[currentPosition];
+                    
+                    if (inputChar === targetChar) {
+                        // Correct character
+                        currentCharSpan.classList.remove('current', 'incorrect');
+                        currentCharSpan.classList.add('correct');
+                        correctChars++;
+                        lastKeyWasCorrect = true;
+                        currentPosition++;
+                        
+                        // Move to next character
+                        if (currentPosition < currentText.length) {
+                            const nextCharSpan = document.getElementById(`char-${currentPosition}`);
+                            document.querySelectorAll('#test-text span').forEach(span => {
+                                span.classList.remove('current');
+                            });
+                            nextCharSpan.classList.add('current');
+                            
+                            // Scroll to keep current character visible
+                            nextCharSpan.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'center',
+                                inline: 'center'
+                            });
+                        }
+                    } else {
+                        // Incorrect character
+                        if (lastKeyWasCorrect) {
+                            errors++;
+                            lastKeyWasCorrect = false;
+                        }
+                        currentCharSpan.classList.remove('current');
+                        currentCharSpan.classList.add('incorrect');
+                    }
+                }
+                
+                // Check for extra characters (user typing beyond current position)
+                if (inputText.length > currentPosition) {
+                    for (let i = currentPosition; i < inputText.length; i++) {
+                        const extraCharSpan = document.createElement('span');
+                        extraCharSpan.textContent = inputText[i];
+                        extraCharSpan.classList.add('extra');
+                        testText.appendChild(extraCharSpan);
+                    }
+                }
+                
+                // Calculate accuracy
+                const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+                accuracyStat.textContent = `${accuracy}%`;
+            }
+            
+            // End the typing test
+            function endTest() {
+                clearInterval(timer);
+                testActive = false;
+                endTime = new Date();
+                
+                // Calculate final stats
+                const minutesElapsed = parseInt(testDuration.value) / 60;
+                const words = (correctChars / 5);
+                const wpm = Math.round(words / minutesElapsed);
+                const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 0;
+                
+                // Update results
+                finalWpm.textContent = wpm;
+                finalAccuracy.textContent = `${accuracy}%`;
+                accuracyFill.style.width = `${accuracy}%`;
+                finalChars.textContent = totalChars;
+                finalErrors.textContent = errors;
+                
+                // Update UI
+                typingInput.disabled = true;
+                resultsSection.classList.add('active');
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Reset the test
+            function resetTest() {
+                clearInterval(timer);
+                testActive = false;
+                
+                // Reset UI
+                startBtn.disabled = false;
+                resetBtn.disabled = true;
+                typingInput.disabled = false;
+                typingInput.value = '';
+                resultsSection.classList.remove('active');
+                progressBar.style.width = '0%';
+                
+                // Reset stats
+                wpmStat.textContent = '0';
+                accuracyStat.textContent = '100%';
+                timeLeft.textContent = `${parseInt(testDuration.value) / 60}:00`;
+                charsStat.textContent = '0';
+                
+                // Clear highlights and reset position
+                document.querySelectorAll('#test-text span').forEach(span => {
+                    span.className = '';
+                });
+                
+                if (testText.firstChild) {
+                    testText.firstChild.classList.add('current');
+                }
+                
+                currentPosition = 0;
+            }
+            
+            // Retry the test with same settings
+            function retryTest() {
+                resetTest();
+                generateTestText();
+                startTest();
+            }
+            
+            // Toggle custom text input
+            contentType.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customTextGroup.style.display = 'block';
+                    customText.value = currentText;
+                } else {
+                    customTextGroup.style.display = 'none';
+                    generateTestText();
+                }
+            });
+            
+            // Initialize
+            generateTestText();
+            
+            // Mobile menu toggle (same as homepage)
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    navLinks.style.display = 'flex';
+                } else {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

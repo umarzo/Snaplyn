@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <link rel="canonical" href="https://snaplyn.xyz/bizcalc" />
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snaplyn BizCalc - Smart Business Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Snaplyn Design System */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-lighter: rgba(72, 149, 239, 0.1);
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --darker: #12121a;
+            --light: #f8f9fa;
+            --lighter: #fefefe;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --shadow-primary: 0 5px 15px rgba(67, 97, 238, 0.3);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-fast: all 0.2s ease;
+            --transition-slow: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-fast);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section {
+            padding: 4rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+            line-height: 1.2;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: -1;
+            transition: var(--transition);
+        }
+        
+        .btn:hover::before {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+        
+        header.scrolled {
+            box-shadow: var(--shadow-lg);
+            background-color: rgba(255, 255, 255, 0.98);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .logo:hover {
+            transform: scale(1.02);
+        }
+        
+        .logo-icon {
+            font-size: 1.75rem;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+        
+        .logo:hover .logo-icon {
+            transform: rotate(15deg);
+        }
+        
+        /* Calculator Styles */
+        .calculator-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-top: 6rem;
+            transition: var(--transition);
+        }
+        
+        .calculator-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .calculator-header-icon {
+            font-size: 1.75rem;
+        }
+        
+        .calculator-header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .calculator-steps {
+            display: flex;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--gray);
+            position: relative;
+            padding: 0.5rem 1rem;
+        }
+        
+        .step-indicator.active {
+            color: var(--primary);
+        }
+        
+        .step-indicator.completed {
+            color: var(--success);
+        }
+        
+        .step-indicator-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gray-light);
+            color: var(--gray);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .step-indicator.active .step-indicator-number {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .step-indicator.completed .step-indicator-number {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .step-indicator:not(:last-child)::after {
+            content: '';
+            width: 40px;
+            height: 2px;
+            background-color: var(--gray-light);
+            margin-left: 0.5rem;
+        }
+        
+        .calculator-content {
+            padding: 2rem;
+        }
+        
+        .calculator-panel {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .calculator-panel.active {
+            display: block;
+        }
+        
+        .business-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .business-type-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+        
+        .business-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .business-type-card.selected {
+            border: 2px solid var(--primary);
+            background-color: var(--primary-lighter);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        .business-type-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .business-type-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .business-type-desc {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--rounded-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .input-group {
+            position: relative;
+            display: flex;
+        }
+        
+        .input-group-prepend {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            color: var(--gray);
+        }
+        
+        .input-group .form-control {
+            padding-left: 3rem;
+        }
+        
+        .calculator-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        /* Results Section */
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        @media (min-width: 992px) {
+            .results-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .results-summary {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .results-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .metric-card {
+            background-color: var(--light);
+            border-radius: var(--rounded-md);
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-positive .metric-value {
+            color: var(--success);
+        }
+        
+        .metric-negative .metric-value {
+            color: var(--danger);
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .results-visuals {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1.5rem;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .results-suggestions {
+            margin-top: 2rem;
+            grid-column: 1 / -1;
+        }
+        
+        .suggestion-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .suggestion-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .suggestion-title i {
+            color: var(--primary);
+        }
+        
+        .suggestion-text {
+            color: var(--dark);
+        }
+        
+        /* Export Section */
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0) 100%);
+            filter: blur(30px);
+            z-index: 0;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 4rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .calculator-steps {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+            
+            .step-indicator {
+                padding: 0.5rem;
+            }
+            
+            .step-indicator:not(:last-child)::after {
+                width: 20px;
+            }
+            
+            .calculator-content {
+                padding: 1.5rem;
+            }
+            
+            .business-type-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .calculator-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1rem;
+            }
+            
+            .business-type-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-metrics {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Background Elements -->
+    <div class="floating-element" style="width: 300px; height: 300px; top: 20%; left: 5%;"></div>
+    <div class="floating-element" style="width: 200px; height: 200px; bottom: 15%; right: 10%;"></div>
+    
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Snaplyn BizCalc</h2>
+                <p class="section-subtitle">Smart business calculator that adapts to your business type and provides profitability insights</p>
+            </div>
+            
+            <!-- Calculator Container -->
+            <div class="calculator-container">
+                <!-- Calculator Header -->
+                <div class="calculator-header">
+                    <i class="fas fa-calculator calculator-header-icon"></i>
+                    <h3 class="calculator-header-title">Business Calculator</h3>
+                </div>
+                
+                <!-- Step Indicators -->
+                <div class="calculator-steps">
+                    <div class="step-indicator active" data-step="1">
+                        <div class="step-indicator-number">1</div>
+                        <span>Business Type</span>
+                    </div>
+                    <div class="step-indicator" data-step="2">
+                        <div class="step-indicator-number">2</div>
+                        <span>Business Details</span>
+                    </div>
+                    <div class="step-indicator" data-step="3">
+                        <div class="step-indicator-number">3</div>
+                        <span>Results</span>
+                    </div>
+                </div>
+                
+                <!-- Calculator Content -->
+                <div class="calculator-content">
+                    <!-- Panel 1: Business Type Selection -->
+                    <div class="calculator-panel active" id="panel-1">
+                        <h4>What kind of business do you run?</h4>
+                        <p class="section-subtitle" style="text-align: left; margin: 1rem 0 2rem;">Select the option that best describes your business</p>
+                        
+                        <div class="business-type-grid">
+                            <!-- Product Seller -->
+                            <div class="business-type-card" data-type="product">
+                                <div class="business-type-icon">
+                                    <i class="fas fa-box-open"></i>
+                                </div>
+                                <h5 class="business-type-title">Product Seller</h5>
+                                <p class="business-type-desc">Sell physical products like clothing, electronics, etc.</p>
+                            </div>
+                            
+                            <!-- Digital Product Creator -->
+                            <div class="business-type-card" data-type="digital">
+                                <div class="business-type-icon">
+                                    <i class="fas fa-file-download"></i>
+                                </div>
+                                <h5 class="business-type-title">Digital Creator</h5>
+                                <p class="business-type-desc">Sell eBooks, courses, templates, software</p>
+                            </div>
+                            
+                            <!-- Service Provider -->
+                            <div class="business-type-card" data-type="service">
+                                <div class="business-type-icon">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                                <h5 class="business-type-title">Service Provider</h5>
+                                <p class="business-type-desc">Freelancer, consultant, designer, etc.</p>
+                            </div>
+                            
+                            <!-- Reseller/Dropshipper -->
+                            <div class="business-type-card" data-type="dropshipper">
+                                <div class="business-type-icon">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                <h5 class="business-type-title">Reseller/Dropshipper</h5>
+                                <p class="business-type-desc">Sell products without holding inventory</p>
+                            </div>
+                            
+                            <!-- Content Monetizer -->
+                            <div class="business-type-card" data-type="content">
+                                <div class="business-type-icon">
+                                    <i class="fas fa-film"></i>
+                                </div>
+                                <h5 class="business-type-title">Content Monetizer</h5>
+                                <p class="business-type-desc">YouTube, blog, social media monetization</p>
+                            </div>
+                            
+                            <!-- Local Store -->
+                            <div class="business-type-card" data-type="local">
+                                <div class="business-type-icon">
+                                    <i class="fas fa-store"></i>
+                                </div>
+                                <h5 class="business-type-title">Local Store/Café</h5>
+                                <p class="business-type-desc">Brick-and-mortar retail or food business</p>
+                            </div>
+                            
+                            <!-- Custom Option -->
+                            <div class="business-type-card" data-type="custom">
+                                <div class="business-type-icon">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <h5 class="business-type-title">Custom Business</h5>
+                                <p class="business-type-desc">Other business type not listed here</p>
+                            </div>
+                        </div>
+                        
+                        <div class="calculator-actions">
+                            <div></div> <!-- Empty div for spacing -->
+                            <button class="btn btn-primary" id="next-1">Continue <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Panel 2: Business Details -->
+                    <div class="calculator-panel" id="panel-2">
+                        <h4>Tell us about your business</h4>
+                        <p class="section-subtitle" style="text-align: left; margin: 1rem 0 2rem;">Fill in your business details to get accurate calculations</p>
+                        
+                        <!-- Dynamic form will be inserted here -->
+                        <div id="dynamic-form"></div>
+                        
+                        <div class="calculator-actions">
+                            <button class="btn btn-outline" id="back-2"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button class="btn btn-primary" id="next-2">Calculate <i class="fas fa-calculator"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Panel 3: Results -->
+                    <div class="calculator-panel" id="panel-3">
+                        <h4>Your Business Analysis</h4>
+                        <p class="section-subtitle" style="text-align: left; margin: 1rem 0 2rem;">Here's your profitability breakdown and suggestions</p>
+                        
+                        <div class="results-container">
+                            <div class="results-summary">
+                                <h5>Financial Summary</h5>
+                                <div class="results-metrics" id="results-metrics">
+                                    <!-- Metrics will be inserted here -->
+                                </div>
+                            </div>
+                            
+                            <div class="results-visuals">
+                                <h5>Revenue vs Expenses</h5>
+                                <div class="chart-container">
+                                    <canvas id="profitChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="results-suggestions">
+                                <h5>SnapSmart Suggestions</h5>
+                                <div id="suggestions-container">
+                                    <!-- Suggestions will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="calculator-actions">
+                            <button class="btn btn-outline" id="back-3"><i class="fas fa-arrow-left"></i> Back</button>
+                            <div class="export-options">
+                                <button class="btn btn-primary" id="export-txt"><i class="fas fa-file-alt"></i> Export as TXT</button>
+                                <button class="btn btn-primary" id="export-json"><i class="fas fa-file-code"></i> Export as JSON</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Business type selection
+            const businessTypeCards = document.querySelectorAll('.business-type-card');
+            let selectedBusinessType = null;
+            
+            businessTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    businessTypeCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedBusinessType = this.getAttribute('data-type');
+                });
+            });
+            
+            // Step navigation
+            const panels = document.querySelectorAll('.calculator-panel');
+            const stepIndicators = document.querySelectorAll('.step-indicator');
+            
+            // Next button for panel 1
+            document.getElementById('next-1').addEventListener('click', function() {
+                if (!selectedBusinessType) {
+                    alert('Please select your business type');
+                    return;
+                }
+                
+                showPanel(2);
+                updateStepIndicators(2);
+                loadBusinessForm(selectedBusinessType);
+            });
+            
+            // Back button for panel 2
+            document.getElementById('back-2').addEventListener('click', function() {
+                showPanel(1);
+                updateStepIndicators(1);
+            });
+            
+            // Next button for panel 2
+            document.getElementById('next-2').addEventListener('click', function() {
+                if (validateForm()) {
+                    showPanel(3);
+                    updateStepIndicators(3);
+                    calculateResults();
+                }
+            });
+            
+            // Back button for panel 3
+            document.getElementById('back-3').addEventListener('click', function() {
+                showPanel(2);
+                updateStepIndicators(2);
+            });
+            
+            // Export buttons
+            document.getElementById('export-txt').addEventListener('click', exportAsTxt);
+            document.getElementById('export-json').addEventListener('click', exportAsJson);
+            
+            // Show specific panel
+            function showPanel(panelNumber) {
+                panels.forEach(panel => panel.classList.remove('active'));
+                document.getElementById(`panel-${panelNumber}`).classList.add('active');
+            }
+            
+            // Update step indicators
+            function updateStepIndicators(activeStep) {
+                stepIndicators.forEach(indicator => {
+                    const step = parseInt(indicator.getAttribute('data-step'));
+                    
+                    indicator.classList.remove('active', 'completed');
+                    
+                    if (step < activeStep) {
+                        indicator.classList.add('completed');
+                    } else if (step === activeStep) {
+                        indicator.classList.add('active');
+                    }
+                });
+            }
+            
+            // Load business-specific form
+            function loadBusinessForm(businessType) {
+                const formContainer = document.getElementById('dynamic-form');
+                let formHTML = '';
+                
+                // Common fields for all business types
+                const commonFields = `
+                    <div class="form-group">
+                        <label class="form-label">Business Name</label>
+                        <input type="text" class="form-control" id="business-name" placeholder="My Awesome Business">
+                    </div>
+                `;
+                
+                // Business type specific fields
+                switch (businessType) {
+                    case 'product':
+                        formHTML = commonFields + `
+                            <div class="form-group">
+                                <label class="form-label">Product Price ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="product-price" placeholder="49.99" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Product Cost ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="product-cost" placeholder="15.00" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Sales Volume</label>
+                                <input type="number" class="form-control" id="sales-volume" placeholder="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Fixed Costs ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="fixed-costs" placeholder="1000" step="0.01">
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'digital':
+                        formHTML = commonFields + `
+                            <div class="form-group">
+                                <label class="form-label">Product Price ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="product-price" placeholder="29.99" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Sales</label>
+                                <input type="number" class="form-control" id="sales-volume" placeholder="50">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Platform Fees (%)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="platform-fees" placeholder="5" step="0.1">
+                                    <span class="input-group-prepend">%</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Expenses ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="fixed-costs" placeholder="500" step="0.01">
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'service':
+                        formHTML = commonFields + `
+                            <div class="form-group">
+                                <label class="form-label">Hourly Rate ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="hourly-rate" placeholder="75" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Billable Hours Per Month</label>
+                                <input type="number" class="form-control" id="billable-hours" placeholder="80">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Expenses ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="fixed-costs" placeholder="1000" step="0.01">
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'dropshipper':
+                        formHTML = commonFields + `
+                            <div class="form-group">
+                                <label class="form-label">Retail Price ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="product-price" placeholder="59.99" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Supplier Cost ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="product-cost" placeholder="25.00" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Sales</label>
+                                <input type="number" class="form-control" id="sales-volume" placeholder="75">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Ad Spend ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="ad-spend" placeholder="500" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Other Monthly Costs ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="fixed-costs" placeholder="300" step="0.01">
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'content':
+                        formHTML = commonFields + `
+                            <div class="form-group">
+                                <label class="form-label">Monthly Ad Revenue ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="ad-revenue" placeholder="1200" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Sponsorships ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="sponsorship-revenue" placeholder="500" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Other Revenue ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="other-revenue" placeholder="200" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Expenses ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="fixed-costs" placeholder="800" step="0.01">
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'local':
+                        formHTML = commonFields + `
+                            <div class="form-group">
+                                <label class="form-label">Average Daily Revenue ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="daily-revenue" placeholder="500" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cost of Goods Sold (%)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="cogs-percent" placeholder="30" step="0.1">
+                                    <span class="input-group-prepend">%</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Operating Days Per Month</label>
+                                <input type="number" class="form-control" id="operating-days" placeholder="25">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Fixed Costs ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="fixed-costs" placeholder="3000" step="0.01">
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    default: // Custom business
+                        formHTML = commonFields + `
+                            <div class="form-group">
+                                <label class="form-label">Monthly Revenue ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="monthly-revenue" placeholder="5000" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cost of Goods Sold (%)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="cogs-percent" placeholder="40" step="0.1">
+                                    <span class="input-group-prepend">%</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Fixed Costs ($)</label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">$</span>
+                                    <input type="number" class="form-control" id="fixed-costs" placeholder="2000" step="0.01">
+                                </div>
+                            </div>
+                        `;
+                }
+                
+                formContainer.innerHTML = formHTML;
+            }
+            
+            // Validate form before calculation
+            function validateForm() {
+                const inputs = document.querySelectorAll('#dynamic-form input');
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!input.value) {
+                        input.style.borderColor = 'var(--danger)';
+                        isValid = false;
+                    } else {
+                        input.style.borderColor = '';
+                    }
+                });
+                
+                if (!isValid) {
+                    alert('Please fill in all required fields');
+                }
+                
+                return isValid;
+            }
+            
+            // Calculate business results
+            function calculateResults() {
+                const businessType = selectedBusinessType;
+                let revenue, cogs, grossProfit, expenses, netProfit, margin, breakeven;
+                
+                // Calculate based on business type
+                switch (businessType) {
+                    case 'product':
+                        const productPrice = parseFloat(document.getElementById('product-price').value);
+                        const productCost = parseFloat(document.getElementById('product-cost').value);
+                        const salesVolume = parseInt(document.getElementById('sales-volume').value);
+                        const fixedCosts = parseFloat(document.getElementById('fixed-costs').value);
+                        
+                        revenue = productPrice * salesVolume;
+                        cogs = productCost * salesVolume;
+                        grossProfit = revenue - cogs;
+                        expenses = fixedCosts;
+                        netProfit = grossProfit - expenses;
+                        margin = (netProfit / revenue) * 100;
+                        breakeven = Math.ceil(fixedCosts / (productPrice - productCost));
+                        break;
+                        
+                    case 'digital':
+                        const digitalPrice = parseFloat(document.getElementById('product-price').value);
+                        const digitalSales = parseInt(document.getElementById('sales-volume').value);
+                        const platformFees = parseFloat(document.getElementById('platform-fees').value) / 100;
+                        const digitalFixedCosts = parseFloat(document.getElementById('fixed-costs').value);
+                        
+                        revenue = digitalPrice * digitalSales;
+                        cogs = revenue * platformFees;
+                        grossProfit = revenue - cogs;
+                        expenses = digitalFixedCosts;
+                        netProfit = grossProfit - expenses;
+                        margin = (netProfit / revenue) * 100;
+                        breakeven = Math.ceil(expenses / (digitalPrice * (1 - platformFees)));
+                        break;
+                        
+                    case 'service':
+                        const hourlyRate = parseFloat(document.getElementById('hourly-rate').value);
+                        const billableHours = parseInt(document.getElementById('billable-hours').value);
+                        const serviceFixedCosts = parseFloat(document.getElementById('fixed-costs').value);
+                        
+                        revenue = hourlyRate * billableHours;
+                        cogs = 0; // Typically no COGS for pure service businesses
+                        grossProfit = revenue;
+                        expenses = serviceFixedCosts;
+                        netProfit = grossProfit - expenses;
+                        margin = (netProfit / revenue) * 100;
+                        breakeven = Math.ceil(expenses / hourlyRate);
+                        break;
+                        
+                    case 'dropshipper':
+                        const retailPrice = parseFloat(document.getElementById('product-price').value);
+                        const supplierCost = parseFloat(document.getElementById('product-cost').value);
+                        const dropshipSales = parseInt(document.getElementById('sales-volume').value);
+                        const adSpend = parseFloat(document.getElementById('ad-spend').value);
+                        const dropshipFixedCosts = parseFloat(document.getElementById('fixed-costs').value);
+                        
+                        revenue = retailPrice * dropshipSales;
+                        cogs = (supplierCost * dropshipSales) + adSpend;
+                        grossProfit = revenue - cogs;
+                        expenses = dropshipFixedCosts;
+                        netProfit = grossProfit - expenses;
+                        margin = (netProfit / revenue) * 100;
+                        breakeven = Math.ceil((expenses + adSpend) / (retailPrice - supplierCost));
+                        break;
+                        
+                    case 'content':
+                        const adRevenue = parseFloat(document.getElementById('ad-revenue').value);
+                        const sponsorshipRevenue = parseFloat(document.getElementById('sponsorship-revenue').value);
+                        const otherRevenue = parseFloat(document.getElementById('other-revenue').value);
+                        const contentFixedCosts = parseFloat(document.getElementById('fixed-costs').value);
+                        
+                        revenue = adRevenue + sponsorshipRevenue + otherRevenue;
+                        cogs = 0; // Typically no COGS for content businesses
+                        grossProfit = revenue;
+                        expenses = contentFixedCosts;
+                        netProfit = grossProfit - expenses;
+                        margin = (netProfit / revenue) * 100;
+                        breakeven = Math.ceil(expenses / ((revenue / 30) || 1)); // Prevent division by zero
+                        break;
+                        
+                    case 'local':
+                        const dailyRevenue = parseFloat(document.getElementById('daily-revenue').value);
+                        const cogsPercent = parseFloat(document.getElementById('cogs-percent').value) / 100;
+                        const operatingDays = parseInt(document.getElementById('operating-days').value);
+                        const localFixedCosts = parseFloat(document.getElementById('fixed-costs').value);
+                        
+                        revenue = dailyRevenue * operatingDays;
+                        cogs = revenue * cogsPercent;
+                        grossProfit = revenue - cogs;
+                        expenses = localFixedCosts;
+                        netProfit = grossProfit - expenses;
+                        margin = (netProfit / revenue) * 100;
+                        breakeven = Math.ceil(expenses / (dailyRevenue * (1 - cogsPercent)));
+                        break;
+                        
+                    default: // Custom business
+                        const monthlyRevenue = parseFloat(document.getElementById('monthly-revenue').value);
+                        const customCogsPercent = parseFloat(document.getElementById('cogs-percent').value) / 100;
+                        const customFixedCosts = parseFloat(document.getElementById('fixed-costs').value);
+                        
+                        revenue = monthlyRevenue;
+                        cogs = revenue * customCogsPercent;
+                        grossProfit = revenue - cogs;
+                        expenses = customFixedCosts;
+                        netProfit = grossProfit - expenses;
+                        margin = (netProfit / revenue) * 100;
+                        breakeven = Math.ceil(expenses / (revenue * (1 - customCogsPercent) / 30)); // Daily breakeven
+                }
+                
+                // Display results
+                displayResults(revenue, cogs, grossProfit, expenses, netProfit, margin, breakeven);
+                
+                // Generate suggestions
+                generateSuggestions(businessType, revenue, netProfit, margin, breakeven);
+                
+                // Draw chart
+                drawProfitChart(revenue, cogs, expenses, netProfit);
+            }
+            
+            // Display calculated results
+            function displayResults(revenue, cogs, grossProfit, expenses, netProfit, margin, breakeven) {
+                const metricsContainer = document.getElementById('results-metrics');
+                
+                metricsContainer.innerHTML = `
+                    <div class="metric-card">
+                        <div class="metric-value">$${revenue.toFixed(2)}</div>
+                        <div class="metric-label">Monthly Revenue</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">$${grossProfit.toFixed(2)}</div>
+                        <div class="metric-label">Gross Profit</div>
+                    </div>
+                    <div class="metric-card ${netProfit >= 0 ? 'metric-positive' : 'metric-negative'}">
+                        <div class="metric-value">$${netProfit.toFixed(2)}</div>
+                        <div class="metric-label">Net Profit</div>
+                    </div>
+                    <div class="metric-card ${margin >= 0 ? 'metric-positive' : 'metric-negative'}">
+                        <div class="metric-value">${margin.toFixed(1)}%</div>
+                        <div class="metric-label">Profit Margin</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${breakeven}</div>
+                        <div class="metric-label">Breakeven Units</div>
+                    </div>
+                `;
+            }
+            
+            // Generate business suggestions
+            function generateSuggestions(businessType, revenue, netProfit, margin, breakeven) {
+                const suggestionsContainer = document.getElementById('suggestions-container');
+                let suggestions = [];
+                
+                // General suggestions based on profitability
+                if (netProfit < 0) {
+                    suggestions.push({
+                        title: "Negative Profit",
+                        text: "Your business is currently losing money. Consider reducing costs or increasing prices to reach profitability."
+                    });
+                } else if (margin < 10) {
+                    suggestions.push({
+                        title: "Low Profit Margin",
+                        text: "Your profit margin is below 10%, which is quite low for most businesses. Look for ways to reduce costs or increase prices."
+                    });
+                } else if (margin > 30) {
+                    suggestions.push({
+                        title: "Healthy Margin",
+                        text: "Your profit margin is excellent! Consider reinvesting some profits to grow your business further."
+                    });
+                }
+                
+                // Business type specific suggestions
+                switch (businessType) {
+                    case 'product':
+                        if (breakeven > 100) {
+                            suggestions.push({
+                                title: "High Breakeven",
+                                text: `You need to sell ${breakeven} units to break even. This seems high - consider lowering fixed costs or increasing your markup.`
+                            });
+                        }
+                        break;
+                        
+                    case 'digital':
+                        suggestions.push({
+                            title: "Recurring Revenue",
+                            text: "Consider adding a subscription or membership option to create predictable recurring revenue."
+                        });
+                        break;
+                        
+                    case 'service':
+                        if (margin < 20) {
+                            suggestions.push({
+                                title: "Raise Rates",
+                                text: "Service businesses typically have higher margins. Consider raising your rates or offering premium packages."
+                            });
+                        }
+                        break;
+                        
+                    case 'dropshipper':
+                        if (margin < 15) {
+                            suggestions.push({
+                                title: "Supplier Negotiation",
+                                text: "Your margins are tight. Try negotiating with suppliers for better prices or find higher-margin products."
+                            });
+                        }
+                        break;
+                        
+                    case 'content':
+                        if (revenue < 1000) {
+                            suggestions.push({
+                                title: "Diversify Income",
+                                text: "Consider adding multiple revenue streams like affiliate marketing, digital products, or consulting."
+                            });
+                        }
+                        break;
+                        
+                    case 'local':
+                        if (breakeven > 20) {
+                            suggestions.push({
+                                title: "Daily Traffic",
+                                text: `You need ${breakeven} customers per day to break even. Focus on increasing foot traffic or average order value.`
+                            });
+                        }
+                        break;
+                }
+                
+                // Add default suggestion if none were added
+                if (suggestions.length === 0) {
+                    suggestions.push({
+                        title: "Looking Good",
+                        text: "Your business metrics look healthy! Keep monitoring and look for opportunities to optimize further."
+                    });
+                }
+                
+                // Display suggestions
+                suggestionsContainer.innerHTML = suggestions.map(suggestion => `
+                    <div class="suggestion-card">
+                        <h6 class="suggestion-title"><i class="fas fa-lightbulb"></i> ${suggestion.title}</h6>
+                        <p class="suggestion-text">${suggestion.text}</p>
+                    </div>
+                `).join('');
+            }
+            
+            // Draw profit chart using Canvas
+            function drawProfitChart(revenue, cogs, expenses, netProfit) {
+                const canvas = document.getElementById('profitChart');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                // Clear previous chart
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Chart data
+                const data = [
+                    { label: 'Revenue', value: revenue, color: '#4361ee' },
+                    { label: 'COGS', value: cogs, color: '#f72585' },
+                    { label: 'Expenses', value: expenses, color: '#f8961e' },
+                    { label: 'Profit', value: netProfit, color: netProfit >= 0 ? '#4cc9f0' : '#f72585' }
+                ];
+                
+                // Calculate maximum value for scaling
+                const maxValue = Math.max(...data.map(item => item.value)) * 1.2;
+                
+                // Chart dimensions
+                const chartWidth = canvas.width - 100;
+                const chartHeight = canvas.height - 80;
+                const barWidth = 40;
+                const gap = 30;
+                const startX = 80;
+                const startY = 30;
+                
+                // Draw bars
+                data.forEach((item, index) => {
+                    const barHeight = (item.value / maxValue) * chartHeight;
+                    const x = startX + (index * (barWidth + gap));
+                    const y = startY + chartHeight - barHeight;
+                    
+                    // Draw bar
+                    ctx.fillStyle = item.color;
+                    ctx.fillRect(x, y, barWidth, barHeight);
+                    
+                    // Draw value label
+                    ctx.fillStyle = '#1a1a2e';
+                    ctx.font = '12px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`$${item.value.toFixed(0)}`, x + barWidth / 2, y - 10);
+                    
+                    // Draw label
+                    ctx.fillStyle = '#6c757d';
+                    ctx.font = '12px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.label, x + barWidth / 2, startY + chartHeight + 20);
+                });
+                
+                // Draw y-axis
+                ctx.strokeStyle = '#e9ecef';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(startX - 10, startY);
+                ctx.lineTo(startX - 10, startY + chartHeight);
+                ctx.stroke();
+                
+                // Draw y-axis labels
+                const ySteps = 5;
+                for (let i = 0; i <= ySteps; i++) {
+                    const y = startY + chartHeight - (i * (chartHeight / ySteps));
+                    const value = (i * (maxValue / ySteps)).toFixed(0);
+                    
+                    ctx.fillStyle = '#6c757d';
+                    ctx.font = '10px sans-serif';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(`$${value}`, startX - 15, y + 4);
+                    
+                    ctx.strokeStyle = '#e9ecef';
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(startX - 15, y);
+                    ctx.lineTo(startX + chartWidth, y);
+                    ctx.stroke();
+                }
+            }
+            
+            // Export results as TXT
+            function exportAsTxt() {
+                const businessName = document.getElementById('business-name')?.value || 'My Business';
+                const metrics = document.querySelectorAll('.metric-card');
+                
+                let content = `Snaplyn BizCalc Report - ${businessName}\n`;
+                content += `Generated on ${new Date().toLocaleDateString()}\n\n`;
+                content += "Financial Summary:\n";
+                
+                metrics.forEach(metric => {
+                    const label = metric.querySelector('.metric-label').textContent;
+                    const value = metric.querySelector('.metric-value').textContent;
+                    content += `${label}: ${value}\n`;
+                });
+                
+                content += "\nSuggestions:\n";
+                const suggestions = document.querySelectorAll('.suggestion-card');
+                suggestions.forEach((suggestion, index) => {
+                    const title = suggestion.querySelector('.suggestion-title').textContent;
+                    const text = suggestion.querySelector('.suggestion-text').textContent;
+                    content += `\n${index + 1}. ${title}\n${text}\n`;
+                });
+                
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `snaplyn-bizcalc-${businessName.toLowerCase().replace(/\s+/g, '-')}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            // Export results as JSON
+            function exportAsJson() {
+                const businessName = document.getElementById('business-name')?.value || 'My Business';
+                const metrics = document.querySelectorAll('.metric-card');
+                
+                const data = {
+                    businessName,
+                    date: new Date().toISOString(),
+                    metrics: {},
+                    suggestions: []
+                };
+                
+                metrics.forEach(metric => {
+                    const label = metric.querySelector('.metric-label').textContent.replace(':', '');
+                    const value = metric.querySelector('.metric-value').textContent;
+                    data.metrics[label] = value;
+                });
+                
+                const suggestions = document.querySelectorAll('.suggestion-card');
+                suggestions.forEach(suggestion => {
+                    const title = suggestion.querySelector('.suggestion-title').textContent;
+                    const text = suggestion.querySelector('.suggestion-text').textContent;
+                    data.suggestions.push({ title, text });
+                });
+                
+                const content = JSON.stringify(data, null, 2);
+                const blob = new Blob([content], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `snaplyn-bizcalc-${businessName.toLowerCase().replace(/\s+/g, '-')}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            // Header scroll effect
+            const header = document.getElementById('header');
+            let lastScroll = 0;
+            
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll <= 0) {
+                    header.classList.remove('scrolled');
+                    return;
+                }
+                
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    // Scroll down
+                    header.style.transform = 'translateY(-100%)';
+                } else if (currentScroll < lastScroll) {
+                    // Scroll up
+                    header.style.transform = 'translateY(0)';
+                    header.classList.add('scrolled');
+                }
+                
+                lastScroll = currentScroll;
+            });
+        });
+    </script>
+</body>
+</html>

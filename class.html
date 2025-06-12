@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/class" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="nCPNtiqQvK5ubhLDBGdKdi_nt_fiAHPQ0O6SezeigVg" />
+    <!-- SEO Meta Tags -->
+    <meta name="title" content="ClassFinder - Discover Your Economic Class | Snaplyn Tools">
+    <meta name="description" content="Determine your economic class (Lower, Middle, Upper) based on income, expenses, lifestyle, and country-specific factors with Snaplyn's ClassFinder tool.">
+    <meta name="keywords" content="economic class calculator, financial class, income classification, wealth assessment, personal finance tool, Snaplyn tools">
+    <meta name="robots" content="index, follow">
+    <title>ClassFinder - Discover Your Economic Class | Snaplyn</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for easy theming */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #560bad;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Tool Specific Styles */
+        .form-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+        
+        .form-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .form-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .form-card-title i {
+            color: var(--primary-light);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--rounded-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .form-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .radio-input {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .radio-input:checked {
+            border-color: var(--primary);
+        }
+        
+        .radio-input:checked::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+        }
+        
+        .radio-label {
+            cursor: pointer;
+        }
+        
+        .slider-container {
+            margin-top: 1rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            outline: none;
+            border-radius: var(--rounded-full);
+            margin-bottom: 1rem;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            cursor: pointer;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+        
+        .slider-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+        
+        .result-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .result-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .result-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .result-card-title i {
+            color: var(--primary-light);
+        }
+        
+        .class-result {
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--rounded-lg);
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+        
+        .class-tier {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .class-tier.lower {
+            color: var(--danger);
+        }
+        
+        .class-tier.lower-middle {
+            color: var(--warning);
+        }
+        
+        .class-tier.middle {
+            color: var(--success);
+        }
+        
+        .class-tier.upper-middle {
+            color: var(--primary);
+        }
+        
+        .class-tier.upper {
+            color: var(--secondary);
+        }
+        
+        .class-description {
+            font-size: 1.1rem;
+            color: var(--dark);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .meter {
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: var(--rounded-full);
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .meter-bar {
+            height: 100%;
+            border-radius: var(--rounded-full);
+            background: linear-gradient(90deg, var(--danger), var(--warning), var(--success), var(--primary), var(--secondary));
+            transition: width 1s ease;
+        }
+        
+        .meter-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: var(--rounded-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .stat-comparison {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 0.5rem;
+        }
+        
+        .stat-comparison.positive {
+            color: var(--success);
+        }
+        
+        .stat-comparison.negative {
+            color: var(--danger);
+        }
+        
+        .suggestions-list {
+            list-style-type: none;
+        }
+        
+        .suggestion-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-icon {
+            color: var(--primary);
+            margin-top: 0.25rem;
+        }
+        
+        .suggestion-text {
+            flex: 1;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .form-card-title {
+                font-size: 1.25rem;
+            }
+            
+            .class-tier {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .form-col {
+                width: 100%;
+            }
+        }
+        
+        /* Mobile Navigation */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                width: 100%;
+                text-align: right;
+                padding: 1rem;
+                box-shadow: var(--shadow-md);
+                z-index: 999;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #eee;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#testimonials" class="nav-link">Testimonials</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="section" style="padding-top: 7rem;">
+        <div class="container">
+            <h1 class="section-title">ClassFinder</h1>
+            <p class="section-subtitle">Discover your economic class based on income, expenses, lifestyle, and country-specific factors.</p>
+            
+            <!-- Form Section -->
+            <form id="classFinderForm">
+                <!-- Basic Info Card -->
+                <div class="form-card fade-in">
+                    <h2 class="form-card-title"><i class="fas fa-user"></i> Basic Information</h2>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="country" class="form-label">Country</label>
+                                <select id="country" class="form-control form-select" required>
+                                    <option value="" selected disabled>Select your country</option>
+                                    <option value="US">United States</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="IN">India</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="FR">France</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="BR">Brazil</option>
+                                    <option value="NG">Nigeria</option>
+                                    <option value="ZA">South Africa</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="age" class="form-label">Age (optional)</label>
+                                <input type="number" id="age" class="form-control" min="18" max="100">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">City/Tier Level</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="cityTier" class="radio-input" value="metro" checked>
+                                        <span class="radio-label">Metro</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cityTier" class="radio-input" value="urban">
+                                        <span class="radio-label">Urban</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cityTier" class="radio-input" value="semi-urban">
+                                        <span class="radio-label">Semi-Urban</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="cityTier" class="radio-input" value="rural">
+                                        <span class="radio-label">Rural</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="dependents" class="form-label">Number of Dependents</label>
+                                <input type="number" id="dependents" class="form-control" min="0" max="10" value="0" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Income Card -->
+                <div class="form-card fade-in delay-1">
+                    <h2 class="form-card-title"><i class="fas fa-money-bill-wave"></i> Income</h2>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="income" class="form-label">Monthly Net Income</label>
+                                <div class="input-group">
+                                    <input type="number" id="income" class="form-control" min="0" step="100" required>
+                                    <span id="currencySymbol" style="margin-left: 0.5rem; font-weight: 500;">$</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Do you have any side income?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasSideIncome" class="radio-input" value="no" checked>
+                                        <span class="radio-label">No</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="hasSideIncome" class="radio-input" value="yes">
+                                        <span class="radio-label">Yes</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row" id="sideIncomeContainer" style="display: none;">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="sideIncome" class="form-label">Side Income per Month</label>
+                                <div class="input-group">
+                                    <input type="number" id="sideIncome" class="form-control" min="0" step="100" value="0">
+                                    <span id="sideIncomeCurrencySymbol" style="margin-left: 0.5rem; font-weight: 500;">$</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Expenses Card -->
+                <div class="form-card fade-in delay-2">
+                    <h2 class="form-card-title"><i class="fas fa-receipt"></i> Expenses</h2>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="rent" class="form-label">Monthly Rent/Mortgage</label>
+                                <input type="number" id="rent" class="form-control" min="0" step="100" value="0" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="utilities" class="form-label">Monthly Bills/Utilities</label>
+                                <input type="number" id="utilities" class="form-control" min="0" step="50" value="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="groceries" class="form-label">Monthly Grocery + Food</label>
+                                <input type="number" id="groceries" class="form-control" min="0" step="50" value="0" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="transport" class="form-label">Transport (Commute, Fuel, Public)</label>
+                                <input type="number" id="transport" class="form-control" min="0" step="50" value="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="entertainment" class="form-label">Entertainment + Subscriptions</label>
+                                <input type="number" id="entertainment" class="form-control" min="0" step="50" value="0" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="education" class="form-label">Children's Expenses / Education</label>
+                                <input type="number" id="education" class="form-control" min="0" step="50" value="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="savings" class="form-label">Monthly Savings</label>
+                                <input type="range" id="savings" class="slider" min="0" max="5000" step="100" value="500">
+                                <div class="slider-value">$<span id="savingsValue">500</span></div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="debts" class="form-label">Monthly Debts/EMI</label>
+                                <input type="range" id="debts" class="slider" min="0" max="5000" step="100" value="0">
+                                <div class="slider-value">$<span id="debtsValue">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lifestyle & Assets Card -->
+                <div class="form-card fade-in delay-3">
+                    <h2 class="form-card-title"><i class="fas fa-home"></i> Lifestyle & Assets</h2>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Do you own your home?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="homeOwnership" class="radio-input" value="no" checked>
+                                        <span class="radio-label">No</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="homeOwnership" class="radio-input" value="yes">
+                                        <span class="radio-label">Yes</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="homeOwnership" class="radio-input" value="family">
+                                        <span class="radio-label">Family Owned</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Do you own a car?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="carOwnership" class="radio-input" value="none" checked>
+                                        <span class="radio-label">None</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="carOwnership" class="radio-input" value="budget">
+                                        <span class="radio-label">Budget</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="carOwnership" class="radio-input" value="midrange">
+                                        <span class="radio-label">Mid-Range</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="carOwnership" class="radio-input" value="luxury">
+                                        <span class="radio-label">Luxury</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">How often do you travel/vacation?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="travelFrequency" class="radio-input" value="never" checked>
+                                        <span class="radio-label">Never</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="travelFrequency" class="radio-input" value="yearly">
+                                        <span class="radio-label">Once a Year</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="travelFrequency" class="radio-input" value="multiple">
+                                        <span class="radio-label">Multiple Times</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Phone Type</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="phoneType" class="radio-input" value="basic" checked>
+                                        <span class="radio-label">Basic</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="phoneType" class="radio-input" value="budget">
+                                        <span class="radio-label">Budget</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="phoneType" class="radio-input" value="flagship">
+                                        <span class="radio-label">Flagship</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Do you invest?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="investing" class="radio-input" value="no" checked>
+                                        <span class="radio-label">No</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="investing" class="radio-input" value="occasionally">
+                                        <span class="radio-label">Occasionally</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="investing" class="radio-input" value="monthly">
+                                        <span class="radio-label">Monthly</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="investing" class="radio-input" value="aggressively">
+                                        <span class="radio-label">Aggressively</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label class="form-label">Do you have health insurance?</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="healthInsurance" class="radio-input" value="no" checked>
+                                        <span class="radio-label">No</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="healthInsurance" class="radio-input" value="yes">
+                                        <span class="radio-label">Yes</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center" style="margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+                        Calculate My Class
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section">
+                <div class="result-card">
+                    <div class="class-result">
+                        <h2 class="result-card-title"><i class="fas fa-chart-line"></i> Your Economic Class</h2>
+                        <div id="classTier" class="class-tier">Middle Class</div>
+                        <p id="classDescription" class="class-description">
+                            Based on your income, expenses, and lifestyle factors, you fall into the Middle Class category. 
+                            This means you have a comfortable standard of living with some discretionary income, but may 
+                            still need to budget carefully for larger expenses.
+                        </p>
+                        
+                        <div class="meter">
+                            <div id="meterBar" class="meter-bar" style="width: 50%;"></div>
+                        </div>
+                        <div class="meter-labels">
+                            <span>Lower</span>
+                            <span>Lower-Middle</span>
+                            <span>Middle</span>
+                            <span>Upper-Middle</span>
+                            <span>Upper</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card delay-1">
+                    <h2 class="result-card-title"><i class="fas fa-chart-pie"></i> Financial Breakdown</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-title">Monthly Net Income</div>
+                            <div id="netIncomeStat" class="stat-value">$4,500</div>
+                            <div id="netIncomeComparison" class="stat-comparison positive">Above national average</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Monthly Expenses</div>
+                            <div id="expensesStat" class="stat-value">$3,200</div>
+                            <div id="expensesComparison" class="stat-comparison negative">Higher than class average</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Savings Rate</div>
+                            <div id="savingsRateStat" class="stat-value">15%</div>
+                            <div id="savingsRateComparison" class="stat-comparison positive">Better than average</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Disposable Income</div>
+                            <div id="disposableIncomeStat" class="stat-value">$1,300</div>
+                            <div id="disposableIncomeComparison" class="stat-comparison">Typical for your class</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card delay-2">
+                    <h2 class="result-card-title"><i class="fas fa-lightbulb"></i> What This Means</h2>
+                    <p id="classImplications" class="class-description" style="text-align: left;">
+                        As part of the Middle Class, you likely enjoy a comfortable standard of living with access to 
+                        basic amenities and some discretionary income. You can afford occasional luxuries but may need 
+                        to budget carefully for larger expenses like vacations or home improvements. Financial security 
+                        is achievable with continued savings and smart investments.
+                    </p>
+                </div>
+                
+                <div class="result-card delay-3">
+                    <h2 class="result-card-title"><i class="fas fa-hands-helping"></i> Personalized Suggestions</h2>
+                    <ul class="suggestions-list">
+                        <li class="suggestion-item">
+                            <i class="fas fa-piggy-bank suggestion-icon"></i>
+                            <div id="suggestion1" class="suggestion-text">
+                                Increase your monthly savings by 5% to build a stronger financial cushion.
+                            </div>
+                        </li>
+                        <li class="suggestion-item">
+                            <i class="fas fa-home suggestion-icon"></i>
+                            <div id="suggestion2" class="suggestion-text">
+                                Consider refinancing your mortgage to reduce your monthly housing costs.
+                            </div>
+                        </li>
+                        <li class="suggestion-item">
+                            <i class="fas fa-chart-line suggestion-icon"></i>
+                            <div id="suggestion3" class="suggestion-text">
+                                Start a monthly investment plan to grow your wealth over time.
+                            </div>
+                        </li>
+                        <li class="suggestion-item">
+                            <i class="fas fa-utensils suggestion-icon"></i>
+                            <div id="suggestion4" class="suggestion-text">
+                                Review your food expenses - they're higher than average for your class.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="text-center" style="margin-top: 2rem;">
+                    <button id="resetButton" class="btn btn-outline" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+                        <i class="fas fa-redo"></i> Start Over
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <div class="social-link"><i class="fab fa-instagram"></i></div>
+                        <div class="social-link"><i class="fab fa-linkedin-in"></i></div>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                        <li class="footer-link"><a href="#">Utility Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+                    <em>Disclaimer: This tool is a simplified self-assessment. Economic class can vary by context and location. 
+                    This is for awareness only — not official classification.</em>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('show');
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.style.display = 'none';
+                        }
+                    }
+                });
+            });
+            
+            // Form functionality
+            const form = document.getElementById('classFinderForm');
+            const resultsSection = document.getElementById('resultsSection');
+            const resetButton = document.getElementById('resetButton');
+            
+            // Side income toggle
+            const hasSideIncomeRadios = document.querySelectorAll('input[name="hasSideIncome"]');
+            const sideIncomeContainer = document.getElementById('sideIncomeContainer');
+            
+            hasSideIncomeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'yes') {
+                        sideIncomeContainer.style.display = 'block';
+                    } else {
+                        sideIncomeContainer.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Slider value displays
+            const savingsSlider = document.getElementById('savings');
+            const savingsValue = document.getElementById('savingsValue');
+            const debtsSlider = document.getElementById('debts');
+            const debtsValue = document.getElementById('debtsValue');
+            
+            savingsSlider.addEventListener('input', function() {
+                savingsValue.textContent = this.value;
+            });
+            
+            debtsSlider.addEventListener('input', function() {
+                debtsValue.textContent = this.value;
+            });
+            
+            // Country currency mapping
+            const countrySelect = document.getElementById('country');
+            const currencySymbol = document.getElementById('currencySymbol');
+            const sideIncomeCurrencySymbol = document.getElementById('sideIncomeCurrencySymbol');
+            
+            const currencyMap = {
+                'US': '$',
+                'UK': '£',
+                'CA': '$',
+                'AU': '$',
+                'IN': '₹',
+                'DE': '€',
+                'FR': '€',
+                'JP': '¥',
+                'BR': 'R$',
+                'NG': '₦',
+                'ZA': 'R',
+                'other': '$'
+            };
+            
+            countrySelect.addEventListener('change', function() {
+                const currency = currencyMap[this.value] || '$';
+                currencySymbol.textContent = currency;
+                sideIncomeCurrencySymbol.textContent = currency;
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateClass();
+            });
+            
+            // Reset button
+            resetButton.addEventListener('click', function() {
+                resultsSection.style.display = 'none';
+                form.reset();
+                window.scrollTo({
+                    top: form.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Calculate economic class
+            function calculateClass() {
+                // Get all form values
+                const country = document.getElementById('country').value;
+                const cityTier = document.querySelector('input[name="cityTier"]:checked').value;
+                const dependents = parseInt(document.getElementById('dependents').value);
+                const income = parseFloat(document.getElementById('income').value);
+                const hasSideIncome = document.querySelector('input[name="hasSideIncome"]:checked').value === 'yes';
+                const sideIncome = hasSideIncome ? parseFloat(document.getElementById('sideIncome').value) : 0;
+                const rent = parseFloat(document.getElementById('rent').value);
+                const utilities = parseFloat(document.getElementById('utilities').value);
+                const groceries = parseFloat(document.getElementById('groceries').value);
+                const transport = parseFloat(document.getElementById('transport').value);
+                const entertainment = parseFloat(document.getElementById('entertainment').value);
+                const education = parseFloat(document.getElementById('education').value);
+                const savings = parseFloat(document.getElementById('savings').value);
+                const debts = parseFloat(document.getElementById('debts').value);
+                const homeOwnership = document.querySelector('input[name="homeOwnership"]:checked').value;
+                const carOwnership = document.querySelector('input[name="carOwnership"]:checked').value;
+                const travelFrequency = document.querySelector('input[name="travelFrequency"]:checked').value;
+                const phoneType = document.querySelector('input[name="phoneType"]:checked').value;
+                const investing = document.querySelector('input[name="investing"]:checked').value;
+                const healthInsurance = document.querySelector('input[name="healthInsurance"]:checked').value;
+                
+                // Calculate totals
+                const totalIncome = income + sideIncome;
+                const totalExpenses = rent + utilities + groceries + transport + entertainment + education + debts;
+                const disposableIncome = totalIncome - totalExpenses;
+                const savingsRate = (savings / totalIncome) * 100;
+                
+                // Determine class based on country and income
+                let classTier = determineClassTier(country, totalIncome, cityTier);
+                
+                // Adjust class based on lifestyle factors
+                classTier = adjustClassBasedOnLifestyle(classTier, {
+                    homeOwnership,
+                    carOwnership,
+                    travelFrequency,
+                    phoneType,
+                    investing,
+                    healthInsurance,
+                    savingsRate,
+                    disposableIncome,
+                    dependents
+                });
+                
+                // Display results
+                displayResults(classTier, {
+                    totalIncome,
+                    totalExpenses: totalExpenses,
+                    disposableIncome,
+                    savingsRate,
+                    country,
+                    cityTier
+                });
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+                
+                // Scroll to results
+                window.scrollTo({
+                    top: resultsSection.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Determine initial class tier based on country and income
+            function determineClassTier(country, income, cityTier) {
+                // Default thresholds (in USD)
+                let lowerClassMax = 15000;
+                let lowerMiddleMax = 35000;
+                let middleClassMax = 75000;
+                let upperMiddleMax = 150000;
+                
+                // Adjust thresholds based on country
+                switch(country) {
+                    case 'US':
+                        lowerClassMax = 30000;
+                        lowerMiddleMax = 60000;
+                        middleClassMax = 120000;
+                        upperMiddleMax = 250000;
+                        break;
+                    case 'UK':
+                        lowerClassMax = 20000;
+                        lowerMiddleMax = 45000;
+                        middleClassMax = 90000;
+                        upperMiddleMax = 180000;
+                        break;
+                    case 'IN':
+                        lowerClassMax = 7500;
+                        lowerMiddleMax = 15000;
+                        middleClassMax = 30000;
+                        upperMiddleMax = 75000;
+                        break;
+                    case 'CA':
+                        lowerClassMax = 25000;
+                        lowerMiddleMax = 50000;
+                        middleClassMax = 100000;
+                        upperMiddleMax = 200000;
+                        break;
+                    case 'AU':
+                        lowerClassMax = 28000;
+                        lowerMiddleMax = 55000;
+                        middleClassMax = 110000;
+                        upperMiddleMax = 220000;
+                        break;
+                }
+                
+                // Adjust for city tier (metro costs more)
+                if (cityTier === 'metro') {
+                    lowerClassMax *= 1.2;
+                    lowerMiddleMax *= 1.2;
+                    middleClassMax *= 1.2;
+                    upperMiddleMax *= 1.2;
+                } else if (cityTier === 'rural') {
+                    lowerClassMax *= 0.8;
+                    lowerMiddleMax *= 0.8;
+                    middleClassMax *= 0.8;
+                    upperMiddleMax *= 0.8;
+                }
+                
+                // Determine class
+                if (income < lowerClassMax) {
+                    return { class: 'Lower Class', score: 10 };
+                } else if (income < lowerMiddleMax) {
+                    return { class: 'Lower-Middle Class', score: 30 };
+                } else if (income < middleClassMax) {
+                    return { class: 'Middle Class', score: 50 };
+                } else if (income < upperMiddleMax) {
+                    return { class: 'Upper-Middle Class', score: 70 };
+                } else {
+                    return { class: 'Upper Class', score: 90 };
+                }
+            }
+            
+            // Adjust class based on lifestyle factors
+            function adjustClassBasedOnLifestyle(classTier, factors) {
+                let adjustment = 0;
+                
+                // Home ownership
+                if (factors.homeOwnership === 'yes') adjustment += 10;
+                else if (factors.homeOwnership === 'family') adjustment += 5;
+                
+                // Car ownership
+                if (factors.carOwnership === 'luxury') adjustment += 15;
+                else if (factors.carOwnership === 'midrange') adjustment += 5;
+                
+                // Travel frequency
+                if (factors.travelFrequency === 'multiple') adjustment += 10;
+                else if (factors.travelFrequency === 'yearly') adjustment += 5;
+                
+                // Phone type
+                if (factors.phoneType === 'flagship') adjustment += 5;
+                
+                // Investing
+                if (factors.investing === 'aggressively') adjustment += 15;
+                else if (factors.investing === 'monthly') adjustment += 10;
+                else if (factors.investing === 'occasionally') adjustment += 5;
+                
+                // Health insurance
+                if (factors.healthInsurance === 'yes') adjustment += 5;
+                
+                // Savings rate (positive if > 10%)
+                if (factors.savingsRate > 15) adjustment += 10;
+                else if (factors.savingsRate > 10) adjustment += 5;
+                else if (factors.savingsRate < 5) adjustment -= 5;
+                
+                // Disposable income (positive if > 20% of income)
+                const disposablePercentage = (factors.disposableIncome / (factors.disposableIncome + factors.totalExpenses)) * 100;
+                if (disposablePercentage > 30) adjustment += 10;
+                else if (disposablePercentage > 20) adjustment += 5;
+                else if (disposablePercentage < 10) adjustment -= 5;
+                
+                // Dependents (negative adjustment for more dependents)
+                if (factors.dependents > 3) adjustment -= 10;
+                else if (factors.dependents > 1) adjustment -= 5;
+                
+                // Calculate new score with adjustment (capped between 0-100)
+                let newScore = classTier.score + adjustment;
+                newScore = Math.max(0, Math.min(100, newScore));
+                
+                // Determine new class based on adjusted score
+                if (newScore < 20) {
+                    return { class: 'Lower Class', score: newScore };
+                } else if (newScore < 40) {
+                    return { class: 'Lower-Middle Class', score: newScore };
+                } else if (newScore < 60) {
+                    return { class: 'Middle Class', score: newScore };
+                } else if (newScore < 80) {
+                    return { class: 'Upper-Middle Class', score: newScore };
+                } else {
+                    return { class: 'Upper Class', score: newScore };
+                }
+            }
+            
+            // Display results
+            function displayResults(classTier, financials) {
+                const classTierElement = document.getElementById('classTier');
+                const classDescriptionElement = document.getElementById('classDescription');
+                const meterBar = document.getElementById('meterBar');
+                const netIncomeStat = document.getElementById('netIncomeStat');
+                const expensesStat = document.getElementById('expensesStat');
+                const savingsRateStat = document.getElementById('savingsRateStat');
+                const disposableIncomeStat = document.getElementById('disposableIncomeStat');
+                const netIncomeComparison = document.getElementById('netIncomeComparison');
+                const expensesComparison = document.getElementById('expensesComparison');
+                const savingsRateComparison = document.getElementById('savingsRateComparison');
+                const disposableIncomeComparison = document.getElementById('disposableIncomeComparison');
+                const classImplications = document.getElementById('classImplications');
+                const suggestion1 = document.getElementById('suggestion1');
+                const suggestion2 = document.getElementById('suggestion2');
+                const suggestion3 = document.getElementById('suggestion3');
+                const suggestion4 = document.getElementById('suggestion4');
+                
+                // Set class tier and style
+                classTierElement.textContent = classTier.class;
+                classTierElement.className = 'class-tier ' + classTier.class.toLowerCase().replace(' ', '-').replace('-class', '');
+                
+                // Set meter bar position
+                meterBar.style.width = classTier.score + '%';
+                
+                // Set financial stats
+                const currency = currencyMap[financials.country] || '$';
+                netIncomeStat.textContent = currency + financials.totalIncome.toLocaleString();
+                expensesStat.textContent = currency + financials.totalExpenses.toLocaleString();
+                savingsRateStat.textContent = Math.round(financials.savingsRate) + '%';
+                disposableIncomeStat.textContent = currency + financials.disposableIncome.toLocaleString();
+                
+                // Set comparisons (simplified for demo)
+                netIncomeComparison.textContent = getRandomComparison('income', classTier.class);
+                expensesComparison.textContent = getRandomComparison('expenses', classTier.class);
+                savingsRateComparison.textContent = getRandomComparison('savings', classTier.class);
+                disposableIncomeComparison.textContent = getRandomComparison('disposable', classTier.class);
+                
+                // Set class implications
+                classImplications.textContent = getClassImplications(classTier.class);
+                
+                // Set suggestions
+                const suggestions = generateSuggestions(classTier, financials);
+                suggestion1.textContent = suggestions[0];
+                suggestion2.textContent = suggestions[1];
+                suggestion3.textContent = suggestions[2];
+                suggestion4.textContent = suggestions[3];
+            }
+            
+            // Helper function to generate random comparisons (for demo)
+            function getRandomComparison(type, classTier) {
+                const positive = ['Above average', 'Better than most', 'Higher than typical', 'Excellent'];
+                const neutral = ['About average', 'Typical', 'Standard', 'Normal'];
+                const negative = ['Below average', 'Worse than most', 'Lower than typical', 'Needs improvement'];
+                
+                // For demo purposes, we'll randomize these
+                const rand = Math.random();
+                
+                if (type === 'income') {
+                    if (classTier.includes('Upper')) {
+                        return positive[Math.floor(Math.random() * positive.length)];
+                    } else if (classTier.includes('Lower')) {
+                        return negative[Math.floor(Math.random() * negative.length)];
+                    } else {
+                        return neutral[Math.floor(Math.random() * neutral.length)];
+                    }
+                } else if (type === 'expenses') {
+                    return negative[Math.floor(Math.random() * negative.length)];
+                } else if (type === 'savings') {
+                    return positive[Math.floor(Math.random() * positive.length)];
+                } else {
+                    return neutral[Math.floor(Math.random() * neutral.length)];
+                }
+            }
+            
+            // Get class implications text
+            function getClassImplications(classTier) {
+                switch(classTier) {
+                    case 'Lower Class':
+                        return `As part of the Lower Class, you likely face financial challenges meeting basic needs. 
+                        Budgeting carefully and seeking additional income sources can help improve your situation. 
+                        Government assistance programs and community resources may be available to help.`;
+                    case 'Lower-Middle Class':
+                        return `As part of the Lower-Middle Class, you can meet basic needs but may struggle with unexpected expenses. 
+                        Building an emergency fund and developing new skills can help move you toward greater financial stability.`;
+                    case 'Middle Class':
+                        return `As part of the Middle Class, you likely enjoy a comfortable standard of living with access to 
+                        basic amenities and some discretionary income. You can afford occasional luxuries but may need 
+                        to budget carefully for larger expenses like vacations or home improvements. Financial security 
+                        is achievable with continued savings and smart investments.`;
+                    case 'Upper-Middle Class':
+                        return `As part of the Upper-Middle Class, you enjoy a high standard of living with significant 
+                        discretionary income. You can afford regular luxuries and save for the future. Focus on wealth 
+                        preservation and long-term financial planning to maintain your status.`;
+                    case 'Upper Class':
+                        return `As part of the Upper Class, you have substantial wealth and financial freedom. 
+                        You can afford high-end luxuries and have significant investments. Focus on wealth management, 
+                        tax optimization, and legacy planning to preserve and grow your assets.`;
+                    default:
+                        return `Your economic class provides insight into your financial situation and opportunities. 
+                        Understanding where you stand can help you make informed decisions about saving, spending, and investing.`;
+                }
+            }
+            
+            // Generate personalized suggestions
+            function generateSuggestions(classTier, financials) {
+                const suggestions = [];
+                const currency = currencyMap[financials.country] || '$';
+                
+                // Savings suggestion
+                if (financials.savingsRate < 10) {
+                    suggestions.push(`Try to save at least 10% of your income (${currency}${Math.round(financials.totalIncome * 0.1)}/month) for better financial security.`);
+                } else if (financials.savingsRate < 20) {
+                    suggestions.push(`Increase your monthly savings by 2-5% to build a stronger financial cushion.`);
+                } else {
+                    suggestions.push(`Maintain your healthy savings rate - consider diversifying where you save/invest.`);
+                }
+                
+                // Housing suggestion
+                const rentToIncome = (financials.rent / financials.totalIncome) * 100;
+                if (rentToIncome > 30) {
+                    suggestions.push(`Your housing costs (${Math.round(rentToIncome)}% of income) are high. Consider more affordable options if possible.`);
+                } else {
+                    suggestions.push(`Your housing costs are reasonable for your income level.`);
+                }
+                
+                // Investing suggestion
+                if (classTier.class === 'Lower Class' || classTier.class === 'Lower-Middle Class') {
+                    suggestions.push(`Focus on building an emergency fund before considering investments.`);
+                } else if (classTier.class === 'Middle Class') {
+                    suggestions.push(`Start a monthly investment plan, even if small, to grow your wealth over time.`);
+                } else {
+                    suggestions.push(`Review your investment portfolio with a financial advisor to optimize returns.`);
+                }
+                
+                // Expense suggestion
+                const foodPercentage = (financials.groceries / financials.totalIncome) * 100;
+                if (foodPercentage > 20) {
+                    suggestions.push(`Your food expenses (${Math.round(foodPercentage)}% of income) seem high. Meal planning could help reduce costs.`);
+                } else {
+                    suggestions.push(`Your food expenses are within a reasonable range for your income.`);
+                }
+                
+                return suggestions;
+            }
+            
+            // Scroll animations
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            function checkScroll() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (elementTop < windowHeight - 100) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+            
+            // Initial check
+            checkScroll();
+            
+            // Check on scroll
+            window.addEventListener('scroll', checkScroll);
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    navLinks.style.display = 'flex';
+                } else {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

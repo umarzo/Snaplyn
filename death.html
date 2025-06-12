@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/death" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Death Detector | Snaplyn Tools</title>
+    <meta name="description" content="Estimate your approximate death age based on lifestyle factors and health metrics. A Snaplyn utility tool.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for easy theming - Matching Snaplyn */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Tool Specific Styles */
+        .tool-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-md);
+            padding: 3rem;
+            margin-top: 6rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--rounded-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+            padding-right: 2.5rem;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .radio-option input {
+            margin: 0;
+        }
+        
+        .result-container {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(248, 249, 250, 1) 100%);
+            border-radius: var(--rounded-xl);
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .result-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            text-align: center;
+        }
+        
+        .result-age {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: center;
+            margin: 1rem 0;
+            line-height: 1;
+        }
+        
+        .result-description {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .result-factors {
+            margin-top: 2rem;
+        }
+        
+        .factor-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .factor-name {
+            font-weight: 500;
+        }
+        
+        .factor-impact {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        .factor-impact.negative {
+            color: var(--danger);
+        }
+        
+        .disclaimer {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 2rem;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        /* BMI Calculator */
+        .bmi-calculator {
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: var(--rounded-md);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .bmi-result {
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .tool-container {
+                padding: 2rem;
+                margin-top: 5rem;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .result-age {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .tool-container {
+                padding: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links">
+                    <a href="#" class="nav-link">All Tools</a>
+                    <a href="#" class="nav-link">Categories</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">About</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="section">
+            <h1 class="section-title">Death Detector</h1>
+            <p class="section-subtitle">Estimate your approximate death age based on lifestyle factors and health metrics. This tool uses statistical data and risk factors to provide an educated guess.</p>
+            
+            <div class="tool-container">
+                <form id="deathDetectorForm">
+                    <div class="form-grid">
+                        <!-- Basic Information -->
+                        <div class="form-group">
+                            <label for="age" class="form-label">Current Age</label>
+                            <input type="number" id="age" class="form-control" min="1" max="120" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select id="gender" class="form-control" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="country" class="form-label">Country of Residence</label>
+                            <select id="country" class="form-control" required>
+                                <option value="">Select Country</option>
+                                <option value="us">United States</option>
+                                <option value="uk">United Kingdom</option>
+                                <option value="ca">Canada</option>
+                                <option value="au">Australia</option>
+                                <option value="jp">Japan</option>
+                                <option value="de">Germany</option>
+                                <option value="fr">France</option>
+                                <option value="it">Italy</option>
+                                <option value="es">Spain</option>
+                                <option value="br">Brazil</option>
+                                <option value="in">India</option>
+                                <option value="cn">China</option>
+                                <option value="ru">Russia</option>
+                                <option value="za">South Africa</option>
+                                <option value="mx">Mexico</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Health Metrics -->
+                        <div class="form-group">
+                            <label class="form-label">Height & Weight (for BMI)</label>
+                            <div class="bmi-calculator">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div>
+                                        <label for="height" style="font-size: 0.85rem;">Height (cm)</label>
+                                        <input type="number" id="height" class="form-control" min="100" max="250">
+                                    </div>
+                                    <div>
+                                        <label for="weight" style="font-size: 0.85rem;">Weight (kg)</label>
+                                        <input type="number" id="weight" class="form-control" min="30" max="200">
+                                    </div>
+                                </div>
+                                <div class="bmi-result" id="bmiResult">BMI: --</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Smoking Habits</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="smoking" value="never" checked> Never
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="smoking" value="former"> Former
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="smoking" value="current"> Current
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Alcohol Consumption</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="alcohol" value="none" checked> None
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="alcohol" value="moderate"> Moderate
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="alcohol" value="heavy"> Heavy
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Physical Activity Level</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="activity" value="none"> None
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="activity" value="light" checked> Light
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="activity" value="moderate"> Moderate
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="activity" value="high"> High
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Type of Work</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="work" value="sedentary" checked> Sedentary
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="work" value="light"> Light physical
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="work" value="moderate"> Moderate
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="work" value="demanding"> Physically demanding
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="work" value="stress"> High stress
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Diet Quality</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="diet" value="poor"> Poor
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="diet" value="average" checked> Average
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="diet" value="good"> Good
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="diet" value="excellent"> Excellent
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Sleep Habits</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label for="sleepHours" style="font-size: 0.85rem;">Avg. Hours/Night</label>
+                                    <input type="number" id="sleepHours" class="form-control" min="3" max="12" value="7">
+                                </div>
+                                <div>
+                                    <label for="sleepQuality" style="font-size: 0.85rem;">Quality</label>
+                                    <select id="sleepQuality" class="form-control">
+                                        <option value="poor">Poor</option>
+                                        <option value="fair">Fair</option>
+                                        <option value="good" selected>Good</option>
+                                        <option value="excellent">Excellent</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Stress Level</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="stress" value="low"> Low
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="stress" value="medium" checked> Medium
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="stress" value="high"> High
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Family History of Diseases</label>
+                            <div class="radio-group" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+                                <label class="radio-option">
+                                    <input type="checkbox" name="familyHistory" value="none"> None
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="familyHistory" value="heart"> Heart disease
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="familyHistory" value="cancer"> Cancer
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="familyHistory" value="diabetes"> Diabetes
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="familyHistory" value="other"> Other
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Chronic Diseases</label>
+                            <div class="radio-group" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+                                <label class="radio-option">
+                                    <input type="checkbox" name="chronic" value="none" checked> None
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="chronic" value="diabetes"> Diabetes
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="chronic" value="hypertension"> Hypertension
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="chronic" value="heart"> Heart disease
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="chronic" value="respiratory"> Respiratory issues
+                                </label>
+                                <label class="radio-option">
+                                    <input type="checkbox" name="chronic" value="other"> Other
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Drug Usage</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="drugs" value="none" checked> None
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="drugs" value="recreational"> Recreational
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="drugs" value="prescription"> Prescription meds
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Mental Health Status</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="mental" value="good" checked> Good
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="mental" value="moderate"> Moderate
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="mental" value="poor"> Poor
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Socioeconomic Status</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="socioeconomic" value="low"> Low
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="socioeconomic" value="middle" checked> Middle
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="socioeconomic" value="high"> High
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Access to Healthcare</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="healthcare" value="good" checked> Good
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="healthcare" value="limited"> Limited
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="healthcare" value="none"> None
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Vaccination History</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="vaccination" value="upToDate" checked> Up to date
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="vaccination" value="partial"> Partial
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="vaccination" value="none"> None
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Regular Health Check-ups</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="checkups" value="yes"> Yes
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="checkups" value="no" checked> No
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Water Quality at Residence</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="water" value="good" checked> Good
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="water" value="moderate"> Moderate
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="water" value="poor"> Poor
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Calculate Death Age</button>
+                    </div>
+                </form>
+                
+                <div class="result-container" id="resultContainer">
+                    <h2 class="result-title">Your Estimated Death Age</h2>
+                    <div class="result-age" id="resultAge">--</div>
+                    <p class="result-description" id="resultDescription"></p>
+                    
+                    <div class="result-factors" id="resultFactors">
+                        <!-- Factors will be inserted here by JavaScript -->
+                    </div>
+                    
+                    <p class="disclaimer">
+                        Disclaimer: This tool provides an estimate based on statistical data and risk factors. 
+                        It is for entertainment and educational purposes only and should not be considered medical advice. 
+                        Many unpredictable factors can influence lifespan. Consult healthcare professionals for health-related concerns.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                        <li class="footer-link"><a href="#">Utility Tools</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // BMI Calculator
+            const heightInput = document.getElementById('height');
+            const weightInput = document.getElementById('weight');
+            const bmiResult = document.getElementById('bmiResult');
+            
+            function calculateBMI() {
+                const height = parseFloat(heightInput.value) / 100; // Convert cm to m
+                const weight = parseFloat(weightInput.value);
+                
+                if (height && weight) {
+                    const bmi = (weight / (height * height)).toFixed(1);
+                    let category = '';
+                    
+                    if (bmi < 18.5) category = 'Underweight';
+                    else if (bmi < 25) category = 'Normal';
+                    else if (bmi < 30) category = 'Overweight';
+                    else category = 'Obese';
+                    
+                    bmiResult.textContent = `BMI: ${bmi} (${category})`;
+                }
+            }
+            
+            heightInput.addEventListener('input', calculateBMI);
+            weightInput.addEventListener('input', calculateBMI);
+            
+            // Death Age Calculator
+            const form = document.getElementById('deathDetectorForm');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultAge = document.getElementById('resultAge');
+            const resultDescription = document.getElementById('resultDescription');
+            const resultFactors = document.getElementById('resultFactors');
+            
+            // Country life expectancy data (simplified)
+            const countryLifeExpectancy = {
+                us: 78.5,    // United States
+                uk: 81.2,    // United Kingdom
+                ca: 82.0,    // Canada
+                au: 83.0,    // Australia
+                jp: 84.5,    // Japan
+                de: 81.0,    // Germany
+                fr: 82.5,    // France
+                it: 83.0,    // Italy
+                es: 83.2,    // Spain
+                br: 75.5,    // Brazil
+                in: 69.7,    // India
+                cn: 77.0,    // China
+                ru: 72.5,    // Russia
+                za: 64.0,    // South Africa
+                mx: 75.0,    // Mexico
+                other: 72.0  // Default for other countries
+            };
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const age = parseInt(document.getElementById('age').value);
+                const gender = document.getElementById('gender').value;
+                const country = document.getElementById('country').value;
+                const height = parseFloat(document.getElementById('height').value);
+                const weight = parseFloat(document.getElementById('weight').value);
+                const smoking = document.querySelector('input[name="smoking"]:checked').value;
+                const alcohol = document.querySelector('input[name="alcohol"]:checked').value;
+                const activity = document.querySelector('input[name="activity"]:checked').value;
+                const work = document.querySelector('input[name="work"]:checked').value;
+                const diet = document.querySelector('input[name="diet"]:checked').value;
+                const sleepHours = parseFloat(document.getElementById('sleepHours').value);
+                const sleepQuality = document.getElementById('sleepQuality').value;
+                const stress = document.querySelector('input[name="stress"]:checked').value;
+                const familyHistory = Array.from(document.querySelectorAll('input[name="familyHistory"]:checked')).map(el => el.value);
+                const chronic = Array.from(document.querySelectorAll('input[name="chronic"]:checked')).map(el => el.value);
+                const drugs = document.querySelector('input[name="drugs"]:checked').value;
+                const mental = document.querySelector('input[name="mental"]:checked').value;
+                const socioeconomic = document.querySelector('input[name="socioeconomic"]:checked').value;
+                const healthcare = document.querySelector('input[name="healthcare"]:checked').value;
+                const vaccination = document.querySelector('input[name="vaccination"]:checked').value;
+                const checkups = document.querySelector('input[name="checkups"]:checked').value;
+                const water = document.querySelector('input[name="water"]:checked').value;
+                
+                // Calculate BMI if provided
+                let bmi = null;
+                if (height && weight) {
+                    bmi = weight / Math.pow(height / 100, 2);
+                }
+                
+                // Start with base life expectancy for country
+                let deathAge = countryLifeExpectancy[country] || countryLifeExpectancy.other;
+                
+                // Adjust for gender
+                if (gender === 'female') deathAge += 5;
+                else if (gender === 'male') deathAge -= 2;
+                
+                // Prepare factors array to show impacts
+                const factors = [];
+                
+                // Apply adjustments based on factors
+                // Age adjustment (older people have already survived certain risks)
+                if (age > 50) deathAge += (age - 50) * 0.2;
+                factors.push({ name: 'Current age', impact: age > 50 ? 'Slightly positive' : 'Neutral', value: age > 50 ? '+0.2 years per year over 50' : 'No adjustment' });
+                
+                // Smoking
+                if (smoking === 'current') {
+                    deathAge -= 10;
+                    factors.push({ name: 'Current smoker', impact: 'Very negative', value: '-10 years' });
+                } else if (smoking === 'former') {
+                    deathAge -= 3;
+                    factors.push({ name: 'Former smoker', impact: 'Negative', value: '-3 years' });
+                } else {
+                    factors.push({ name: 'Non-smoker', impact: 'Positive', value: 'No reduction' });
+                }
+                
+                // Alcohol
+                if (alcohol === 'heavy') {
+                    deathAge -= 7;
+                    factors.push({ name: 'Heavy alcohol consumption', impact: 'Negative', value: '-7 years' });
+                } else if (alcohol === 'moderate') {
+                    deathAge += 0.5;
+                    factors.push({ name: 'Moderate alcohol consumption', impact: 'Slightly positive', value: '+0.5 years' });
+                } else {
+                    factors.push({ name: 'No alcohol consumption', impact: 'Neutral', value: 'No adjustment' });
+                }
+                
+                // Physical activity
+                if (activity === 'none') {
+                    deathAge -= 5;
+                    factors.push({ name: 'No physical activity', impact: 'Negative', value: '-5 years' });
+                } else if (activity === 'light') {
+                    factors.push({ name: 'Light physical activity', impact: 'Neutral', value: 'No adjustment' });
+                } else if (activity === 'moderate') {
+                    deathAge += 3;
+                    factors.push({ name: 'Moderate physical activity', impact: 'Positive', value: '+3 years' });
+                } else if (activity === 'high') {
+                    deathAge += 5;
+                    factors.push({ name: 'High physical activity', impact: 'Very positive', value: '+5 years' });
+                }
+                
+                // Work type
+                if (work === 'sedentary') {
+                    deathAge -= 2;
+                    factors.push({ name: 'Sedentary work', impact: 'Slightly negative', value: '-2 years' });
+                } else if (work === 'stress') {
+                    deathAge -= 3;
+                    factors.push({ name: 'High stress work', impact: 'Negative', value: '-3 years' });
+                } else if (work === 'demanding') {
+                    deathAge += 1;
+                    factors.push({ name: 'Physically demanding work', impact: 'Slightly positive', value: '+1 year' });
+                } else {
+                    factors.push({ name: 'Work type', impact: 'Neutral', value: 'No adjustment' });
+                }
+                
+                // Diet quality
+                if (diet === 'poor') {
+                    deathAge -= 4;
+                    factors.push({ name: 'Poor diet', impact: 'Negative', value: '-4 years' });
+                } else if (diet === 'average') {
+                    factors.push({ name: 'Average diet', impact: 'Neutral', value: 'No adjustment' });
+                } else if (diet === 'good') {
+                    deathAge += 3;
+                    factors.push({ name: 'Good diet', impact: 'Positive', value: '+3 years' });
+                } else if (diet === 'excellent') {
+                    deathAge += 6;
+                    factors.push({ name: 'Excellent diet', impact: 'Very positive', value: '+6 years' });
+                }
+                
+                // Sleep
+                if (sleepHours < 6) {
+                    deathAge -= 3;
+                    factors.push({ name: 'Insufficient sleep', impact: 'Negative', value: '-3 years' });
+                } else if (sleepHours > 9) {
+                    deathAge -= 1;
+                    factors.push({ name: 'Excessive sleep', impact: 'Slightly negative', value: '-1 year' });
+                } else {
+                    factors.push({ name: 'Adequate sleep duration', impact: 'Positive', value: 'No reduction' });
+                }
+                
+                if (sleepQuality === 'poor') {
+                    deathAge -= 2;
+                    factors.push({ name: 'Poor sleep quality', impact: 'Negative', value: '-2 years' });
+                } else if (sleepQuality === 'excellent') {
+                    deathAge += 1;
+                    factors.push({ name: 'Excellent sleep quality', impact: 'Positive', value: '+1 year' });
+                }
+                
+                // Stress
+                if (stress === 'high') {
+                    deathAge -= 4;
+                    factors.push({ name: 'High stress level', impact: 'Negative', value: '-4 years' });
+                } else if (stress === 'medium') {
+                    factors.push({ name: 'Medium stress level', impact: 'Neutral', value: 'No adjustment' });
+                } else {
+                    deathAge += 2;
+                    factors.push({ name: 'Low stress level', impact: 'Positive', value: '+2 years' });
+                }
+                
+                // Family history
+                if (familyHistory.includes('none')) {
+                    factors.push({ name: 'No family history of diseases', impact: 'Positive', value: 'No reduction' });
+                } else {
+                    let reduction = 0;
+                    if (familyHistory.includes('heart')) reduction += 3;
+                    if (familyHistory.includes('cancer')) reduction += 4;
+                    if (familyHistory.includes('diabetes')) reduction += 2;
+                    if (familyHistory.includes('other')) reduction += 1;
+                    
+                    if (reduction > 0) {
+                        deathAge -= reduction;
+                        factors.push({ name: 'Family history of diseases', impact: 'Negative', value: `-${reduction} years` });
+                    }
+                }
+                
+                // Chronic diseases
+                if (chronic.includes('none')) {
+                    factors.push({ name: 'No chronic diseases', impact: 'Positive', value: 'No reduction' });
+                } else {
+                    let reduction = 0;
+                    if (chronic.includes('diabetes')) reduction += 6;
+                    if (chronic.includes('hypertension')) reduction += 3;
+                    if (chronic.includes('heart')) reduction += 8;
+                    if (chronic.includes('respiratory')) reduction += 5;
+                    if (chronic.includes('other')) reduction += 2;
+                    
+                    if (reduction > 0) {
+                        deathAge -= reduction;
+                        factors.push({ name: 'Chronic diseases', impact: 'Negative', value: `-${reduction} years` });
+                    }
+                }
+                
+                // BMI adjustments
+                if (bmi) {
+                    if (bmi < 18.5) {
+                        deathAge -= 2;
+                        factors.push({ name: 'Underweight (BMI)', impact: 'Negative', value: '-2 years' });
+                    } else if (bmi >= 25 && bmi < 30) {
+                        deathAge -= 1;
+                        factors.push({ name: 'Overweight (BMI)', impact: 'Slightly negative', value: '-1 year' });
+                    } else if (bmi >= 30) {
+                        deathAge -= 5;
+                        factors.push({ name: 'Obese (BMI)', impact: 'Negative', value: '-5 years' });
+                    } else {
+                        factors.push({ name: 'Normal weight (BMI)', impact: 'Positive', value: 'No reduction' });
+                    }
+                }
+                
+                // Drug usage
+                if (drugs === 'recreational') {
+                    deathAge -= 8;
+                    factors.push({ name: 'Recreational drug use', impact: 'Very negative', value: '-8 years' });
+                } else if (drugs === 'prescription') {
+                    deathAge -= 1;
+                    factors.push({ name: 'Prescription medication use', impact: 'Slightly negative', value: '-1 year' });
+                } else {
+                    factors.push({ name: 'No drug use', impact: 'Positive', value: 'No reduction' });
+                }
+                
+                // Mental health
+                if (mental === 'moderate') {
+                    deathAge -= 1;
+                    factors.push({ name: 'Moderate mental health', impact: 'Slightly negative', value: '-1 year' });
+                } else if (mental === 'poor') {
+                    deathAge -= 3;
+                    factors.push({ name: 'Poor mental health', impact: 'Negative', value: '-3 years' });
+                } else {
+                    factors.push({ name: 'Good mental health', impact: 'Positive', value: 'No reduction' });
+                }
+                
+                // Socioeconomic status
+                if (socioeconomic === 'low') {
+                    deathAge -= 4;
+                    factors.push({ name: 'Low socioeconomic status', impact: 'Negative', value: '-4 years' });
+                } else if (socioeconomic === 'high') {
+                    deathAge += 3;
+                    factors.push({ name: 'High socioeconomic status', impact: 'Positive', value: '+3 years' });
+                } else {
+                    factors.push({ name: 'Middle socioeconomic status', impact: 'Neutral', value: 'No adjustment' });
+                }
+                
+                // Healthcare access
+                if (healthcare === 'limited') {
+                    deathAge -= 3;
+                    factors.push({ name: 'Limited healthcare access', impact: 'Negative', value: '-3 years' });
+                } else if (healthcare === 'none') {
+                    deathAge -= 6;
+                    factors.push({ name: 'No healthcare access', impact: 'Very negative', value: '-6 years' });
+                } else {
+                    factors.push({ name: 'Good healthcare access', impact: 'Positive', value: 'No reduction' });
+                }
+                
+                // Vaccination
+                if (vaccination === 'partial') {
+                    deathAge -= 1;
+                    factors.push({ name: 'Partial vaccination', impact: 'Slightly negative', value: '-1 year' });
+                } else if (vaccination === 'none') {
+                    deathAge -= 3;
+                    factors.push({ name: 'No vaccination', impact: 'Negative', value: '-3 years' });
+                } else {
+                    factors.push({ name: 'Up-to-date vaccination', impact: 'Positive', value: 'No reduction' });
+                }
+                
+                // Checkups
+                if (checkups === 'yes') {
+                    deathAge += 2;
+                    factors.push({ name: 'Regular health check-ups', impact: 'Positive', value: '+2 years' });
+                } else {
+                    factors.push({ name: 'No regular health check-ups', impact: 'Neutral', value: 'No adjustment' });
+                }
+                
+                // Water quality
+                if (water === 'moderate') {
+                    deathAge -= 1;
+                    factors.push({ name: 'Moderate water quality', impact: 'Slightly negative', value: '-1 year' });
+                } else if (water === 'poor') {
+                    deathAge -= 3;
+                    factors.push({ name: 'Poor water quality', impact: 'Negative', value: '-3 years' });
+                } else {
+                    factors.push({ name: 'Good water quality', impact: 'Positive', value: 'No reduction' });
+                }
+                
+                // Ensure death age is at least current age + 1 year
+                deathAge = Math.max(deathAge, age + 1);
+                
+                // Round to nearest whole number
+                deathAge = Math.round(deathAge);
+                
+                // Display results
+                resultAge.textContent = deathAge;
+                
+                // Generate description based on result
+                let description = '';
+                const yearsLeft = deathAge - age;
+                
+                if (yearsLeft > 80) {
+                    description = `Based on your inputs, you're likely to live an exceptionally long life! You have approximately ${yearsLeft} years remaining.`;
+                } else if (yearsLeft > 60) {
+                    description = `Based on your inputs, you're likely to live a long life. You have approximately ${yearsLeft} years remaining.`;
+                } else if (yearsLeft > 40) {
+                    description = `Based on your inputs, you have approximately ${yearsLeft} years remaining.`;
+                } else if (yearsLeft > 20) {
+                    description = `Based on your inputs, you have approximately ${yearsLeft} years remaining. Consider improving certain lifestyle factors.`;
+                } else {
+                    description = `Based on your inputs, you have approximately ${yearsLeft} years remaining. You may want to consult a healthcare professional about improving your health.`;
+                }
+                
+                resultDescription.textContent = description;
+                
+                // Display factors
+                resultFactors.innerHTML = '';
+                factors.forEach(factor => {
+                    const factorItem = document.createElement('div');
+                    factorItem.className = 'factor-item';
+                    
+                    const factorName = document.createElement('div');
+                    factorName.className = 'factor-name';
+                    factorName.textContent = factor.name;
+                    
+                    const factorImpact = document.createElement('div');
+                    factorImpact.className = `factor-impact ${factor.impact.toLowerCase().includes('negative') ? 'negative' : ''}`;
+                    factorImpact.textContent = `${factor.impact} (${factor.value})`;
+                    
+                    factorItem.appendChild(factorName);
+                    factorItem.appendChild(factorImpact);
+                    resultFactors.appendChild(factorItem);
+                });
+                
+                // Show results
+                resultContainer.style.display = 'block';
+                
+                // Scroll to results
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    navLinks.style.display = 'flex';
+                } else {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

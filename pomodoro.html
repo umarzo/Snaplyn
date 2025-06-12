@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/pomodoro" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snaplyn - Pomodoro Timer</title>
+    <meta name="description" content="Boost your productivity with Snaplyn's free Pomodoro timer. Work in focused intervals with smart breaks.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for easy theming */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Pomodoro Timer Styles */
+        .pomodoro-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--rounded-xl);
+            padding: 3rem 2rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+        
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 700;
+            margin: 1.5rem 0;
+            color: var(--dark);
+            font-family: monospace;
+        }
+        
+        .timer-mode {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-transform: capitalize;
+        }
+        
+        .timer-progress {
+            height: 8px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: var(--rounded-full);
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 1s linear;
+        }
+        
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .timer-btn {
+            padding: 0.75rem 2rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .timer-btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .timer-btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .timer-btn-secondary {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        .timer-btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .timer-settings {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .settings-label {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .settings-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .settings-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--light);
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .settings-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .timer-display {
+                font-size: 3.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .timer-display {
+                font-size: 2.5rem;
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+            }
+            
+            .timer-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Tools</a>
+                    <a href="#" class="nav-link">Features</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="section">
+        <div class="container">
+            <h1 class="section-title">Pomodoro Timer</h1>
+            <p class="section-subtitle">Boost your productivity with focused work sessions and regular breaks</p>
+            
+            <div class="pomodoro-container">
+                <div class="timer-mode" id="timerMode">Ready</div>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                
+                <div class="timer-controls">
+                    <button class="timer-btn timer-btn-primary" id="startBtn">Start</button>
+                    <button class="timer-btn timer-btn-secondary" id="pauseBtn" disabled>Pause</button>
+                    <button class="timer-btn timer-btn-secondary" id="resetBtn">Reset</button>
+                </div>
+                
+                <div class="timer-settings">
+                    <div class="settings-row">
+                        <span class="settings-label">Work Duration (minutes)</span>
+                        <div class="settings-control">
+                            <button class="settings-btn" id="decreaseWork">-</button>
+                            <span class="settings-value" id="workDuration">25</span>
+                            <button class="settings-btn" id="increaseWork">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <span class="settings-label">Break Duration (minutes)</span>
+                        <div class="settings-control">
+                            <button class="settings-btn" id="decreaseBreak">-</button>
+                            <span class="settings-value" id="breakDuration">5</span>
+                            <button class="settings-btn" id="increaseBreak">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <span class="settings-label">Long Break Duration (minutes)</span>
+                        <div class="settings-control">
+                            <button class="settings-btn" id="decreaseLongBreak">-</button>
+                            <span class="settings-value" id="longBreakDuration">15</span>
+                            <button class="settings-btn" id="increaseLongBreak">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <span class="settings-label">Sessions Before Long Break</span>
+                        <div class="settings-control">
+                            <button class="settings-btn" id="decreaseSessions">-</button>
+                            <span class="settings-value" id="sessionsBeforeLongBreak">4</span>
+                            <button class="settings-btn" id="increaseSessions">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Text Tools</a></li>
+                        <li class="footer-link"><a href="#">Image Tools</a></li>
+                        <li class="footer-link"><a href="#">Video Tools</a></li>
+                        <li class="footer-link"><a href="#">PDF Tools</a></li>
+                        <li class="footer-link"><a href="#">Productivity</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerMode = document.getElementById('timerMode');
+            const progressBar = document.getElementById('progressBar');
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            // Settings elements
+            const workDurationEl = document.getElementById('workDuration');
+            const breakDurationEl = document.getElementById('breakDuration');
+            const longBreakDurationEl = document.getElementById('longBreakDuration');
+            const sessionsBeforeLongBreakEl = document.getElementById('sessionsBeforeLongBreak');
+            
+            // Timer variables
+            let timer;
+            let timeLeft = 25 * 60; // 25 minutes in seconds
+            let totalSeconds = 25 * 60;
+            let isRunning = false;
+            let isPaused = false;
+            let currentMode = 'work'; // 'work', 'break', 'longBreak'
+            let sessionsCompleted = 0;
+            
+            // Initialize timer with work duration
+            updateTimerDisplay(timeLeft);
+            
+            // Event Listeners
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', pauseTimer);
+            resetBtn.addEventListener('click', resetTimer);
+            
+            // Settings controls
+            document.getElementById('increaseWork').addEventListener('click', () => updateSetting(workDurationEl, 1, 5, 60));
+            document.getElementById('decreaseWork').addEventListener('click', () => updateSetting(workDurationEl, -1, 5, 60));
+            document.getElementById('increaseBreak').addEventListener('click', () => updateSetting(breakDurationEl, 1, 1, 30));
+            document.getElementById('decreaseBreak').addEventListener('click', () => updateSetting(breakDurationEl, -1, 1, 30));
+            document.getElementById('increaseLongBreak').addEventListener('click', () => updateSetting(longBreakDurationEl, 1, 5, 60));
+            document.getElementById('decreaseLongBreak').addEventListener('click', () => updateSetting(longBreakDurationEl, -1, 5, 60));
+            document.getElementById('increaseSessions').addEventListener('click', () => updateSetting(sessionsBeforeLongBreakEl, 1, 1, 10));
+            document.getElementById('decreaseSessions').addEventListener('click', () => updateSetting(sessionsBeforeLongBreakEl, -1, 1, 10));
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+                });
+            }
+            
+            // Functions
+            function updateSetting(element, change, min, max) {
+                let value = parseInt(element.textContent) + change;
+                if (value < min) value = min;
+                if (value > max) value = max;
+                element.textContent = value;
+                
+                // If timer is not running and we're in the corresponding mode, update display
+                if (!isRunning && !isPaused) {
+                    if (element === workDurationEl && currentMode === 'work') {
+                        timeLeft = value * 60;
+                        totalSeconds = value * 60;
+                        updateTimerDisplay(timeLeft);
+                    } else if (element === breakDurationEl && currentMode === 'break') {
+                        timeLeft = value * 60;
+                        totalSeconds = value * 60;
+                        updateTimerDisplay(timeLeft);
+                    } else if (element === longBreakDurationEl && currentMode === 'longBreak') {
+                        timeLeft = value * 60;
+                        totalSeconds = value * 60;
+                        updateTimerDisplay(timeLeft);
+                    }
+                }
+            }
+            
+            function startTimer() {
+                if (!isRunning) {
+                    // If starting fresh (not resuming from pause)
+                    if (!isPaused) {
+                        switch(currentMode) {
+                            case 'work':
+                                totalSeconds = parseInt(workDurationEl.textContent) * 60;
+                                break;
+                            case 'break':
+                                totalSeconds = parseInt(breakDurationEl.textContent) * 60;
+                                break;
+                            case 'longBreak':
+                                totalSeconds = parseInt(longBreakDurationEl.textContent) * 60;
+                                break;
+                        }
+                        timeLeft = totalSeconds;
+                    }
+                    
+                    isRunning = true;
+                    isPaused = false;
+                    startBtn.disabled = true;
+                    pauseBtn.disabled = false;
+                    
+                    timer = setInterval(updateTimer, 1000);
+                    updateModeDisplay();
+                }
+            }
+            
+            function pauseTimer() {
+                if (isRunning) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    isPaused = true;
+                    startBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    timerMode.textContent = 'Paused';
+                }
+            }
+            
+            function resetTimer() {
+                clearInterval(timer);
+                isRunning = false;
+                isPaused = false;
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                
+                switch(currentMode) {
+                    case 'work':
+                        timeLeft = parseInt(workDurationEl.textContent) * 60;
+                        break;
+                    case 'break':
+                        timeLeft = parseInt(breakDurationEl.textContent) * 60;
+                        break;
+                    case 'longBreak':
+                        timeLeft = parseInt(longBreakDurationEl.textContent) * 60;
+                        break;
+                }
+                
+                totalSeconds = timeLeft;
+                updateTimerDisplay(timeLeft);
+                progressBar.style.width = '0%';
+                updateModeDisplay();
+            }
+            
+            function updateTimer() {
+                timeLeft--;
+                updateTimerDisplay(timeLeft);
+                
+                // Update progress bar
+                const progressPercentage = ((totalSeconds - timeLeft) / totalSeconds) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+                
+                // Change color based on mode
+                progressBar.style.backgroundColor = currentMode === 'work' ? 'var(--primary)' : 'var(--success)';
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    
+                    // Play sound
+                    playTimerSound();
+                    
+                    // Determine next mode
+                    if (currentMode === 'work') {
+                        sessionsCompleted++;
+                        
+                        if (sessionsCompleted >= parseInt(sessionsBeforeLongBreakEl.textContent)) {
+                            currentMode = 'longBreak';
+                            sessionsCompleted = 0;
+                        } else {
+                            currentMode = 'break';
+                        }
+                    } else {
+                        currentMode = 'work';
+                    }
+                    
+                    // Set up next timer
+                    switch(currentMode) {
+                        case 'work':
+                            timeLeft = parseInt(workDurationEl.textContent) * 60;
+                            break;
+                        case 'break':
+                            timeLeft = parseInt(breakDurationEl.textContent) * 60;
+                            break;
+                        case 'longBreak':
+                            timeLeft = parseInt(longBreakDurationEl.textContent) * 60;
+                            break;
+                    }
+                    
+                    totalSeconds = timeLeft;
+                    updateTimerDisplay(timeLeft);
+                    progressBar.style.width = '0%';
+                    updateModeDisplay();
+                    
+                    // Show notification
+                    showModeNotification();
+                }
+            }
+            
+            function updateTimerDisplay(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            function updateModeDisplay() {
+                if (isPaused) {
+                    timerMode.textContent = 'Paused';
+                } else {
+                    timerMode.textContent = 
+                        currentMode === 'work' ? 'Focus Time' : 
+                        currentMode === 'break' ? 'Short Break' : 
+                        'Long Break';
+                }
+            }
+            
+            function playTimerSound() {
+                const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+                audio.play().catch(e => console.log('Audio playback failed:', e));
+            }
+            
+            function showModeNotification() {
+                let notificationText = '';
+                if (currentMode === 'work') {
+                    notificationText = 'Time to focus! Your work session starts now.';
+                } else if (currentMode === 'break') {
+                    notificationText = 'Take a short break! Relax for a few minutes.';
+                } else {
+                    notificationText = 'Enjoy a long break! You deserve it after your hard work.';
+                }
+                
+                // Check if browser supports notifications
+                if (!('Notification' in window)) {
+                    alert(notificationText);
+                    return;
+                }
+                
+                // Check if permission is already granted
+                if (Notification.permission === 'granted') {
+                    new Notification(notificationText);
+                } 
+                // Otherwise, ask for permission
+                else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification(notificationText);
+                        }
+                    });
+                }
+            }
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768 && navLinks) {
+                    navLinks.style.display = 'flex';
+                } else if (navLinks) {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            handleResize(); // Initial check
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/hygiene" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hygiene Doctor - Personalized Hygiene Analysis</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Snaplyn theme */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(248, 249, 250, 1) 100%);
+            padding-top: 5rem;
+        }
+        
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--dark);
+        }
+        
+        .hero-title span {
+            color: var(--primary);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .hero-image {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+        
+        /* Features Section */
+        .features {
+            background-color: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .feature-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 1) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+        
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            width: calc(100% - 50px);
+            height: 2px;
+            background-color: var(--primary-light);
+            opacity: 0.3;
+        }
+        
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .step-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            background-color: white;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .testimonial-text::before {
+            content: '"';
+            font-size: 3rem;
+            color: var(--primary-light);
+            opacity: 0.3;
+            position: absolute;
+            top: -1rem;
+            left: -1rem;
+            line-height: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .author-info p {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 0;
+            border-radius: var(--rounded-xl);
+            margin: 5rem auto;
+            max-width: calc(100% - 3rem);
+        }
+        
+        .cta-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-btn {
+            background-color: white;
+            color: var(--primary);
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+        
+        /* Hygiene Doctor Specific Styles */
+        .survey-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            padding: 3rem;
+            box-shadow: var(--shadow-md);
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+        
+        .survey-section {
+            margin-bottom: 3rem;
+        }
+        
+        .survey-section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        
+        .question {
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .option input {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        
+        .option label {
+            cursor: pointer;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: var(--rounded-full);
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .result-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            padding: 3rem;
+            box-shadow: var(--shadow-md);
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .score-value {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .score-label {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .score-meter {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: var(--rounded-full);
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .score-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger), var(--warning), var(--success));
+            width: 0%;
+            transition: width 1s ease;
+        }
+        
+        .category-score {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .category-meter {
+            width: 60%;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: var(--rounded-full);
+            overflow: hidden;
+        }
+        
+        .category-meter-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 1s ease;
+        }
+        
+        .tip-card {
+            background-color: var(--light);
+            border-radius: var(--rounded-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .tip-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .fact-card {
+            background-color: white;
+            border-radius: var(--rounded-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .fact-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .challenge-card {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+            border-radius: var(--rounded-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(67, 97, 238, 0.2);
+        }
+        
+        .challenge-title {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.75rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero-title {
+                font-size: 2.25rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .step:not(:last-child)::after {
+                display: none;
+            }
+            
+            .survey-container, .result-container {
+                padding: 2rem 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .cta-title {
+                font-size: 1.75rem;
+            }
+            
+            .cta-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .score-value {
+                font-size: 3rem;
+            }
+        }
+        
+        /* Mobile Navigation */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                width: 100%;
+                text-align: right;
+                padding: 1rem;
+                box-shadow: var(--shadow-md);
+                z-index: 999;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #eee;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Hygiene Doctor
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#testimonials" class="nav-link">Testimonials</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Welcome Section -->
+    <section class="hero" id="welcome">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <h1 class="hero-title">Hygiene Doctor <span>👨‍⚕️🧼</span></h1>
+                <p class="hero-subtitle">Let's check how clean your life really is — no shame, just improvement. Get personalized hygiene advice based on science.</p>
+                
+                <div class="hero-buttons">
+                    <button id="startSurvey" class="btn btn-primary">Start Hygiene Checkup</button>
+                    <a href="#how-it-works" class="btn btn-outline">How It Works</a>
+                </div>
+                
+                <div class="hero-image delay-1">
+                    <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1630&q=80" alt="Hygiene products">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Survey Section (Hidden Initially) -->
+    <section class="section hidden" id="survey">
+        <div class="container">
+            <div class="survey-container">
+                <h2 class="section-title">Hygiene Self-Assessment</h2>
+                <p class="section-subtitle">Answer these questions honestly to get your personalized hygiene report.</p>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                
+                <form id="hygieneSurvey">
+                    <!-- Body Hygiene Section -->
+                    <div class="survey-section">
+                        <h3 class="survey-section-title"><i class="fas fa-shower"></i> Body Hygiene</h3>
+                        
+                        <div class="question">
+                            <p class="question-text">1. How often do you shower?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="showerFrequency" value="4" required>
+                                    <span>Daily</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="showerFrequency" value="3">
+                                    <span>Every other day</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="showerFrequency" value="2">
+                                    <span>Twice a week</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="showerFrequency" value="1">
+                                    <span>Rarely</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">2. Do you use soap on all body parts?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="soapUsage" value="3" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="soapUsage" value="2">
+                                    <span>Sometimes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="soapUsage" value="1">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">3. Do you clean behind your ears, navel, toes, groin, etc.?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="cleanHiddenAreas" value="3" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="cleanHiddenAreas" value="1">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">4. How often do you change underwear?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="underwearChange" value="3" required>
+                                    <span>Daily</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="underwearChange" value="2">
+                                    <span>Every 2-3 days</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="underwearChange" value="1">
+                                    <span>Longer</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">5. Do you use deodorant or antiperspirant?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="deodorantUse" value="3" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="deodorantUse" value="2">
+                                    <span>Natural only</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="deodorantUse" value="1">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Oral Hygiene Section -->
+                    <div class="survey-section">
+                        <h3 class="survey-section-title"><i class="fas fa-tooth"></i> Oral Hygiene</h3>
+                        
+                        <div class="question">
+                            <p class="question-text">6. How often do you brush your teeth?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="brushFrequency" value="3" required>
+                                    <span>Twice daily</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="brushFrequency" value="2">
+                                    <span>Once daily</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="brushFrequency" value="1">
+                                    <span>Not daily</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">7. Do you floss?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="flossFrequency" value="3" required>
+                                    <span>Daily</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="flossFrequency" value="2">
+                                    <span>Sometimes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="flossFrequency" value="1">
+                                    <span>Never</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">8. Do you have bad breath regularly?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="badBreath" value="1" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="badBreath" value="3">
+                                    <span>No</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="badBreath" value="2">
+                                    <span>Unsure</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">9. When was your last dentist visit?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="dentistVisit" value="3" required>
+                                    <span>Less than 6 months ago</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="dentistVisit" value="2">
+                                    <span>1 year+ ago</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="dentistVisit" value="1">
+                                    <span>Never</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hair & Nail Hygiene Section -->
+                    <div class="survey-section">
+                        <h3 class="survey-section-title"><i class="fas fa-cut"></i> Hair & Nail Hygiene</h3>
+                        
+                        <div class="question">
+                            <p class="question-text">10. How often do you wash your hair?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="hairWashFrequency" value="3" required>
+                                    <span>Every 2-3 days</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="hairWashFrequency" value="2">
+                                    <span>Weekly</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="hairWashFrequency" value="1">
+                                    <span>Rarely</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">11. Do you trim nails regularly?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="nailTrim" value="3" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="nailTrim" value="2">
+                                    <span>Sometimes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="nailTrim" value="1">
+                                    <span>Never</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">12. Do you have dandruff or itchy scalp?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="dandruff" value="1" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="dandruff" value="3">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Clothing & Environment Section -->
+                    <div class="survey-section">
+                        <h3 class="survey-section-title"><i class="fas fa-tshirt"></i> Clothing & Environment</h3>
+                        
+                        <div class="question">
+                            <p class="question-text">13. How often do you wash clothes?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="clothesWashFrequency" value="3" required>
+                                    <span>After 1 wear</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="clothesWashFrequency" value="2">
+                                    <span>After 2+ wears</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="clothesWashFrequency" value="1">
+                                    <span>Rarely</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">14. Do you wear socks or undergarments more than once without washing?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="rewearUnderwear" value="1" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="rewearUnderwear" value="2">
+                                    <span>Sometimes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="rewearUnderwear" value="3">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">15. How often do you change bed sheets?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="bedSheetsChange" value="3" required>
+                                    <span>Weekly</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="bedSheetsChange" value="2">
+                                    <span>Bi-weekly</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="bedSheetsChange" value="1">
+                                    <span>Monthly or longer</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">16. Do you keep your room clean and aired out?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="roomClean" value="3" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="roomClean" value="2">
+                                    <span>Sometimes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="roomClean" value="1">
+                                    <span>Rarely</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Food & Hand Hygiene Section -->
+                    <div class="survey-section">
+                        <h3 class="survey-section-title"><i class="fas fa-hand-holding-water"></i> Food & Hand Hygiene</h3>
+                        
+                        <div class="question">
+                            <p class="question-text">17. Do you wash hands before eating?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="handWashBeforeEating" value="3" required>
+                                    <span>Always</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="handWashBeforeEating" value="2">
+                                    <span>Sometimes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="handWashBeforeEating" value="1">
+                                    <span>Rarely</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">18. Do you sanitize after touching public surfaces (like bus, cash, gym)?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="sanitizeAfterPublic" value="3" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="sanitizeAfterPublic" value="1">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="question">
+                            <p class="question-text">19. Do you regularly clean your phone and headphones?</p>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="cleanDevices" value="3" required>
+                                    <span>Yes</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="cleanDevices" value="1">
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" id="submitSurvey">Get My Hygiene Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section (Hidden Initially) -->
+    <section class="section hidden" id="results">
+        <div class="container">
+            <div class="result-container">
+                <div class="score-display fade-in">
+                    <div class="score-value" id="overallScore">0%</div>
+                    <div class="score-label" id="scoreLabel">Calculating...</div>
+                    <div class="score-meter">
+                        <div class="score-meter-fill" id="scoreMeter"></div>
+                    </div>
+                </div>
+                
+                <h2 class="section-title">Your Hygiene Breakdown</h2>
+                
+                <div class="category-scores fade-in delay-1">
+                    <div class="category-score">
+                        <span class="category-name">Body Hygiene</span>
+                        <div class="category-meter">
+                            <div class="category-meter-fill" id="bodyHygieneMeter"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-score">
+                        <span class="category-name">Oral Hygiene</span>
+                        <div class="category-meter">
+                            <div class="category-meter-fill" id="oralHygieneMeter"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-score">
+                        <span class="category-name">Hair & Nails</span>
+                        <div class="category-meter">
+                            <div class="category-meter-fill" id="hairNailMeter"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-score">
+                        <span class="category-name">Clothing & Environment</span>
+                        <div class="category-meter">
+                            <div class="category-meter-fill" id="clothingMeter"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-score">
+                        <span class="category-name">Hand Hygiene</span>
+                        <div class="category-meter">
+                            <div class="category-meter-fill" id="handHygieneMeter"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="section-title" style="margin-top: 3rem;">Your Personalized Hygiene Plan</h2>
+                
+                <div class="improvement-tips fade-in delay-2">
+                    <div class="tip-card">
+                        <h3 class="tip-title"><i class="fas fa-lightbulb"></i> Improvement Tip #1</h3>
+                        <p id="tip1">Loading your personalized tip...</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h3 class="tip-title"><i class="fas fa-lightbulb"></i> Improvement Tip #2</h3>
+                        <p id="tip2">Loading your personalized tip...</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h3 class="tip-title"><i class="fas fa-lightbulb"></i> Improvement Tip #3</h3>
+                        <p id="tip3">Loading your personalized tip...</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <h3 class="tip-title"><i class="fas fa-lightbulb"></i> Improvement Tip #4</h3>
+                        <p id="tip4">Loading your personalized tip...</p>
+                    </div>
+                </div>
+                
+                <h2 class="section-title" style="margin-top: 3rem;">Did You Know? <small>Fun Hygiene Facts</small></h2>
+                
+                <div class="fun-facts fade-in delay-3">
+                    <div class="fact-card">
+                        <h3 class="fact-title"><i class="fas fa-info-circle"></i> Hygiene Fact #1</h3>
+                        <p id="fact1">Loading interesting fact...</p>
+                    </div>
+                    
+                    <div class="fact-card">
+                        <h3 class="fact-title"><i class="fas fa-info-circle"></i> Hygiene Fact #2</h3>
+                        <p id="fact2">Loading interesting fact...</p>
+                    </div>
+                </div>
+                
+                <h2 class="section-title" style="margin-top: 3rem;">7-Day Hygiene Challenge</h2>
+                
+                <div class="challenge fade-in delay-3">
+                    <div class="challenge-card">
+                        <h3 class="challenge-title"><i class="fas fa-trophy"></i> Try This Challenge</h3>
+                        <p id="challenge1">Loading your challenge...</p>
+                    </div>
+                </div>
+                
+                <div class="text-center" style="margin-top: 3rem;">
+                    <button id="restartSurvey" class="btn btn-outline">Retake the Survey</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How Hygiene Doctor Works</h2>
+            <p class="section-subtitle">Getting your personalized hygiene report is simple and takes just a few minutes.</p>
+            
+            <div class="steps">
+                <div class="step fade-in">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Answer Questions</h3>
+                    <p class="step-description">Complete our quick hygiene assessment with honest answers about your daily habits.</p>
+                </div>
+                
+                <div class="step fade-in delay-1">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Get Your Score</h3>
+                    <p class="step-description">Receive an instant hygiene score with breakdown by different health categories.</p>
+                </div>
+                
+                <div class="step fade-in delay-2">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Improve Your Routine</h3>
+                    <p class="step-description">Follow personalized recommendations to enhance your hygiene habits and health.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">What People Say About Hygiene Doctor</h2>
+            <p class="section-subtitle">Don't just take our word for it. Here's what our users have to say.</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <p class="testimonial-text">I thought my hygiene was good until I took this assessment. The personalized tips helped me improve areas I didn't even consider!</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jessica Tan" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Jessica Tan</h4>
+                            <p>College Student</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card fade-in delay-1">
+                    <p class="testimonial-text">As a busy professional, I was neglecting some hygiene basics. This tool gave me practical, actionable advice that fits my schedule.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="David Kim" class="author-avatar">
+                        <div class="author-info">
+                            <h4>David Kim</h4>
+                            <p>Software Engineer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card fade-in delay-2">
+                    <p class="testimonial-text">The fun facts made learning about hygiene enjoyable for my kids. Now our whole family follows the 7-day challenge together!</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Maria Gonzalez" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Maria Gonzalez</h4>
+                            <p>Parent</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <div class="container">
+        <div class="cta fade-in">
+            <h2 class="cta-title">Ready to Improve Your Hygiene?</h2>
+            <p class="cta-subtitle">Get personalized recommendations to enhance your daily routine and overall health.</p>
+            <button id="ctaStartSurvey" class="btn cta-btn">Start Free Assessment</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Hygiene Doctor
+                    </div>
+                    <p class="footer-description">Your personal hygiene assessment tool providing science-backed recommendations for a cleaner, healthier life.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Hygiene Assessment</a></li>
+                        <li class="footer-link"><a href="#">7-Day Challenge</a></li>
+                        <li class="footer-link"><a href="#">Hygiene Tracker</a></li>
+                        <li class="footer-link"><a href="#">Educational Resources</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Hygiene Doctor. All rights reserved.</p>
+                <p><small>Disclaimer: This tool is educational and does not diagnose medical conditions. For persistent issues, please consult a healthcare provider.</small></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('show');
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('show');
+                        }
+                    }
+                });
+            });
+            
+            // Survey navigation
+            const startSurveyBtn = document.getElementById('startSurvey');
+            const ctaStartSurveyBtn = document.getElementById('ctaStartSurvey');
+            const welcomeSection = document.getElementById('welcome');
+            const surveySection = document.getElementById('survey');
+            const resultsSection = document.getElementById('results');
+            const restartSurveyBtn = document.getElementById('restartSurvey');
+            
+            function startSurvey() {
+                welcomeSection.classList.add('hidden');
+                surveySection.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            startSurveyBtn.addEventListener('click', startSurvey);
+            ctaStartSurveyBtn.addEventListener('click', startSurvey);
+            
+            restartSurveyBtn.addEventListener('click', function() {
+                welcomeSection.classList.add('hidden');
+                surveySection.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+                document.getElementById('hygieneSurvey').reset();
+                document.getElementById('progressBar').style.width = '0%';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Update progress bar as user fills out survey
+            const form = document.getElementById('hygieneSurvey');
+            const progressBar = document.getElementById('progressBar');
+            const questions = form.querySelectorAll('.question');
+            const totalQuestions = questions.length;
+            
+            form.addEventListener('change', function() {
+                let answered = 0;
+                questions.forEach(question => {
+                    if (question.querySelector('input:checked')) {
+                        answered++;
+                    }
+                });
+                
+                const progress = (answered / totalQuestions) * 100;
+                progressBar.style.width = `${progress}%`;
+            });
+            
+            // Form submission and result calculation
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Calculate scores
+                const formData = new FormData(form);
+                const answers = Object.fromEntries(formData.entries());
+                
+                // Convert string values to numbers
+                for (const key in answers) {
+                    answers[key] = parseInt(answers[key]);
+                }
+                
+                // Calculate category scores (out of 15)
+                const bodyHygieneScore = 
+                    answers.showerFrequency + 
+                    answers.soapUsage + 
+                    answers.cleanHiddenAreas + 
+                    answers.underwearChange + 
+                    answers.deodorantUse;
+                
+                const oralHygieneScore = 
+                    answers.brushFrequency + 
+                    answers.flossFrequency + 
+                    answers.badBreath + 
+                    answers.dentistVisit;
+                
+                const hairNailScore = 
+                    answers.hairWashFrequency + 
+                    answers.nailTrim + 
+                    (answers.dandruff === 1 ? 1 : 3); // Reverse score for dandruff
+                
+                const clothingEnvScore = 
+                    answers.clothesWashFrequency + 
+                    answers.rewearUnderwear + 
+                    answers.bedSheetsChange + 
+                    answers.roomClean;
+                
+                const handHygieneScore = 
+                    answers.handWashBeforeEating + 
+                    answers.sanitizeAfterPublic + 
+                    answers.cleanDevices;
+                
+                // Calculate overall score (percentage)
+                const maxPossibleScore = 57; // 3 points per question * 19 questions
+                const totalScore = 
+                    bodyHygieneScore + 
+                    oralHygieneScore + 
+                    hairNailScore + 
+                    clothingEnvScore + 
+                    handHygieneScore;
+                
+                const overallPercentage = Math.round((totalScore / maxPossibleScore) * 100);
+                
+                // Display results
+                surveySection.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Animate score display
+                animateValue('overallScore', 0, overallPercentage, 1000);
+                animateMeter('scoreMeter', 0, overallPercentage, 1000);
+                
+                // Animate category meters
+                setTimeout(() => {
+                    animateMeter('bodyHygieneMeter', 0, (bodyHygieneScore / 15) * 100, 800);
+                }, 200);
+                
+                setTimeout(() => {
+                    animateMeter('oralHygieneScore', 0, (oralHygieneScore / 12) * 100, 800);
+                    animateMeter('oralHygieneMeter', 0, (oralHygieneScore / 12) * 100, 800);
+                }, 400);
+                
+                setTimeout(() => {
+                    animateMeter('hairNailMeter', 0, (hairNailScore / 9) * 100, 800);
+                }, 600);
+                
+                setTimeout(() => {
+                    animateMeter('clothingMeter', 0, (clothingEnvScore / 12) * 100, 800);
+                }, 800);
+                
+                setTimeout(() => {
+                    animateMeter('handHygieneMeter', 0, (handHygieneScore / 9) * 100, 800);
+                }, 1000);
+                
+                // Set score label
+                let scoreLabel = '';
+                if (overallPercentage >= 85) {
+                    scoreLabel = 'Excellent Hygiene!';
+                } else if (overallPercentage >= 70) {
+                    scoreLabel = 'Good Hygiene';
+                } else if (overallPercentage >= 50) {
+                    scoreLabel = 'Needs Some Work';
+                } else {
+                    scoreLabel = 'Needs Significant Improvement';
+                }
+                
+                document.getElementById('scoreLabel').textContent = scoreLabel;
+                
+                // Generate personalized tips based on lowest scoring categories
+                generatePersonalizedTips(
+                    bodyHygieneScore, 
+                    oralHygieneScore, 
+                    hairNailScore, 
+                    clothingEnvScore, 
+                    handHygieneScore
+                );
+                
+                // Generate fun facts
+                generateFunFacts();
+                
+                // Generate challenge
+                generateChallenge(overallPercentage);
+            });
+            
+            // Helper function to animate number values
+            function animateValue(id, start, end, duration) {
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * (end - start) + start) + '%';
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+            
+            // Helper function to animate meter bars
+            function animateMeter(id, start, end, duration) {
+                const meter = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    meter.style.width = progress * (end - start) + start + '%';
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+            
+            // Generate personalized tips based on survey results
+            function generatePersonalizedTips(bodyScore, oralScore, hairNailScore, clothingScore, handScore) {
+                const tips = [];
+                const allTips = [
+                    // Body hygiene tips
+                    {
+                        category: 'body',
+                        text: "Use a mild antibacterial soap and scrub armpits, groin, and feet for at least 30 seconds each.",
+                        threshold: 12 // Show if score is below this
+                    },
+                    {
+                        category: 'body',
+                        text: "Change your underwear daily to prevent bacterial and fungal growth in sensitive areas.",
+                        threshold: 12
+                    },
+                    {
+                        category: 'body',
+                        text: "Don't forget to clean behind your ears and your navel - these areas often get missed but collect dirt and bacteria.",
+                        threshold: 12
+                    },
+                    {
+                        category: 'body',
+                        text: "Consider showering after workouts or sweating heavily to prevent body odor and skin irritation.",
+                        threshold: 10
+                    },
+                    {
+                        category: 'body',
+                        text: "Deodorant masks odor but doesn't replace cleaning. Make sure to thoroughly wash odor-prone areas.",
+                        threshold: 9
+                    },
+                    
+                    // Oral hygiene tips
+                    {
+                        category: 'oral',
+                        text: "Brush your teeth twice daily for 2 minutes each time, covering all surfaces of your teeth.",
+                        threshold: 9
+                    },
+                    {
+                        category: 'oral',
+                        text: "Floss at least once daily to remove plaque between teeth where brushing can't reach.",
+                        threshold: 9
+                    },
+                    {
+                        category: 'oral',
+                        text: "Schedule a dental checkup every 6 months for professional cleaning and early problem detection.",
+                        threshold: 8
+                    },
+                    {
+                        category: 'oral',
+                        text: "Replace your toothbrush every 3-4 months or when bristles become frayed.",
+                        threshold: 8
+                    },
+                    {
+                        category: 'oral',
+                        text: "Clean your tongue daily with a tongue scraper or your toothbrush to reduce bad breath.",
+                        threshold: 7
+                    },
+                    
+                    // Hair & nail tips
+                    {
+                        category: 'hairNail',
+                        text: "Wash your hair every 2-3 days to maintain natural oils while keeping it clean.",
+                        threshold: 6
+                    },
+                    {
+                        category: 'hairNail',
+                        text: "Trim your nails weekly to prevent dirt accumulation and potential infections.",
+                        threshold: 6
+                    },
+                    {
+                        category: 'hairNail',
+                        text: "Clean under your nails daily with a nail brush to remove trapped dirt and bacteria.",
+                        threshold: 5
+                    },
+                    {
+                        category: 'hairNail',
+                        text: "If you have dandruff, try using an anti-dandruff shampoo 2-3 times per week.",
+                        threshold: 4
+                    },
+                    {
+                        category: 'hairNail',
+                        text: "Avoid sharing combs, brushes, or hair accessories to prevent spreading scalp conditions.",
+                        threshold: 4
+                    },
+                    
+                    // Clothing & environment tips
+                    {
+                        category: 'clothing',
+                        text: "Wash bed sheets weekly to reduce dust mites, skin cells, and oils that accumulate.",
+                        threshold: 9
+                    },
+                    {
+                        category: 'clothing',
+                        text: "Don't re-wear socks or underwear without washing - these items collect sweat and bacteria.",
+                        threshold: 9
+                    },
+                    {
+                        category: 'clothing',
+                        text: "Open windows regularly to air out your living space and reduce stale odors.",
+                        threshold: 8
+                    },
+                    {
+                        category: 'clothing',
+                        text: "Wash workout clothes after each use to prevent bacterial growth from sweat.",
+                        threshold: 7
+                    },
+                    {
+                        category: 'clothing',
+                        text: "Vacuum and dust your bedroom weekly to reduce allergens and improve air quality.",
+                        threshold: 6
+                    },
+                    
+                    // Hand hygiene tips
+                    {
+                        category: 'hand',
+                        text: "Wash hands with soap for 20 seconds before eating and after using the restroom.",
+                        threshold: 7
+                    },
+                    {
+                        category: 'hand',
+                        text: "Clean your phone screen daily with alcohol wipes - it can harbor more bacteria than a toilet seat.",
+                        threshold: 6
+                    },
+                    {
+                        category: 'hand',
+                        text: "Carry hand sanitizer for times when soap and water aren't available.",
+                        threshold: 6
+                    },
+                    {
+                        category: 'hand',
+                        text: "Avoid touching your face to reduce the spread of germs to your eyes, nose, and mouth.",
+                        threshold: 5
+                    },
+                    {
+                        category: 'hand',
+                        text: "Disinfect frequently touched surfaces like doorknobs and light switches weekly.",
+                        threshold: 5
+                    }
+                ];
+                
+                // Determine which categories need most improvement
+                const categoryScores = [
+                    { name: 'body', score: bodyScore, max: 15 },
+                    { name: 'oral', score: oralScore, max: 12 },
+                    { name: 'hairNail', score: hairNailScore, max: 9 },
+                    { name: 'clothing', score: clothingScore, max: 12 },
+                    { name: 'hand', score: handScore, max: 9 }
+                ];
+                
+                // Sort by percentage score (lowest first)
+                categoryScores.sort((a, b) => (a.score / a.max) - (b.score / b.max));
+                
+                // Get tips for the lowest scoring categories
+                const selectedCategories = categoryScores.slice(0, 3).map(c => c.name);
+                
+                // Filter relevant tips
+                const relevantTips = allTips.filter(tip => 
+                    selectedCategories.includes(tip.category) && 
+                    (tip.category === 'body' ? bodyScore < tip.threshold :
+                     tip.category === 'oral' ? oralScore < tip.threshold :
+                     tip.category === 'hairNail' ? hairNailScore < tip.threshold :
+                     tip.category === 'clothing' ? clothingScore < tip.threshold :
+                     handScore < tip.threshold)
+                );
+                
+                // Shuffle and select top tips
+                const shuffledTips = relevantTips.sort(() => 0.5 - Math.random());
+                const selectedTips = shuffledTips.slice(0, 4);
+                
+                // Display the tips
+                selectedTips.forEach((tip, index) => {
+                    document.getElementById(`tip${index + 1}`).textContent = tip.text;
+                });
+            }
+            
+            // Generate fun hygiene facts
+            function generateFunFacts() {
+                const facts = [
+                    "The average person's hands carry between 2-10 million bacteria at any given time.",
+                    "Skipping underwear changes for 2+ days raises risk of fungal infections by 300%.",
+                    "Most people forget to clean behind ears — a prime spot for bacterial growth.",
+                    "Mouthwash ≠ flossing. Only floss reaches between teeth where 40% of plaque accumulates.",
+                    "Your phone screen can harbor 10 times more bacteria than a toilet seat.",
+                    "Pillowcases accumulate skin cells, oils, and bacteria - washing weekly reduces acne by up to 40%.",
+                    "The human body sheds about 1 million skin cells per day - regular cleaning helps remove them.",
+                    "Not washing hands properly contributes to nearly 50% of all foodborne illnesses.",
+                    "Natural deodorants may need to be applied more frequently than antiperspirants to be effective.",
+                    "The belly button can harbor nearly 70 different types of bacteria if not cleaned regularly."
+                ];
+                
+                // Select two random facts
+                const randomFacts = facts.sort(() => 0.5 - Math.random()).slice(0, 2);
+                
+                document.getElementById('fact1').textContent = randomFacts[0];
+                document.getElementById('fact2').textContent = randomFacts[1];
+            }
+            
+            // Generate a hygiene challenge based on overall score
+            function generateChallenge(overallScore) {
+                let challenge = "";
+                
+                if (overallScore >= 85) {
+                    challenge = "Maintain your excellent hygiene with our 'Advanced Clean Living' challenge: 1) Try a new hygiene product (like a tongue scraper), 2) Deep clean one overlooked area daily (phone, keyboard, etc.), 3) Teach someone else a hygiene tip.";
+                } else if (overallScore >= 70) {
+                    challenge = "Boost your good hygiene with our '7-Day Upgrade' challenge: 1) Floss daily, 2) Wash sheets mid-week, 3) Clean phone daily, 4) 30-second armpit/groin scrub, 5) Sanitize after public transport, 6) Change towels, 7) Declutter one space.";
+                } else if (overallScore >= 50) {
+                    challenge = "Try our 'Basic Hygiene Boost' challenge: 1) Shower daily with soap, 2) Brush 2x daily, 3) Change underwear daily, 4) Wash hands before meals, 5) Clean phone, 6) Trim nails, 7) Do one load of laundry.";
+                } else {
+                    challenge = "Start with our 'Foundational Hygiene' challenge: 1) Shower with soap (focus on pits/groin/feet), 2) Brush teeth morning and night, 3) Wear clean clothes daily, 4) Wash hands before eating, 5) Change bedsheets, 6) Clean living space, 7) Schedule dental visit.";
+                }
+                
+                document.getElementById('challenge1').textContent = challenge;
+            }
+            
+            // Scroll animations
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            function checkScroll() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (elementTop < windowHeight - 100) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+            
+            // Initial check
+            checkScroll();
+            
+            // Check on scroll
+            window.addEventListener('scroll', checkScroll);
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    navLinks.style.display = 'flex';
+                } else {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

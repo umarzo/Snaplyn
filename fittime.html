@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="canonical" href="https://snaplyn.xyz/fittime" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Goal Calculator | Snaplyn Tools</title>
+    <meta name="description" content="Calculate how long it will take to reach your fitness goals based on your body data, activity level, and nutrition.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for easy theming */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(248, 249, 250, 1) 100%);
+            padding-top: 5rem;
+        }
+        
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--dark);
+        }
+        
+        .hero-title span {
+            color: var(--primary);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .hero-image {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+        
+        /* Features Section */
+        .features {
+            background-color: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .feature-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Form Styles */
+        .form-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            padding: 3rem;
+            box-shadow: var(--shadow-md);
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--rounded-md);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--rounded-md);
+            font-size: 1rem;
+            background-color: white;
+            transition: var(--transition);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .form-section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .form-section-title i {
+            color: var(--primary-light);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .radio-option input {
+            margin-right: 0.25rem;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            padding: 0.5rem 1rem;
+            border-radius: var(--rounded-md);
+        }
+        
+        /* Results Section */
+        .results-container {
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            padding: 3rem;
+            box-shadow: var(--shadow-md);
+            margin: 2rem auto;
+            max-width: 900px;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .results-container.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .results-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .results-subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .result-card {
+            background-color: var(--light);
+            border-radius: var(--rounded-lg);
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-label {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        .results-details {
+            margin-bottom: 3rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .detail-value {
+            color: var(--gray);
+        }
+        
+        .advice-section {
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .advice-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .advice-list {
+            list-style-type: none;
+        }
+        
+        .advice-item {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .advice-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            background: linear-gradient(135deg, rgba(248, 249, 250, 1) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+        
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            width: calc(100% - 50px);
+            height: 2px;
+            background-color: var(--primary-light);
+            opacity: 0.3;
+        }
+        
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .step-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            background-color: white;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .testimonial-text::before {
+            content: '"';
+            font-size: 3rem;
+            color: var(--primary-light);
+            opacity: 0.3;
+            position: absolute;
+            top: -1rem;
+            left: -1rem;
+            line-height: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .author-info p {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 0;
+            border-radius: var(--rounded-xl);
+            margin: 5rem auto;
+            max-width: calc(100% - 3rem);
+        }
+        
+        .cta-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-btn {
+            background-color: white;
+            color: var(--primary);
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 5rem 0 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.75rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero-title {
+                font-size: 2.25rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .section {
+                padding: 3rem 0;
+            }
+            
+            .step:not(:last-child)::after {
+                display: none;
+            }
+            
+            .form-container, .results-container {
+                padding: 2rem 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .cta-title {
+                font-size: 1.75rem;
+            }
+            
+            .cta-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links">
+                    <a href="#calculator" class="nav-link">Calculator</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#testimonials" class="nav-link">Testimonials</a>
+                    <a href="#" class="nav-link">Blog</a>
+                    <a href="#" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <h1 class="hero-title">Fitness Goal <span>Calculator</span></h1>
+                <p class="hero-subtitle">Discover how long it will take to reach your fitness goals based on your body data, activity level, and nutrition. Get personalized advice to optimize your progress.</p>
+                
+                <div class="hero-buttons">
+                    <a href="#calculator" class="btn btn-primary">Start Calculating</a>
+                    <a href="#how-it-works" class="btn btn-outline">How It Works</a>
+                </div>
+                
+                <div class="hero-image delay-1">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Fitness Progress Tracking">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculator Form -->
+    <section class="section" id="calculator">
+        <div class="container">
+            <h2 class="section-title">Calculate Your Fitness Timeline</h2>
+            <p class="section-subtitle">Fill in your details below to get a personalized estimate of when you'll reach your goals.</p>
+            
+            <div class="form-container">
+                <form id="fitnessCalculatorForm">
+                    <!-- Personal Data Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-user"></i> Personal Data</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="age" class="form-label">Age</label>
+                                    <input type="number" id="age" class="form-control" min="15" max="100" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <select id="gender" class="form-select" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="height" class="form-label">Height (cm)</label>
+                                    <input type="number" id="height" class="form-control" min="100" max="250" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="weight" class="form-label">Current Weight (kg)</label>
+                                    <input type="number" id="weight" class="form-control" min="30" max="200" step="0.1" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="bodyFat" class="form-label">Body Fat % (optional)</label>
+                                    <input type="number" id="bodyFat" class="form-control" min="5" max="50" step="0.1">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label class="form-label">Body Type</label>
+                                    <div class="radio-group">
+                                        <div class="radio-option">
+                                            <input type="radio" id="ectomorph" name="bodyType" value="ectomorph">
+                                            <label for="ectomorph">Ectomorph</label>
+                                        </div>
+                                        <div class="radio-option">
+                                            <input type="radio" id="mesomorph" name="bodyType" value="mesomorph" checked>
+                                            <label for="mesomorph">Mesomorph</label>
+                                        </div>
+                                        <div class="radio-option">
+                                            <input type="radio" id="endomorph" name="bodyType" value="endomorph">
+                                            <label for="endomorph">Endomorph</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity & Lifestyle Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-running"></i> Activity & Lifestyle</h3>
+                        
+                        <div class="form-group">
+                            <label for="activityLevel" class="form-label">Physical Activity Level</label>
+                            <select id="activityLevel" class="form-select" required>
+                                <option value="">Select Activity Level</option>
+                                <option value="1.2">Sedentary (little or no exercise)</option>
+                                <option value="1.375">Light (exercise 1-3 days/week)</option>
+                                <option value="1.55" selected>Moderate (exercise 3-5 days/week)</option>
+                                <option value="1.725">Intense (exercise 6-7 days/week)</option>
+                                <option value="1.9">Athlete (2x/day or physical job)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="trainingHours" class="form-label">Hours of daily training</label>
+                                    <input type="number" id="trainingHours" class="form-control" min="0" max="6" step="0.25" value="1">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="exerciseType" class="form-label">Type of exercise</label>
+                                    <select id="exerciseType" class="form-select">
+                                        <option value="weightlifting">Weightlifting</option>
+                                        <option value="cardio">Cardio</option>
+                                        <option value="mixed" selected>Mix</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="steps" class="form-label">Step count per day (approx.)</label>
+                                    <input type="number" id="steps" class="form-control" min="0" max="30000" value="5000">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nutrition & Intake Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-utensils"></i> Nutrition & Intake</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="calories" class="form-label">Average daily calorie intake</label>
+                                    <input type="number" id="calories" class="form-control" min="800" max="5000" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="protein" class="form-label">Protein per day (grams)</label>
+                                    <input type="number" id="protein" class="form-control" min="0" max="300" value="100">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="cheatMeals" class="form-label">Junk/cheat meals per week</label>
+                                    <input type="number" id="cheatMeals" class="form-control" min="0" max="14" value="2">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="water" class="form-label">Water intake (liters/day)</label>
+                                    <input type="number" id="water" class="form-control" min="0" max="10" step="0.25" value="2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fitness Goal Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-bullseye"></i> Fitness Goal</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Goal Type</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="loseFat" name="goalType" value="lose" checked>
+                                    <label for="loseFat">Lose Fat</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="gainMuscle" name="goalType" value="gain">
+                                    <label for="gainMuscle">Gain Muscle</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="recomp" name="goalType" value="recomp">
+                                    <label for="recomp">Body Recomposition</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group" id="goalWeightGroup">
+                                    <label for="goalWeight" class="form-label">Goal Weight (kg)</label>
+                                    <input type="number" id="goalWeight" class="form-control" min="30" max="200" step="0.1">
+                                </div>
+                                <div class="form-group" id="goalBodyFatGroup" style="display: none;">
+                                    <label for="goalBodyFat" class="form-label">Goal Body Fat %</label>
+                                    <input type="number" id="goalBodyFat" class="form-control" min="5" max="50" step="0.1">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="goalPace" class="form-label">Deadline Preference</label>
+                                    <select id="goalPace" class="form-select">
+                                        <option value="aggressive">Aggressive</option>
+                                        <option value="balanced" selected>Balanced</option>
+                                        <option value="slow">Slow and steady</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Other Factors Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title"><i class="fas fa-heartbeat"></i> Other Factors</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="sleep" class="form-label">Sleep hours per night</label>
+                                    <input type="number" id="sleep" class="form-control" min="0" max="12" step="0.25" value="7">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="stress" class="form-label">Stress level</label>
+                                    <select id="stress" class="form-select">
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Existing health conditions (if any)</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="thyroid" name="healthConditions">
+                                    <label for="thyroid">Thyroid Issues</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="hormonal" name="healthConditions">
+                                    <label for="hormonal">Hormonal Imbalance</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="injuries" name="healthConditions">
+                                    <label for="injuries">Injuries</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="metabolic" name="healthConditions">
+                                    <label for="metabolic">Metabolic Disorder</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 3rem;">Calculate My Timeline</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Results Container (initially hidden) -->
+            <div class="results-container" id="resultsContainer">
+                <div class="results-header">
+                    <h3 class="results-title">Your Fitness Timeline</h3>
+                    <p class="results-subtitle">Here's your personalized estimate based on your inputs and goals.</p>
+                </div>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-value" id="resultDays">--</div>
+                        <div class="result-label">Days to Reach Goal</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="resultWeeks">--</div>
+                        <div class="result-label">Weeks to Reach Goal</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="resultRate">--</div>
+                        <div class="result-label">Weekly Progress Rate</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value" id="resultTDEE">--</div>
+                        <div class="result-label">Estimated TDEE</div>
+                    </div>
+                </div>
+                
+                <div class="results-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Current Weight</span>
+                        <span class="detail-value" id="detailCurrentWeight">--</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Goal Weight</span>
+                        <span class="detail-value" id="detailGoalWeight">--</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight Difference</span>
+                        <span class="detail-value" id="detailWeightDiff">--</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Calorie Deficit/Surplus</span>
+                        <span class="detail-value" id="detailCalorieDiff">--</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Total Calorie Gap</span>
+                        <span class="detail-value" id="detailTotalCalories">--</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Projected Completion Date</span>
+                        <span class="detail-value" id="detailCompletionDate">--</span>
+                    </div>
+                </div>
+                
+                <div class="advice-section">
+                    <h4 class="advice-title"><i class="fas fa-lightbulb"></i> Personalized Advice</h4>
+                    <ul class="advice-list" id="adviceList">
+                        <!-- Advice items will be added here by JavaScript -->
+                    </ul>
+                </div>
+                
+                <div class="text-center" style="margin-top: 2rem;">
+                    <button id="recalculateBtn" class="btn btn-outline">Recalculate</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How Our Calculator Works</h2>
+            <p class="section-subtitle">We use scientifically validated formulas to estimate your fitness timeline.</p>
+            
+            <div class="steps">
+                <div class="step fade-in">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Calculate Your TDEE</h3>
+                    <p class="step-description">We use the Mifflin-St Jeor equation to estimate your Basal Metabolic Rate (BMR), then adjust for your activity level to determine Total Daily Energy Expenditure (TDEE).</p>
+                </div>
+                
+                <div class="step fade-in delay-1">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Determine Calorie Balance</h3>
+                    <p class="step-description">We compare your current calorie intake to your TDEE to determine your daily surplus or deficit, then factor in your goal pace preference.</p>
+                </div>
+                
+                <div class="step fade-in delay-2">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Calculate Timeline</h3>
+                    <p class="step-description">Based on the calorie gap needed to reach your goal (7700kcal ≈ 1kg), we calculate how long it will take at your current rate.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">Success Stories</h2>
+            <p class="section-subtitle">Here's what people say about using our fitness calculators.</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <p class="testimonial-text">The timeline estimate was spot on! It helped me set realistic expectations and stay motivated throughout my weight loss journey.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jessica Miller" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Jessica Miller</h4>
+                            <p>Lost 12kg in 4 months</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card fade-in delay-1">
+                    <p class="testimonial-text">The personalized advice helped me optimize my nutrition and training. I gained 5kg of muscle in just 3 months following the recommendations.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="David Wilson" class="author-avatar">
+                        <div class="author-info">
+                            <h4>David Wilson</h4>
+                            <p>Fitness Enthusiast</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card fade-in delay-2">
+                    <p class="testimonial-text">As a personal trainer, I recommend this calculator to all my clients. It's scientifically sound and helps set realistic goals.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sarah Johnson" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>Certified Personal Trainer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <div class="container">
+        <div class="cta fade-in">
+            <h2 class="cta-title">Ready to Transform Your Body?</h2>
+            <p class="cta-subtitle">Get your personalized fitness timeline and start making progress today.</p>
+            <a href="#calculator" class="btn cta-btn">Calculate Now</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Fitness Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Goal Calculator</a></li>
+                        <li class="footer-link"><a href="#">TDEE Calculator</a></li>
+                        <li class="footer-link"><a href="#">Macro Calculator</a></li>
+                        <li class="footer-link"><a href="#">Body Fat Calculator</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">About Us</a></li>
+                        <li class="footer-link"><a href="#">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="#">Terms of Service</a></li>
+                        <li class="footer-link"><a href="#">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="#">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+                <p class="disclaimer-text" style="margin-top: 1rem; font-size: 0.8rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <strong>Disclaimer:</strong> This tool provides estimates based on general fitness science. Results may vary based on individual factors. Always consult a certified trainer or medical professional before starting a diet or fitness plan.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.style.display = 'none';
+                        }
+                    }
+                });
+            });
+            
+            // Scroll animations
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            function checkScroll() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (elementTop < windowHeight - 100) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+            
+            // Initial check
+            checkScroll();
+            
+            // Check on scroll
+            window.addEventListener('scroll', checkScroll);
+            
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth > 768) {
+                    navLinks.style.display = 'flex';
+                } else {
+                    navLinks.style.display = 'none';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Fitness Calculator Logic
+            const form = document.getElementById('fitnessCalculatorForm');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const recalculateBtn = document.getElementById('recalculateBtn');
+            
+            // Toggle between goal weight and body fat % based on goal type
+            const goalTypeRadios = document.querySelectorAll('input[name="goalType"]');
+            const goalWeightGroup = document.getElementById('goalWeightGroup');
+            const goalBodyFatGroup = document.getElementById('goalBodyFatGroup');
+            
+            goalTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'recomp') {
+                        goalWeightGroup.style.display = 'none';
+                        goalBodyFatGroup.style.display = 'block';
+                    } else {
+                        goalWeightGroup.style.display = 'block';
+                        goalBodyFatGroup.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateResults();
+            });
+            
+            // Recalculate button
+            recalculateBtn.addEventListener('click', function() {
+                resultsContainer.classList.remove('show');
+                window.scrollTo({
+                    top: form.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Calculate results function
+            function calculateResults() {
+                // Get form values
+                const age = parseInt(document.getElementById('age').value);
+                const gender = document.getElementById('gender').value;
+                const height = parseFloat(document.getElementById('height').value);
+                const weight = parseFloat(document.getElementById('weight').value);
+                const bodyFat = document.getElementById('bodyFat').value ? parseFloat(document.getElementById('bodyFat').value) : null;
+                const bodyType = document.querySelector('input[name="bodyType"]:checked').value;
+                const activityLevel = parseFloat(document.getElementById('activityLevel').value);
+                const trainingHours = parseFloat(document.getElementById('trainingHours').value);
+                const exerciseType = document.getElementById('exerciseType').value;
+                const steps = parseInt(document.getElementById('steps').value);
+                const calories = parseInt(document.getElementById('calories').value);
+                const protein = parseInt(document.getElementById('protein').value);
+                const cheatMeals = parseInt(document.getElementById('cheatMeals').value);
+                const water = parseFloat(document.getElementById('water').value);
+                const goalType = document.querySelector('input[name="goalType"]:checked').value;
+                const goalWeight = goalType !== 'recomp' ? parseFloat(document.getElementById('goalWeight').value) : null;
+                const goalBodyFat = goalType === 'recomp' ? parseFloat(document.getElementById('goalBodyFat').value) : null;
+                const goalPace = document.getElementById('goalPace').value;
+                const sleep = parseFloat(document.getElementById('sleep').value);
+                const stress = document.getElementById('stress').value;
+                const healthConditions = Array.from(document.querySelectorAll('input[name="healthConditions"]:checked')).map(el => el.id);
+                
+                // Calculate BMR (Mifflin-St Jeor Equation)
+                let bmr;
+                if (gender === 'male') {
+                    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+                } else {
+                    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+                }
+                
+                // Calculate TDEE
+                let tdee = bmr * activityLevel;
+                
+                // Adjust TDEE based on additional activity
+                if (trainingHours > 0) {
+                    let activityMultiplier = 0;
+                    if (exerciseType === 'weightlifting') {
+                        activityMultiplier = 200; // kcal per hour
+                    } else if (exerciseType === 'cardio') {
+                        activityMultiplier = 400; // kcal per hour
+                    } else if (exerciseType === 'mixed') {
+                        activityMultiplier = 300; // kcal per hour
+                    }
+                    tdee += trainingHours * activityMultiplier;
+                }
+                
+                // Adjust for steps
+                if (steps > 8000) {
+                    tdee += (steps - 8000) * 0.04; // ~0.04 kcal per step above sedentary
+                }
+                
+                // Calculate calorie balance
+                const calorieBalance = calories - tdee;
+                
+                // Determine goal parameters based on goal type
+                let goalCalorieDiff, weeklyRate, totalCalorieGap, weightDifference;
+                
+                if (goalType === 'lose') {
+                    weightDifference = weight - goalWeight;
+                    
+                    // Adjust calorie deficit based on goal pace
+                    if (goalPace === 'aggressive') {
+                        goalCalorieDiff = -750;
+                        weeklyRate = 0.75; // kg/week
+                    } else if (goalPace === 'balanced') {
+                        goalCalorieDiff = -500;
+                        weeklyRate = 0.5; // kg/week
+                    } else {
+                        goalCalorieDiff = -250;
+                        weeklyRate = 0.25; // kg/week
+                    }
+                    
+                    // Adjust for body type
+                    if (bodyType === 'endomorph') {
+                        goalCalorieDiff *= 0.9; // Slightly slower rate
+                        weeklyRate *= 0.9;
+                    } else if (bodyType === 'ectomorph') {
+                        goalCalorieDiff *= 1.1; // Slightly faster rate
+                        weeklyRate *= 1.1;
+                    }
+                    
+                    totalCalorieGap = weightDifference * 7700; // 7700 kcal ≈ 1kg fat
+                } 
+                else if (goalType === 'gain') {
+                    weightDifference = goalWeight - weight;
+                    
+                    // Adjust calorie surplus based on goal pace
+                    if (goalPace === 'aggressive') {
+                        goalCalorieDiff = 500;
+                        weeklyRate = 0.5; // kg/week
+                    } else if (goalPace === 'balanced') {
+                        goalCalorieDiff = 300;
+                        weeklyRate = 0.3; // kg/week
+                    } else {
+                        goalCalorieDiff = 200;
+                        weeklyRate = 0.2; // kg/week
+                    }
+                    
+                    // Adjust for body type
+                    if (bodyType === 'ectomorph') {
+                        goalCalorieDiff *= 1.2; // Need more surplus
+                        weeklyRate *= 0.8; // Harder to gain
+                    } else if (bodyType === 'endomorph') {
+                        goalCalorieDiff *= 0.8; // Easier to gain
+                        weeklyRate *= 1.2;
+                    }
+                    
+                    totalCalorieGap = weightDifference * 5500; // 5500 kcal ≈ 1kg muscle (with some fat)
+                } 
+                else { // Recomposition
+                    // For recomposition, we'll estimate based on body fat percentage change
+                    if (!bodyFat || !goalBodyFat) {
+                        alert('Please enter both current and goal body fat % for recomposition calculation.');
+                        return;
+                    }
+                    
+                    const fatMass = weight * (bodyFat / 100);
+                    const leanMass = weight - fatMass;
+                    const goalFatMass = leanMass / (1 - (goalBodyFat / 100)) * (goalBodyFat / 100);
+                    weightDifference = goalFatMass - fatMass;
+                    
+                    // Recomp is typically slower
+                    if (goalPace === 'aggressive') {
+                        goalCalorieDiff = -250; // Small deficit
+                        weeklyRate = 0.15; // % body fat change per week
+                    } else if (goalPace === 'balanced') {
+                        goalCalorieDiff = -150;
+                        weeklyRate = 0.1;
+                    } else {
+                        goalCalorieDiff = -100;
+                        weeklyRate = 0.05;
+                    }
+                    
+                    totalCalorieGap = Math.abs(weightDifference) * 7700;
+                }
+                
+                // Calculate time to reach goal
+                const daysToGoal = Math.round(totalCalorieGap / Math.abs(goalCalorieDiff));
+                const weeksToGoal = Math.round(daysToGoal / 7 * 10) / 10; // Round to 1 decimal
+                
+                // Calculate completion date
+                const today = new Date();
+                const completionDate = new Date(today);
+                completionDate.setDate(today.getDate() + daysToGoal);
+                
+                // Format completion date
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = completionDate.toLocaleDateString('en-US', options);
+                
+                // Generate personalized advice
+                const adviceList = [];
+                
+                // Protein advice
+                const proteinPerKg = protein / weight;
+                if (goalType === 'lose' && proteinPerKg < 1.6) {
+                    adviceList.push(`Increase protein intake to at least ${Math.ceil(weight * 1.6)}g (1.6g/kg) to preserve muscle while losing fat.`);
+                } else if (goalType === 'gain' && proteinPerKg < 2.2) {
+                    adviceList.push(`Increase protein intake to at least ${Math.ceil(weight * 2.2)}g (2.2g/kg) to support muscle growth.`);
+                }
+                
+                // Cheat meals advice
+                if (cheatMeals > 2 && goalType === 'lose') {
+                    adviceList.push(`Reduce cheat meals to 1-2 per week to maintain a consistent calorie deficit.`);
+                }
+                
+                // Sleep advice
+                if (sleep < 7) {
+                    adviceList.push(`Aim for 7-9 hours of sleep per night to optimize recovery and fat metabolism.`);
+                }
+                
+                // Water advice
+                if (water < 2.5) {
+                    adviceList.push(`Increase water intake to at least 2.5-3 liters per day for optimal hydration and metabolism.`);
+                }
+                
+                // Stress advice
+                if (stress === 'high') {
+                    adviceList.push(`High stress levels can hinder progress. Consider stress-reduction techniques like meditation or yoga.`);
+                }
+                
+                // Steps advice
+                if (steps < 8000 && goalType === 'lose') {
+                    adviceList.push(`Increase daily steps to 8,000-10,000 to boost calorie expenditure without increasing hunger.`);
+                }
+                
+                // Health conditions advice
+                if (healthConditions.includes('thyroid') || healthConditions.includes('hormonal')) {
+                    adviceList.push(`With your health conditions, progress may be slower. Consider consulting a specialist for personalized guidance.`);
+                }
+                
+                // Display results
+                document.getElementById('resultDays').textContent = daysToGoal;
+                document.getElementById('resultWeeks').textContent = weeksToGoal;
+                document.getElementById('resultRate').textContent = goalType === 'recomp' ? 
+                    `${weeklyRate}% BF/week` : `${weeklyRate} kg/week`;
+                document.getElementById('resultTDEE').textContent = Math.round(tdee);
+                
+                document.getElementById('detailCurrentWeight').textContent = `${weight} kg${bodyFat ? ` (${bodyFat}% BF)` : ''}`;
+                document.getElementById('detailGoalWeight').textContent = goalType === 'recomp' ? 
+                    `${goalBodyFat}% BF target` : `${goalWeight} kg`;
+                document.getElementById('detailWeightDiff').textContent = goalType === 'recomp' ? 
+                    `${(goalBodyFat - bodyFat).toFixed(1)}% BF change` : `${Math.abs(weightDifference).toFixed(1)} kg ${goalType === 'lose' ? 'loss' : 'gain'}`;
+                document.getElementById('detailCalorieDiff').textContent = `${Math.abs(goalCalorieDiff)} kcal/day ${goalCalorieDiff < 0 ? 'deficit' : 'surplus'}`;
+                document.getElementById('detailTotalCalories').textContent = `${Math.round(totalCalorieGap)} kcal total`;
+                document.getElementById('detailCompletionDate').textContent = formattedDate;
+                
+                // Clear and populate advice list
+                const adviceListElement = document.getElementById('adviceList');
+                adviceListElement.innerHTML = '';
+                adviceList.forEach(advice => {
+                    const li = document.createElement('li');
+                    li.className = 'advice-item';
+                    li.textContent = advice;
+                    adviceListElement.appendChild(li);
+                });
+                
+                // Show results with animation
+                resultsContainer.classList.add('show');
+                
+                // Scroll to results
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: resultsContainer.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+            
+            // Initialize form with some default values for easier testing
+            document.getElementById('age').value = '30';
+            document.getElementById('gender').value = 'male';
+            document.getElementById('height').value = '175';
+            document.getElementById('weight').value = '80';
+            document.getElementById('calories').value = '2500';
+            document.getElementById('goalWeight').value = '75';
+        });
+    </script>
+</body>
+</html>
