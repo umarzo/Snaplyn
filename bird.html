@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="nCPNtiqQvK5ubhLDBGdKdi_nt_fiAHPQ0O6SezeigVg" />
+    <!-- SEO Meta Tags -->
+    <meta name="title" content="Snapy Bird - Snaplyn Game">
+    <meta name="description" content="Play Snapy Bird on Snaplyn - a Flappy Bird style game with perfect controls!">
+    <meta name="keywords" content="free online game, snaplyn, flappy bird, snapy bird, online game, snaplyn games">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://snaplyn.xyz/bird.html" />
+
+    <title>Snapy Bird - Snaplyn Game</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Favicon for various platforms -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://snaplyn.xyz/bird.html">
+    <meta property="og:title" content="Snapy Bird - Snaplyn Game">
+    <meta property="og:description" content="Play Snapy Bird on Snaplyn - a Flappy Bird style game with perfect controls!">
+    <meta property="og:image" content="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://snaplyn.xyz/bird.html">
+    <meta name="twitter:title" content="Snapy Bird - Snaplyn Game">
+    <meta name="twitter:description" content="Play Snapy Bird on Snaplyn - a Flappy Bird style game with perfect controls!">
+    <meta name="twitter:image" content="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    
+    <style>
+        /* CSS Variables for easy theming */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-lighter: rgba(72, 149, 239, 0.1);
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --darker: #12121a;
+            --light: #f8f9fa;
+            --lighter: #fefefe;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --shadow-primary: 0 5px 15px rgba(67, 97, 238, 0.3);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-fast: all 0.2s ease;
+            --transition-slow: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-fast);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section {
+            padding: 6rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+            line-height: 1.2;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: -1;
+            transition: var(--transition);
+        }
+        
+        .btn:hover::before {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+        
+        header.scrolled {
+            box-shadow: var(--shadow-lg);
+            background-color: rgba(255, 255, 255, 0.98);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .logo:hover {
+            transform: scale(1.02);
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+        
+        .logo:hover .logo-icon {
+            transform: rotate(15deg);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 600;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+            font-size: 1.05rem;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: var(--primary);
+            transition: var(--transition);
+            border-radius: 3px;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: var(--rounded-sm);
+        }
+        
+        .mobile-menu-btn:hover {
+            background-color: var(--gray-light);
+        }
+        
+        /* Game Container Styles */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(67, 97, 238, 0.2);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            background: rgba(67, 97, 238, 0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--rounded-lg);
+            border: 1px solid rgba(67, 97, 238, 0.3);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .game-score {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .game-score i {
+            color: var(--primary);
+        }
+        
+        .game-highscore {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .game-highscore i {
+            color: var(--warning);
+        }
+        
+        .game-canvas {
+            background-color: #f8f9fa;
+            border: 2px solid var(--primary);
+            border-radius: var(--rounded-lg);
+            box-shadow: var(--shadow-md);
+            touch-action: none;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        
+        .game-instructions {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: var(--rounded-lg);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .game-instructions h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .game-instructions ul {
+            list-style-position: inside;
+            color: var(--gray);
+        }
+        
+        .game-instructions li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Game Over Modal */
+        .game-over-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .game-over-content {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--rounded-xl);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--primary);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .game-over-title {
+            font-size: 2rem;
+            color: var(--danger);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .game-over-score {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 2rem;
+        }
+        
+        .game-over-highscore {
+            font-size: 1.25rem;
+            color: var(--warning);
+            margin-bottom: 2rem;
+        }
+        
+        .game-over-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 6rem 0 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 4rem;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .footer-logo:hover {
+            transform: translateX(5px);
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+        
+        .footer-logo:hover .footer-logo-icon {
+            color: white;
+            transform: rotate(15deg);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .footer-links-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-links-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-light);
+            border-radius: 3px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-link a::before {
+            content: '→';
+            color: var(--primary-light);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-link a:hover::before {
+            opacity: 1;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2.5rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+                gap: 1.5rem;
+                border-bottom: 1px solid var(--gray-light);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .game-container {
+                padding: 1rem;
+            }
+            
+            .game-canvas {
+                width: 100%;
+                height: auto;
+                max-width: 400px;
+                max-height: 500px;
+            }
+            
+            .game-over-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .game-over-content {
+                padding: 2rem 1rem;
+            }
+            
+            .game-over-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#features" class="nav-link">Features</a>
+                    <a href="index.html#how-it-works" class="nav-link">How It Works</a>
+                    <a href="index.html#testimonials" class="nav-link">Testimonials</a>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Snapy Bird</h2>
+                <p class="section-subtitle">Fly through the pipes in this addictive Flappy Bird style game!</p>
+            </div>
+            
+            <div class="game-container">
+                <div class="game-header">
+                    <div class="game-score"><i class="fas fa-star"></i> Score: <span id="score">0</span></div>
+                    <div class="game-highscore"><i class="fas fa-trophy"></i> High Score: <span id="high-score">0</span></div>
+                </div>
+                
+                <canvas id="game-canvas" width="400" height="600" class="game-canvas"></canvas>
+                
+                <div class="game-controls">
+                    <button id="start-btn" class="btn btn-primary">Start Game</button>
+                    <button id="reset-btn" class="btn btn-outline">Reset</button>
+                </div>
+                
+                <div class="game-instructions">
+                    <h3>How to Play:</h3>
+                    <ul>
+                        <li>Tap or click to make the bird flap</li>
+                        <li>Avoid hitting the pipes or the ground</li>
+                        <li>Each successful pass through pipes gives you 1 point</li>
+                        <li>Press SPACE or tap to start/pause</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Game Over Modal -->
+    <div class="game-over-modal" id="game-over-modal">
+        <div class="game-over-content">
+            <h2 class="game-over-title">Game Over!</h2>
+            <div class="game-over-score">Your Score: <span id="final-score">0</span></div>
+            <div class="game-over-highscore">High Score: <span id="final-highscore">0</span></div>
+            <div class="game-over-buttons">
+                <button id="play-again-btn" class="btn btn-primary">Play Again</button>
+                <button id="close-modal-btn" class="btn btn-outline">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="texttopdf.html">Text to PDF</a></li>
+                        <li class="footer-link"><a href="qrgenerator.html">QR Code Generator</a></li>
+                        <li class="footer-link"><a href="ultimatecalculator.html">Ultimate Calculator</a></li>
+                        <li class="footer-link"><a href="pdftools.html">PDF Toolkit</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="about.html">About Us</a></li>
+                        <li class="footer-link"><a href="blog.html">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="terms.html">Terms of Service</a></li>
+                        <li class="footer-link"><a href="privacy.html">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="cookie.html">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                this.setAttribute('aria-expanded', navLinks.classList.contains('active'));
+                this.innerHTML = navLinks.classList.contains('active') ? 
+                    '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+            });
+            
+            // Header scroll effect
+            const header = document.getElementById('header');
+            let lastScroll = 0;
+            
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll <= 0) {
+                    header.classList.remove('scrolled');
+                    return;
+                }
+                
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    // Scroll down
+                    header.style.transform = 'translateY(-100%)';
+                } else if (currentScroll < lastScroll) {
+                    // Scroll up
+                    header.style.transform = 'translateY(0)';
+                    header.classList.add('scrolled');
+                }
+                
+                lastScroll = currentScroll;
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('active');
+                            mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            });
+
+            // Game variables
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            const scoreElement = document.getElementById('score');
+            const highScoreElement = document.getElementById('high-score');
+            const startBtn = document.getElementById('start-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const gameOverModal = document.getElementById('game-over-modal');
+            const finalScoreElement = document.getElementById('final-score');
+            const finalHighscoreElement = document.getElementById('final-highscore');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            
+            // Game settings - Adjusted for better gameplay
+            const gravity = 0.4; // Slightly reduced gravity
+            const jumpForce = -9; // Slightly reduced jump force for better control
+            const pipeWidth = 70; // Narrower pipes
+            const pipeGap = 200; // Increased gap between pipes (from 150 to 200)
+            const pipeSpeed = 2.5; // Slightly faster pipes
+            const birdWidth = 34;
+            const birdHeight = 26;
+            
+            // Game state
+            let bird = {
+                x: 100,
+                y: canvas.height / 2,
+                velocity: 0,
+                width: birdWidth,
+                height: birdHeight
+            };
+            
+            let pipes = [];
+            let score = 0;
+            let highScore = localStorage.getItem('snapyBirdHighScore') || 0;
+            let gameRunning = false;
+            let animationFrameId;
+            let lastPipeTime = 0;
+            
+            // Initialize game
+            function initGame() {
+                bird = {
+                    x: 100,
+                    y: canvas.height / 2,
+                    velocity: 0,
+                    width: birdWidth,
+                    height: birdHeight
+                };
+                
+                pipes = [];
+                score = 0;
+                scoreElement.textContent = score;
+                highScoreElement.textContent = highScore;
+                lastPipeTime = 0;
+            }
+            
+            // Start game
+            function startGame() {
+                if (gameRunning) return;
+                
+                initGame();
+                gameRunning = true;
+                startBtn.textContent = 'Pause Game';
+                
+                // Start game loop
+                gameLoop();
+            }
+            
+            // Pause game
+            function pauseGame() {
+                if (!gameRunning) return;
+                
+                cancelAnimationFrame(animationFrameId);
+                gameRunning = false;
+                startBtn.textContent = 'Resume Game';
+            }
+            
+            // Reset game
+            function resetGame() {
+                pauseGame();
+                initGame();
+                drawGame();
+                startBtn.textContent = 'Start Game';
+            }
+            
+            // Game loop
+            function gameLoop() {
+                updateGame();
+                drawGame();
+                
+                if (gameRunning) {
+                    animationFrameId = requestAnimationFrame(gameLoop);
+                }
+            }
+            
+            // Update game state
+            function updateGame() {
+                // Update bird position with smoother movement
+                bird.velocity += gravity;
+                bird.y += bird.velocity;
+                
+                // Generate new pipes with more consistent spacing
+                const now = Date.now();
+                if (now - lastPipeTime > 1800) { // Slightly increased time between pipes
+                    createPipe();
+                    lastPipeTime = now;
+                }
+                
+                // Update pipes
+                for (let i = pipes.length - 1; i >= 0; i--) {
+                    pipes[i].x -= pipeSpeed;
+                    
+                    // Check if bird passed the pipe
+                    if (!pipes[i].passed && pipes[i].x + pipeWidth < bird.x) {
+                        pipes[i].passed = true;
+                        score++;
+                        scoreElement.textContent = score;
+                    }
+                    
+                    // Remove pipes that are off screen
+                    if (pipes[i].x + pipeWidth < 0) {
+                        pipes.splice(i, 1);
+                    }
+                }
+                
+                // Check collisions
+                checkCollisions();
+            }
+            
+            // Create new pipe with more reasonable positioning
+            function createPipe() {
+                const minHeight = 80; // Increased minimum height
+                const maxHeight = canvas.height - pipeGap - minHeight;
+                const height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+                
+                pipes.push({
+                    x: canvas.width,
+                    height: height,
+                    passed: false
+                });
+            }
+            
+            // Draw game with enhanced visuals
+            function drawGame() {
+                // Clear canvas
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw sky gradient
+                const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                skyGradient.addColorStop(0, '#e9ecef');
+                skyGradient.addColorStop(1, '#dee2e6');
+                ctx.fillStyle = skyGradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw pipes with Snaplyn theme
+                ctx.fillStyle = '#4895ef';
+                for (const pipe of pipes) {
+                    // Top pipe
+                    ctx.fillRect(pipe.x, 0, pipeWidth, pipe.height);
+                    
+                    // Bottom pipe
+                    ctx.fillRect(pipe.x, pipe.height + pipeGap, pipeWidth, canvas.height - pipe.height - pipeGap);
+                    
+                    // Pipe edges with gradient
+                    const edgeGradient = ctx.createLinearGradient(pipe.x - 5, 0, pipe.x + pipeWidth + 5, 0);
+                    edgeGradient.addColorStop(0, '#4361ee');
+                    edgeGradient.addColorStop(0.5, '#4895ef');
+                    edgeGradient.addColorStop(1, '#4361ee');
+                    
+                    ctx.fillStyle = edgeGradient;
+                    ctx.fillRect(pipe.x - 5, pipe.height - 20, pipeWidth + 10, 20);
+                    ctx.fillRect(pipe.x - 5, pipe.height + pipeGap, pipeWidth + 10, 20);
+                    ctx.fillStyle = '#4895ef';
+                }
+                
+                // Draw bird with more details
+                ctx.fillStyle = '#f72585';
+                ctx.beginPath();
+                ctx.arc(bird.x, bird.y, bird.width / 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bird eye
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(bird.x + 8, bird.y - 4, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(bird.x + 8, bird.y - 4, 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bird beak
+                ctx.fillStyle = '#f8961e';
+                ctx.beginPath();
+                ctx.moveTo(bird.x + bird.width / 2, bird.y);
+                ctx.lineTo(bird.x + bird.width / 2 + 12, bird.y - 4);
+                ctx.lineTo(bird.x + bird.width / 2 + 12, bird.y + 4);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Score display with Snaplyn style
+                ctx.fillStyle = 'rgba(26, 26, 46, 0.8)';
+                ctx.font = 'bold 28px Segoe UI, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(score, canvas.width / 2, 60);
+            }
+            
+            // Check collisions with adjusted hitboxes
+            function checkCollisions() {
+                // Ground collision with buffer
+                if (bird.y + bird.height / 2 > canvas.height - 5) {
+                    gameOver();
+                    return;
+                }
+                
+                // Ceiling collision with buffer
+                if (bird.y - bird.height / 2 < 5) {
+                    gameOver();
+                    return;
+                }
+                
+                // Pipe collisions with slightly more forgiving hitboxes
+                for (const pipe of pipes) {
+                    const birdRight = bird.x + bird.width / 2 - 5; // Slightly smaller hitbox
+                    const birdLeft = bird.x - bird.width / 2 + 5;
+                    const pipeRight = pipe.x + pipeWidth;
+                    const pipeLeft = pipe.x;
+                    
+                    if (birdRight > pipeLeft && birdLeft < pipeRight) {
+                        const birdTop = bird.y - bird.height / 2 + 5;
+                        const birdBottom = bird.y + bird.height / 2 - 5;
+                        const pipeTop = pipe.height;
+                        const pipeBottom = pipe.height + pipeGap;
+                        
+                        if (birdTop < pipeTop || birdBottom > pipeBottom) {
+                            gameOver();
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            // Make bird jump
+            function birdJump() {
+                if (!gameRunning && pipes.length === 0) {
+                    startGame();
+                } else if (gameRunning) {
+                    bird.velocity = jumpForce;
+                }
+            }
+            
+            // Game over
+            function gameOver() {
+                cancelAnimationFrame(animationFrameId);
+                gameRunning = false;
+                startBtn.textContent = 'Start Game';
+                
+                // Update high score
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('snapyBirdHighScore', highScore);
+                    highScoreElement.textContent = highScore;
+                }
+                
+                // Show game over modal
+                finalScoreElement.textContent = score;
+                finalHighscoreElement.textContent = highScore;
+                gameOverModal.style.display = 'flex';
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', function() {
+                if (gameRunning) {
+                    pauseGame();
+                } else {
+                    startGame();
+                }
+            });
+            
+            resetBtn.addEventListener('click', resetGame);
+            
+            playAgainBtn.addEventListener('click', function() {
+                gameOverModal.style.display = 'none';
+                startGame();
+            });
+            
+            closeModalBtn.addEventListener('click', function() {
+                gameOverModal.style.display = 'none';
+            });
+            
+            // Keyboard controls
+            document.addEventListener('keydown', function(e) {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (gameRunning) {
+                        birdJump();
+                    } else {
+                        startGame();
+                    }
+                }
+            });
+            
+            // Touch/mouse controls with improved handling
+            function handleInteraction(e) {
+                if (e.target === canvas) {
+                    e.preventDefault();
+                    birdJump();
+                }
+            }
+            
+            // Mouse click
+            canvas.addEventListener('mousedown', handleInteraction);
+            
+            // Touch controls
+            canvas.addEventListener('touchstart', function(e) {
+                if (gameRunning) {
+                    e.preventDefault();
+                    birdJump();
+                }
+            }, { passive: false });
+            
+            canvas.addEventListener('touchmove', function(e) {
+                if (gameRunning) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Initialize game display
+            initGame();
+            drawGame();
+        });
+    </script>
+</body>
+</html>

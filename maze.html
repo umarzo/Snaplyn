@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Escape - Snaplyn</title>
+    <meta name="description" content="Play Maze Escape on Snaplyn - Navigate through challenging mazes with swipe controls!">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for easy theming */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-lighter: rgba(72, 149, 239, 0.1);
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --darker: #12121a;
+            --light: #f8f9fa;
+            --lighter: #fefefe;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --shadow-primary: 0 5px 15px rgba(67, 97, 238, 0.3);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-fast: all 0.2s ease;
+            --transition-slow: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-fast);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section {
+            padding: 6rem 0;
+            position: relative;
+        }
+        
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+        
+        header.scrolled {
+            box-shadow: var(--shadow-lg);
+            background-color: rgba(255, 255, 255, 0.98);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .logo:hover {
+            transform: scale(1.02);
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+        
+        .logo:hover .logo-icon {
+            transform: rotate(15deg);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            font-weight: 600;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+            font-size: 1.05rem;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: var(--primary);
+            transition: var(--transition);
+            border-radius: 3px;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: var(--rounded-sm);
+        }
+        
+        .mobile-menu-btn:hover {
+            background-color: var(--gray-light);
+        }
+
+        /* Game Container */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: white;
+            border-radius: var(--rounded-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(67, 97, 238, 0.1);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .game-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .game-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--primary-lighter);
+            padding: 1rem 2rem;
+            border-radius: var(--rounded-lg);
+            margin-bottom: 2rem;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .maze-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1/1;
+            border: 4px solid var(--primary);
+            border-radius: var(--rounded-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            background-color: white;
+            touch-action: none; /* For swipe controls */
+        }
+        
+        .maze {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            background-color: var(--light);
+        }
+        
+        .cell {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .wall {
+            background-color: var(--primary);
+            position: absolute;
+            opacity: 0.7;
+        }
+        
+        .wall.top {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+        }
+        
+        .wall.right {
+            top: 0;
+            right: 0;
+            width: 3px;
+            height: 100%;
+        }
+        
+        .wall.bottom {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+        }
+        
+        .wall.left {
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+        }
+        
+        .player {
+            position: absolute;
+            background: radial-gradient(circle at 30% 30%, var(--success), #009688);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.7);
+        }
+        
+        .exit {
+            position: absolute;
+            background: radial-gradient(circle at 30% 30%, var(--danger), #d32f2f);
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 0 15px rgba(247, 37, 133, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Swipe indicator */
+        .swipe-indicator {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 20;
+            display: none;
+        }
+        
+        .swipe-arrow {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(67, 97, 238, 0.7);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        /* Game modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--rounded-xl);
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: var(--shadow-xl);
+            border: 2px solid var(--primary);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .modal p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .modal-btn {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.75rem;
+            font-size: 1rem;
+            border-radius: var(--rounded-lg);
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 6rem 0 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, rgba(67, 97, 238, 0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 4rem;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .footer-logo:hover {
+            transform: translateX(5px);
+        }
+        
+        .footer-logo-icon {
+            font-size: 2rem;
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+        
+        .footer-logo:hover .footer-logo-icon {
+            color: white;
+            transform: rotate(15deg);
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .footer-links-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-links-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-light);
+            border-radius: 3px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-link a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-link a::before {
+            content: '→';
+            color: var(--primary-light);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .footer-link a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-link a:hover::before {
+            opacity: 1;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2.5rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                width: 100%;
+                text-align: right;
+                padding: 1rem 2rem;
+                box-shadow: var(--shadow-lg);
+                z-index: 999;
+                border-radius: 0 0 var(--rounded-md) var(--rounded-md);
+            }
+            
+            .nav-links.show {
+                display: flex;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 0;
+                border-bottom: 1px solid var(--gray-light);
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .stat {
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+            }
+            
+            .modal-content {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="index.html#features" class="nav-link">Features</a>
+                    <a href="index.html#how-it-works" class="nav-link">How It Works</a>
+                    <a href="index.html#testimonials" class="nav-link">Testimonials</a>
+                    <a href="blog.html" class="nav-link">Blog</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Game Content -->
+    <main class="container">
+        <section class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h1>Maze Escape</h1>
+                    <p>Navigate through the maze to reach the exit. Swipe in any direction to move!</p>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">Level</div>
+                        <div class="stat-value" id="level">1</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Time</div>
+                        <div class="stat-value" id="time">00:00</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Moves</div>
+                        <div class="stat-value" id="moves">0</div>
+                    </div>
+                </div>
+
+                <div class="maze-container" id="mazeContainer">
+                    <div class="maze" id="maze"></div>
+                    <div class="swipe-indicator" id="swipeIndicator">
+                        <div class="swipe-arrow" id="swipeUp">↑</div>
+                        <div class="swipe-arrow" id="swipeLeft">←</div>
+                        <div class="swipe-arrow" id="swipeDown">↓</div>
+                        <div class="swipe-arrow" id="swipeRight">→</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Game Modals -->
+    <div class="modal" id="levelCompleteModal">
+        <div class="modal-content">
+            <h2>Level Complete!</h2>
+            <p id="levelCompleteStats">You completed Level 1 in 00:00 with 0 moves!</p>
+            <button class="modal-btn" id="nextLevelBtn">Next Level</button>
+        </div>
+    </div>
+
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2>Game Over</h2>
+            <p id="gameOverStats">You failed to complete the level.</p>
+            <button class="modal-btn" id="retryBtn">Try Again</button>
+        </div>
+    </div>
+
+    <div class="modal" id="welcomeModal">
+        <div class="modal-content">
+            <h2>Welcome to Maze Escape!</h2>
+            <p>Swipe in any direction to move your ball through the maze. Reach the red exit to complete each level.</p>
+            <p>Complete levels quickly with few moves for the best score!</p>
+            <button class="modal-btn" id="startGameBtn">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-bolt footer-logo-icon"></i>
+                        Snaplyn
+                    </div>
+                    <p class="footer-description">Your all-in-one web platform for free, fast, and useful tools to handle all your digital needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link tooltip" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                            <span class="tooltip-text">Follow us on Twitter</span>
+                        </a>
+                        <a href="#" class="social-link tooltip" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                            <span class="tooltip-text">Like us on Facebook</span>
+                        </a>
+                        <a href="#" class="social-link tooltip" aria-label="Instagram">
+                            <i class="fas fa-gamepad"></i>
+                            <span class="tooltip-text">Follow us on Instagram</span>
+                        </a>
+                        <a href="#" class="social-link tooltip" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                            <span class="tooltip-text">Connect on LinkedIn</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Tools</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="texttopdf.html">Text to PDF</a></li>
+                        <li class="footer-link"><a href="qrgenerator.html">QR Code Generator</a></li>
+                        <li class="footer-link"><a href="ultimatecalculator.html">Ultimate Calculator</a></li>
+                        <li class="footer-link"><a href="pdftools.html">PDF Toolkit</a></li>
+                        <li class="footer-link"><a href="vault.html">Snaplyn Vault</a></li>
+                        <li class="footer-link"><a href="codeplay.html">Code Playground</a></li>
+                        <li class="footer-link"><a href="pomodoro.html">Pomodoro Timer</a></li>
+                        <li class="footer-link"><a href="fittime.html">Fitness Goal Analyzer</a></li>
+                        <li class="footer-link"><a href="looksmax.html">LooksMax Guide</a></li>
+                        <li class="footer-link"><a href="expercal.html">Exam Percentage Calculator</a></li>
+                        <li class="footer-link"><a href="heightmax.html">HeightMax</a></li>
+                        <li class="footer-link"><a href="class.html">Class Finder</a></li>
+                        <li class="footer-link"><a href="hygiene.html">Hygiene Doctor</a></li>
+                        <li class="footer-link"><a href="sleep.html">Sleep Optimizer</a></li>
+                        <li class="footer-link"><a href="response.html">Response Speed Checker</a></li>
+                        <li class="footer-link"><a href="passgenerator.html">Password Generator</a></li>
+                        <li class="footer-link"><a href="typetest.html">Typing Analysis</a></li>
+                        <li class="footer-link"><a href="name.html">Name Generator</a></li>
+                        <li class="footer-link"><a href="death.html">Death Finder</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Company</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="about.html">About Us</a></li>
+                        <li class="footer-link"><a href="blog.html">Blog</a></li>
+                        <li class="footer-link"><a href="#">Careers</a></li>
+                        <li class="footer-link"><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-links-title">Legal</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link"><a href="terms.html">Terms of Service</a></li>
+                        <li class="footer-link"><a href="privacy.html">Privacy Policy</a></li>
+                        <li class="footer-link"><a href="cookie.html">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Snaplyn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Game constants
+        const MIN_SIZE = 5;
+        const MAX_SIZE = 15;
+        const SIZE_INCREMENT = 2;
+        const TIME_LIMIT_MULTIPLIER = 3; // seconds per cell
+        
+        // Game state
+        let mazeSize = MIN_SIZE;
+        let currentLevel = 1;
+        let maze = [];
+        let playerPosition = { x: 0, y: 0 };
+        let exitPosition = { x: 0, y: 0 };
+        let moves = 0;
+        let startTime = 0;
+        let timerInterval = null;
+        let cellSize = 0;
+        let gameActive = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        // DOM elements
+        const mazeElement = document.getElementById('maze');
+        const mazeContainer = document.getElementById('mazeContainer');
+        const levelElement = document.getElementById('level');
+        const timeElement = document.getElementById('time');
+        const movesElement = document.getElementById('moves');
+        const levelCompleteModal = document.getElementById('levelCompleteModal');
+        const gameOverModal = document.getElementById('gameOverModal');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const levelCompleteStats = document.getElementById('levelCompleteStats');
+        const gameOverStats = document.getElementById('gameOverStats');
+        const nextLevelBtn = document.getElementById('nextLevelBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const swipeIndicator = document.getElementById('swipeIndicator');
+        const swipeUp = document.getElementById('swipeUp');
+        const swipeLeft = document.getElementById('swipeLeft');
+        const swipeDown = document.getElementById('swipeDown');
+        const swipeRight = document.getElementById('swipeRight');
+
+        // Initialize game
+        function initGame() {
+            // Set up event listeners
+            nextLevelBtn.addEventListener('click', startNextLevel);
+            retryBtn.addEventListener('click', startLevel);
+            startGameBtn.addEventListener('click', () => {
+                welcomeModal.style.display = 'none';
+                startLevel();
+            });
+
+            // Touch controls for swipe
+            mazeContainer.addEventListener('touchstart', handleTouchStart, false);
+            mazeContainer.addEventListener('touchmove', handleTouchMove, false);
+            mazeContainer.addEventListener('touchend', handleTouchEnd, false);
+
+            // Keyboard controls (for desktop testing)
+            document.addEventListener('keydown', handleKeyDown);
+
+            // Show welcome modal
+            welcomeModal.style.display = 'flex';
+        }
+
+        // Touch event handlers
+        function handleTouchStart(e) {
+            if (!gameActive) return;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            
+            // Position swipe indicator
+            const rect = mazeContainer.getBoundingClientRect();
+            swipeIndicator.style.display = 'block';
+            swipeUp.style.left = `${rect.width / 2 - 15}px`;
+            swipeUp.style.top = '20px';
+            swipeLeft.style.left = '20px';
+            swipeLeft.style.top = `${rect.height / 2 - 15}px`;
+            swipeDown.style.left = `${rect.width / 2 - 15}px`;
+            swipeDown.style.top = `${rect.height - 50}px`;
+            swipeRight.style.left = `${rect.width - 50}px`;
+            swipeRight.style.top = `${rect.height / 2 - 15}px`;
+        }
+
+        function handleTouchMove(e) {
+            if (!gameActive || !touchStartX || !touchStartY) return;
+            e.preventDefault();
+            
+            const touchEndX = e.touches[0].clientX;
+            const touchEndY = e.touches[0].clientY;
+            
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            // Show direction indicator
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                // Horizontal swipe
+                if (diffX > 0) {
+                    // Left swipe
+                    swipeLeft.style.opacity = '1';
+                } else {
+                    // Right swipe
+                    swipeRight.style.opacity = '1';
+                }
+            } else {
+                // Vertical swipe
+                if (diffY > 0) {
+                    // Up swipe
+                    swipeUp.style.opacity = '1';
+                } else {
+                    // Down swipe
+                    swipeDown.style.opacity = '1';
+                }
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!gameActive || !touchStartX || !touchStartY) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            // Reset swipe indicator
+            swipeIndicator.style.display = 'none';
+            swipeUp.style.opacity = '0';
+            swipeLeft.style.opacity = '0';
+            swipeDown.style.opacity = '0';
+            swipeRight.style.opacity = '0';
+
+            // Only register the swipe if it's significant enough
+            if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
+
+            // Determine primary direction
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                // Horizontal swipe
+                if (diffX > 0) {
+                    movePlayer(-1, 0); // Left
+                } else {
+                    movePlayer(1, 0); // Right
+                }
+            } else {
+                // Vertical swipe
+                if (diffY > 0) {
+                    movePlayer(0, -1); // Up
+                } else {
+                    movePlayer(0, 1); // Down
+                }
+            }
+            
+            touchStartX = 0;
+            touchStartY = 0;
+        }
+
+        function handleKeyDown(e) {
+            if (!gameActive) return;
+
+            switch(e.key) {
+                case 'ArrowUp':
+                    movePlayer(0, -1);
+                    break;
+                case 'ArrowLeft':
+                    movePlayer(-1, 0);
+                    break;
+                case 'ArrowDown':
+                    movePlayer(0, 1);
+                    break;
+                case 'ArrowRight':
+                    movePlayer(1, 0);
+                    break;
+            }
+        }
+
+        function startLevel() {
+            gameActive = true;
+            moves = 0;
+            startTime = Date.now();
+            movesElement.textContent = moves;
+            updateTimer();
+
+            // Clear previous timer if exists
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            timerInterval = setInterval(updateTimer, 1000);
+
+            // Calculate maze size based on level
+            mazeSize = Math.min(MIN_SIZE + (currentLevel - 1) * SIZE_INCREMENT, MAX_SIZE);
+            levelElement.textContent = currentLevel;
+
+            // Generate maze
+            generateMaze(mazeSize);
+            renderMaze();
+
+            // Close any open modals
+            levelCompleteModal.style.display = 'none';
+            gameOverModal.style.display = 'none';
+        }
+
+        function startNextLevel() {
+            currentLevel++;
+            startLevel();
+        }
+
+        function generateMaze(size) {
+            // Initialize maze grid
+            maze = Array(size).fill().map(() => 
+                Array(size).fill().map(() => ({
+                    top: true,
+                    right: true,
+                    bottom: true,
+                    left: true,
+                    visited: false
+                }))
+            );
+
+            // Generate maze using recursive backtracking
+            const stack = [];
+            const startCell = { x: 0, y: 0 };
+            maze[startCell.y][startCell.x].visited = true;
+            stack.push(startCell);
+
+            while (stack.length > 0) {
+                const current = stack[stack.length - 1];
+                const neighbors = getUnvisitedNeighbors(current.x, current.y, size);
+
+                if (neighbors.length === 0) {
+                    stack.pop();
+                } else {
+                    const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    removeWallBetween(current, next);
+                    maze[next.y][next.x].visited = true;
+                    stack.push(next);
+                }
+            }
+
+            // Set player and exit positions
+            playerPosition = { x: 0, y: 0 };
+            exitPosition = { x: size - 1, y: size - 1 };
+        }
+
+        function getUnvisitedNeighbors(x, y, size) {
+            const neighbors = [];
+
+            if (y > 0 && !maze[y - 1][x].visited) neighbors.push({ x, y: y - 1, dir: 'top' });
+            if (x < size - 1 && !maze[y][x + 1].visited) neighbors.push({ x: x + 1, y, dir: 'right' });
+            if (y < size - 1 && !maze[y + 1][x].visited) neighbors.push({ x, y: y + 1, dir: 'bottom' });
+            if (x > 0 && !maze[y][x - 1].visited) neighbors.push({ x: x - 1, y, dir: 'left' });
+
+            return neighbors;
+        }
+
+        function removeWallBetween(current, next) {
+            if (next.dir === 'top') {
+                maze[current.y][current.x].top = false;
+                maze[next.y][next.x].bottom = false;
+            } else if (next.dir === 'right') {
+                maze[current.y][current.x].right = false;
+                maze[next.y][next.x].left = false;
+            } else if (next.dir === 'bottom') {
+                maze[current.y][current.x].bottom = false;
+                maze[next.y][next.x].top = false;
+            } else if (next.dir === 'left') {
+                maze[current.y][current.x].left = false;
+                maze[next.y][next.x].right = false;
+            }
+        }
+
+        function renderMaze() {
+            mazeElement.innerHTML = '';
+            mazeElement.style.gridTemplateColumns = `repeat(${mazeSize}, 1fr)`;
+            mazeElement.style.gridTemplateRows = `repeat(${mazeSize}, 1fr)`;
+
+            const containerWidth = mazeElement.clientWidth;
+            cellSize = containerWidth / mazeSize;
+
+            // Create cells
+            for (let y = 0; y < mazeSize; y++) {
+                for (let x = 0; x < mazeSize; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+
+                    // Add walls
+                    if (maze[y][x].top) {
+                        const wall = document.createElement('div');
+                        wall.className = 'wall top';
+                        cell.appendChild(wall);
+                    }
+                    if (maze[y][x].right) {
+                        const wall = document.createElement('div');
+                        wall.className = 'wall right';
+                        cell.appendChild(wall);
+                    }
+                    if (maze[y][x].bottom) {
+                        const wall = document.createElement('div');
+                        wall.className = 'wall bottom';
+                        cell.appendChild(wall);
+                    }
+                    if (maze[y][x].left) {
+                        const wall = document.createElement('div');
+                        wall.className = 'wall left';
+                        cell.appendChild(wall);
+                    }
+
+                    mazeElement.appendChild(cell);
+                }
+            }
+
+            // Add player
+            const player = document.createElement('div');
+            player.className = 'player';
+            player.style.width = `${cellSize * 0.7}px`;
+            player.style.height = `${cellSize * 0.7}px`;
+            player.style.left = `${playerPosition.x * cellSize + cellSize * 0.15}px`;
+            player.style.top = `${playerPosition.y * cellSize + cellSize * 0.15}px`;
+            mazeElement.appendChild(player);
+
+            // Add exit
+            const exit = document.createElement('div');
+            exit.className = 'exit';
+            exit.style.width = `${cellSize * 0.7}px`;
+            exit.style.height = `${cellSize * 0.7}px`;
+            exit.style.left = `${exitPosition.x * cellSize + cellSize * 0.15}px`;
+            exit.style.top = `${exitPosition.y * cellSize + cellSize * 0.15}px`;
+            mazeElement.appendChild(exit);
+        }
+
+        function movePlayer(dx, dy) {
+            if (!gameActive) return;
+
+            const newX = playerPosition.x + dx;
+            const newY = playerPosition.y + dy;
+
+            // Check if move is valid (within bounds and no wall)
+            if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize) {
+                // Check for walls
+                if (dx === 1 && !maze[playerPosition.y][playerPosition.x].right || 
+                    dx === -1 && !maze[playerPosition.y][playerPosition.x].left || 
+                    dy === 1 && !maze[playerPosition.y][playerPosition.x].bottom || 
+                    dy === -1 && !maze[playerPosition.y][playerPosition.x].top) {
+                    
+                    playerPosition.x = newX;
+                    playerPosition.y = newY;
+                    moves++;
+                    movesElement.textContent = moves;
+
+                    // Update player position
+                    const player = document.querySelector('.player');
+                    player.style.left = `${playerPosition.x * cellSize + cellSize * 0.15}px`;
+                    player.style.top = `${playerPosition.y * cellSize + cellSize * 0.15}px`;
+
+                    // Check if player reached exit
+                    if (playerPosition.x === exitPosition.x && playerPosition.y === exitPosition.y) {
+                        levelComplete();
+                    }
+                }
+            }
+        }
+
+        function levelComplete() {
+            gameActive = false;
+            clearInterval(timerInterval);
+
+            const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+            const seconds = (timeElapsed % 60).toString().padStart(2, '0');
+            
+            levelCompleteStats.textContent = `You completed Level ${currentLevel} in ${minutes}:${seconds} with ${moves} moves!`;
+            levelCompleteModal.style.display = 'flex';
+        }
+
+        function gameOver() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            gameOverStats.textContent = `You failed to complete Level ${currentLevel}.`;
+            gameOverModal.style.display = 'flex';
+        }
+
+        function updateTimer() {
+            const currentTime = Date.now();
+            const timeElapsed = Math.floor((currentTime - startTime) / 1000);
+            const timeLimit = mazeSize * TIME_LIMIT_MULTIPLIER;
+            
+            // Check if time limit exceeded
+            if (timeElapsed > timeLimit) {
+                gameOver();
+                return;
+            }
+            
+            const remainingTime = timeLimit - timeElapsed;
+            const minutes = Math.floor(remainingTime / 60).toString().padStart(2, '0');
+            const seconds = (remainingTime % 60).toString().padStart(2, '0');
+            
+            timeElement.textContent = `${minutes}:${seconds}`;
+            
+            // Change color when time is running low
+            if (remainingTime <= 10) {
+                timeElement.style.color = 'var(--danger)';
+            } else if (remainingTime <= 30) {
+                timeElement.style.color = 'var(--warning)';
+            } else {
+                timeElement.style.color = 'var(--dark)';
+            }
+        }
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', function() {
+            navLinks.classList.toggle('show');
+            this.setAttribute('aria-expanded', navLinks.classList.contains('show'));
+            this.innerHTML = navLinks.classList.contains('show') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Header scroll effect
+        const header = document.getElementById('header');
+        let lastScroll = 0;
+        
+        window.addEventListener('scroll', function() {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.classList.remove('scrolled');
+                return;
+            }
+            
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                // Scroll down
+                header.style.transform = 'translateY(-100%)';
+            } else if (currentScroll < lastScroll) {
+                // Scroll up
+                header.style.transform = 'translateY(0)';
+                header.classList.add('scrolled');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Start the game when page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
