@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs - Snaplyn</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/HpxQX1XQ/logo-color.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Snaplyn theme */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-lighter: rgba(72, 149, 239, 0.1);
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --darker: #12121a;
+            --light: #f8f9fa;
+            --lighter: #fefefe;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            --shadow-primary: 0 5px 15px rgba(67, 97, 238, 0.3);
+            
+            --rounded-sm: 0.25rem;
+            --rounded-md: 0.5rem;
+            --rounded-lg: 0.75rem;
+            --rounded-xl: 1rem;
+            --rounded-full: 9999px;
+            
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-fast: all 0.2s ease;
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-top: 80px;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition-fast);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 1.75rem;
+            color: var(--primary-light);
+        }
+        
+        /* FAQ Page Styles */
+        .faq-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .faq-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .faq-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* FAQ Categories */
+        .faq-category {
+            margin-bottom: 3rem;
+        }
+        
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .category-icon {
+            font-size: 1.25rem;
+        }
+        
+        /* FAQ Accordion */
+        .faq-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .faq-item {
+            background-color: white;
+            border-radius: var(--rounded-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .faq-item:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(67, 97, 238, 0.2);
+        }
+        
+        .faq-question {
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+        
+        .faq-question:hover {
+            color: var(--primary);
+        }
+        
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .faq-item.active .faq-question::after {
+            content: '-';
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+            padding: 0 1.5rem;
+        }
+        
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 1.5rem 1.5rem;
+        }
+        
+        .faq-answer-content {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        .faq-answer-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .faq-answer-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Back to Home Button */
+        .back-to-home {
+            text-align: center;
+            margin: 4rem 0 3rem;
+        }
+        
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            border-radius: var(--rounded-lg);
+            font-weight: 600;
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .home-btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2.5rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        .copyright {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .faq-title {
+                font-size: 2rem;
+            }
+            
+            .faq-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .category-title {
+                font-size: 1.3rem;
+            }
+            
+            .faq-question {
+                font-size: 1rem;
+                padding: 1rem 1.25rem;
+            }
+            
+            .faq-answer-content {
+                font-size: 0.95rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            body {
+                padding-top: 70px;
+            }
+            
+            .container {
+                padding: 0 1.25rem;
+            }
+            
+            .faq-title {
+                font-size: 1.75rem;
+            }
+            
+            .faq-subtitle {
+                font-size: 1rem;
+            }
+            
+            .category-title {
+                font-size: 1.2rem;
+            }
+            
+            .footer-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt logo-icon"></i>
+                    Snaplyn
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="faq-header">
+            <h1 class="faq-title">Frequently Asked Questions</h1>
+            <p class="faq-subtitle">Find answers to common questions about Snaplyn and its suite of free online tools.</p>
+        </div>
+        
+        <!-- About Snaplyn -->
+        <div class="faq-category">
+            <h2 class="category-title">
+                <i class="fas fa-info-circle category-icon"></i>
+                About Snaplyn
+            </h2>
+            
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <div class="faq-question">What is Snaplyn?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Snaplyn is an all-in-one web platform offering a comprehensive suite of free online tools designed to handle various digital needs. From text and image processing to PDF tools and utility converters, Snaplyn provides simple yet powerful solutions that work instantly in your browser without requiring any downloads or installations.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Who created Snaplyn?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Snaplyn was created by Umar and the snap team passionate about building useful, accessible tools that solve real problems. Our mission is to provide high-quality digital utilities that are completely free to use, with no hidden costs or requirements.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is Snaplyn really free?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Yes! Snaplyn is completely free to use with no hidden charges. We believe in providing valuable tools without paywalls or subscriptions. All current features are available at no cost, and we have no plans to charge for basic functionality in the future.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Why does Snaplyn exist?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>We created Snaplyn to simplify digital tasks that often require multiple apps or expensive software. Our goal is to be the single destination for all your quick digital needs—saving you time, money, and the hassle of searching for different solutions across the web.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tools & Features -->
+        <div class="faq-category">
+            <h2 class="category-title">
+                <i class="fas fa-tools category-icon"></i>
+                Tools & Features
+            </h2>
+            
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <div class="faq-question">What kind of tools does Snaplyn offer?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Snaplyn offers a wide range of tools across several categories:</p>
+                            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                                <li>Text Tools: Convert text to PDF, text to speech, document formatting</li>
+                                <li>Image Tools: Crop, rotate, enhance, compress images</li>
+                                <li>PDF Tools: Compress, merge, convert PDF files</li>
+                                <li>Utility Tools: QR code generator, unit converter, calculators</li>
+                                <li>Developer Tools: Code playground, password generator</li>
+                            </ul>
+                            <p>We're constantly adding new tools based on user feedback and needs.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Are Snaplyn tools accurate?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Yes, we take great care to ensure our tools provide accurate results. All our tools undergo rigorous testing before release, and we regularly update them to maintain high standards. For tools involving calculations or conversions, we use verified algorithms and data sources.</p>
+                            <p>That said, for critical applications, we always recommend double-checking results with another source.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Will you add more tools in the future?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Absolutely! We're continuously expanding Snaplyn's capabilities based on user requests and emerging needs. Our roadmap includes more advanced editing tools, additional file format support, and specialized utilities for different professions and use cases.</p>
+                            <p>If you have specific tool requests, feel free to contact us with your suggestions.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Can I use Snaplyn tools offline?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Currently, Snaplyn requires an internet connection as most tools process data on our servers for optimal performance. However, we're exploring options to make certain tools available for offline use in the future.</p>
+                            <p>Some simpler tools like calculators and text formatters may work with intermittent connectivity once the page is loaded.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technical & File Use -->
+        <div class="faq-category">
+            <h2 class="category-title">
+                <i class="fas fa-cog category-icon"></i>
+                Technical & File Use
+            </h2>
+            
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <div class="faq-question">Are my files stored or shared?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>No, we do not permanently store or share your files. When you upload a file for processing, it's temporarily stored in memory just long enough to complete the requested operation. The file is automatically deleted from our servers immediately after processing, typically within minutes.</p>
+                            <p>We never access, view, or share your files with any third parties.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Do you track my inputs or personal data?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>We do not track or store the content you input into our tools. For analytics purposes, we may collect anonymous usage data (like which tools are used and general performance metrics), but this never includes your actual file contents or personal information.</p>
+                            <p>You can use our tools with confidence that your data remains private.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">What types of files do your tools support?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Our tools support a wide range of common file formats:</p>
+                            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                                <li>Documents: PDF, DOCX, TXT, RTF</li>
+                                <li>Images: JPG, PNG, GIF, WEBP, SVG</li>
+                                <li>Other: CSV, JSON, and various archive formats</li>
+                            </ul>
+                            <p>Each tool's page specifies which formats it accepts. We're constantly adding support for more file types based on user demand.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Will Snaplyn ever require login?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>We have no plans to require login for basic tool usage. Snaplyn was designed to be accessible without accounts or signups. In the future, we may offer optional accounts for features like saving preferences or tracking your tool history, but all current functionality will remain available without registration.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Privacy & Ads -->
+        <div class="faq-category">
+            <h2 class="category-title">
+                <i class="fas fa-shield-alt category-icon"></i>
+                Privacy & Ads
+            </h2>
+            
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <div class="faq-question">Does Snaplyn use cookies?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Snaplyn uses only essential cookies required for basic website functionality, such as remembering your preferences for cookie consent. We do not use tracking cookies or any third-party analytics that compromise your privacy.</p>
+                            <p>You can learn more in our <a href="cookie.html" style="color: var(--primary);">Cookie Policy</a>.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Is Snaplyn secure?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>Yes, security is a top priority. All data transferred to and from Snaplyn is encrypted using HTTPS. File processing occurs in secure, isolated environments. We regularly audit our systems and update our security measures to protect against emerging threats.</p>
+                            <p>That said, we recommend not uploading highly sensitive documents to any online service unless absolutely necessary.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Will Snaplyn show ads in the future?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>We aim to keep Snaplyn free without intrusive advertising. Currently, the platform is ad-free, and any future advertising would be implemented carefully to avoid disrupting the user experience. If we ever introduce ads, they would be:</p>
+                            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                                <li>Relevant and non-intrusive</li>
+                                <li>Clearly marked as advertisements</li>
+                                <li>Never based on your personal file contents</li>
+                            </ul>
+                            <p>Our primary goal is maintaining a clean, useful service above all else.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">How is user privacy handled?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>User privacy is fundamental to Snaplyn. Our approach includes:</p>
+                            <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                                <li>No collection of personal data beyond basic analytics</li>
+                                <li>Automatic deletion of processed files</li>
+                                <li>No tracking of individual user activity</li>
+                                <li>Transparent policies about data handling</li>
+                            </ul>
+                            <p>You can review our complete <a href="privacy.html" style="color: var(--primary);">Privacy Policy</a> for detailed information.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Back to Home Button -->
+        <div class="back-to-home">
+            <a href="index.html" class="home-btn">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="about.html" class="footer-link">About</a>
+                <a href="blog.html" class="footer-link">Blog</a>
+                <a href="contact.html" class="footer-link">Contact</a>
+                <a href="terms.html" class="footer-link">Terms</a>
+                <a href="privacy.html" class="footer-link">Privacy</a>
+            </div>
+            <p class="copyright">&copy; 2023 Snaplyn. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // FAQ Accordion Functionality
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', () => {
+                    // Close all other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+            
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
