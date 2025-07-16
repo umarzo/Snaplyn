@@ -1559,11 +1559,20 @@
             }
             
             // Random Matchmaking Functions
-            function findRandomGame() {
-                isSearching = true;
-                findGameBtn.style.display = 'none';
-                waitingMessage.style.display = 'flex';
-                cancelFindBtn.style.display = 'block';
+         function findRandomGame() {
+    // 🔐 Ask for name if not already set
+    if (!playerName || playerName.trim() === "") {
+        playerName = prompt("Enter your name:");
+        if (!playerName || playerName.trim() === "") {
+            showToast("Name is required to play multiplayer.");
+            return;
+        }
+    }
+
+    isSearching = true;
+    findGameBtn.style.display = 'none';
+    waitingMessage.style.display = 'flex';
+    cancelFindBtn.style.display = 'block';
                 
                 // Create a reference to the matchmaking queue
                 matchmakingRef = database.ref('matchmaking');
