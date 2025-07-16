@@ -643,6 +643,65 @@
             background-color: #d3165c;
         }
         
+        /* Multiplayer Mode Selector */
+        .multiplayer-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-light);
+            padding-bottom: 0.5rem;
+        }
+        
+        .multiplayer-tab {
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: var(--transition-fast);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        
+        .multiplayer-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .multiplayer-tab:hover:not(.active) {
+            color: var(--dark);
+        }
+        
+        .multiplayer-content {
+            display: none;
+        }
+        
+        .multiplayer-content.active {
+            display: block;
+        }
+        
+        .find-game-btn {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .waiting-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            color: var(--gray);
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* Toast notification */
         .toast {
             position: fixed;
@@ -740,6 +799,25 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+            
+            .multiplayer-tabs {
+                flex-direction: column;
+                align-items: center;
+                border-bottom: none;
+            }
+            
+            .multiplayer-tab {
+                border-bottom: none;
+                margin-bottom: 0.5rem;
+                border-left: 2px solid transparent;
+                border-radius: var(--rounded-sm);
+                padding: 0.75rem 1rem;
+            }
+            
+            .multiplayer-tab.active {
+                border-left-color: var(--primary);
+                border-bottom: none;
+            }
         }
         
         @media (max-width: 576px) {
@@ -813,27 +891,50 @@
                     
                     <!-- Lobby Container (hidden by default) -->
                     <div class="lobby-container" id="lobbyContainer">
-                        <h3 class="lobby-title">Multiplayer Lobby</h3>
-                        <div class="lobby-id">Game ID: <span id="gameIdDisplay"></span></div>
-                        <button id="copyBtn" class="copy-btn">
-                            <i class="fas fa-copy"></i> Copy Link
-                        </button>
-                        <div class="lobby-players" id="lobbyPlayers">
-                            <div class="player-card you">
-                                <div class="player-icon"><i class="fas fa-user"></i></div>
-                                <div class="player-name" id="player1Name">You</div>
-                                <div class="player-status">(X)</div>
-                            </div>
-                            <div class="player-card waiting">
-                                <div class="player-icon"><i class="fas fa-user-clock"></i></div>
-                                <div class="player-name">Waiting...</div>
-                                <div class="player-status">(O)</div>
-                            </div>
+                        <div class="multiplayer-tabs">
+                            <div class="multiplayer-tab active" data-tab="friend">With Friend</div>
+                            <div class="multiplayer-tab" data-tab="random">Random Player</div>
                         </div>
-                        <p class="lobby-message" id="lobbyMessage">Share the game link with a friend to start playing</p>
-                        <button id="leaveBtn" class="btn leave-btn">
-                            <i class="fas fa-sign-out-alt"></i> Leave Lobby
-                        </button>
+                        
+                        <!-- Friend Multiplayer Content -->
+                        <div class="multiplayer-content active" id="friendMultiplayer">
+                            <h3 class="lobby-title">Multiplayer Lobby</h3>
+                            <div class="lobby-id">Game ID: <span id="gameIdDisplay"></span></div>
+                            <button id="copyBtn" class="copy-btn">
+                                <i class="fas fa-copy"></i> Copy Link
+                            </button>
+                            <div class="lobby-players" id="lobbyPlayers">
+                                <div class="player-card you">
+                                    <div class="player-icon"><i class="fas fa-user"></i></div>
+                                    <div class="player-name" id="player1Name">You</div>
+                                    <div class="player-status">(X)</div>
+                                </div>
+                                <div class="player-card waiting">
+                                    <div class="player-icon"><i class="fas fa-user-clock"></i></div>
+                                    <div class="player-name">Waiting...</div>
+                                    <div class="player-status">(O)</div>
+                                </div>
+                            </div>
+                            <p class="lobby-message" id="lobbyMessage">Share the game link with a friend to start playing</p>
+                            <button id="leaveBtn" class="btn leave-btn">
+                                <i class="fas fa-sign-out-alt"></i> Leave Lobby
+                            </button>
+                        </div>
+                        
+                        <!-- Random Multiplayer Content -->
+                        <div class="multiplayer-content" id="randomMultiplayer">
+                            <h3 class="lobby-title">Find Random Opponent</h3>
+                            <p class="lobby-message">Click the button below to find a random opponent</p>
+                            <button id="findGameBtn" class="btn btn-primary find-game-btn">
+                                <i class="fas fa-search"></i> Find Random Game
+                            </button>
+                            <div class="waiting-message" id="waitingMessage" style="display: none;">
+                                <i class="fas fa-spinner spinner"></i> Searching for opponent...
+                            </div>
+                            <button id="cancelFindBtn" class="btn btn-outline" style="display: none; margin-top: 1rem;">
+                                <i class="fas fa-times"></i> Cancel Search
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="game-info">
@@ -967,6 +1068,14 @@
             const leaveBtn = document.getElementById('leaveBtn');
             const toast = document.getElementById('toast');
             
+            // Multiplayer tabs
+            const multiplayerTabs = document.querySelectorAll('.multiplayer-tab');
+            const friendMultiplayer = document.getElementById('friendMultiplayer');
+            const randomMultiplayer = document.getElementById('randomMultiplayer');
+            const findGameBtn = document.getElementById('findGameBtn');
+            const cancelFindBtn = document.getElementById('cancelFindBtn');
+            const waitingMessage = document.getElementById('waitingMessage');
+            
             // Game Variables
             let board = ['', '', '', '', '', '', '', '', ''];
             let currentPlayer = 'X';
@@ -982,6 +1091,8 @@
             let playerName = "Player " + Math.floor(Math.random() * 1000);
             let gameRef = null;
             let playerRef = null;
+            let queueRef = null;
+            let isSearchingForGame = false;
             
             // Winning Conditions
             const winConditions = [
@@ -1437,6 +1548,64 @@
                     });
             }
             
+            // Random Matchmaking Functions
+            function findRandomGame() {
+                isSearchingForGame = true;
+                findGameBtn.style.display = 'none';
+                waitingMessage.style.display = 'flex';
+                cancelFindBtn.style.display = 'block';
+                
+                // Add player to the matchmaking queue
+                queueRef = database.ref('matchmakingQueue');
+                
+                const playerData = {
+                    name: playerName,
+                    joinedAt: firebase.database.ServerValue.TIMESTAMP
+                };
+                
+                const newPlayerRef = queueRef.push(playerData);
+                const playerKey = newPlayerRef.key;
+                
+                // Listen for match
+                queueRef.on('child_removed', (snapshot) => {
+                    if (snapshot.key === playerKey && isSearchingForGame) {
+                        // Player was matched
+                        const gameData = snapshot.val();
+                        
+                        if (gameData && gameData.gameId) {
+                            // Join the matched game
+                            joinMultiplayerGame(gameData.gameId);
+                        } else {
+                            // Matchmaking failed
+                            showToast("Matchmaking failed. Please try again.");
+                            cancelMatchmaking();
+                        }
+                    }
+                });
+                
+                // Timeout after 60 seconds
+                setTimeout(() => {
+                    if (isSearchingForGame) {
+                        showToast("Could not find an opponent. Please try again.");
+                        cancelMatchmaking();
+                    }
+                }, 60000);
+            }
+            
+            function cancelMatchmaking() {
+                if (!isSearchingForGame) return;
+                
+                isSearchingForGame = false;
+                findGameBtn.style.display = 'block';
+                waitingMessage.style.display = 'none';
+                cancelFindBtn.style.display = 'none';
+                
+                if (queueRef) {
+                    queueRef.off();
+                    queueRef = null;
+                }
+            }
+            
             function listenForGameChanges() {
                 gameRef.on('value', snapshot => {
                     if (!snapshot.exists()) {
@@ -1534,6 +1703,8 @@
             }
             
             function leaveMultiplayerGame() {
+                cancelMatchmaking();
+                
                 if (gameRef) {
                     if (isHost) {
                         // Host leaves - delete the game
@@ -1566,6 +1737,7 @@
                 isHost = false;
                 gameRef = null;
                 hideLobby();
+                cancelMatchmaking();
                 
                 // Reset buttons
                 pvpBtn.classList.remove('btn-primary');
@@ -1656,7 +1828,7 @@
             
             mpBtn.addEventListener('click', () => {
                 resetGameMode();
-                createMultiplayerGame();
+                showLobby();
                 mpBtn.classList.remove('btn-outline');
                 mpBtn.classList.add('btn-primary');
                 pvpBtn.classList.remove('btn-primary');
@@ -1692,6 +1864,24 @@
             copyBtn.addEventListener('click', copyGameLink);
             
             leaveBtn.addEventListener('click', leaveMultiplayerGame);
+            
+            // Multiplayer tab switching
+            multiplayerTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and content
+                    multiplayerTabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.multiplayer-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId + 'Multiplayer').classList.add('active');
+                });
+            });
+            
+            // Random multiplayer buttons
+            findGameBtn.addEventListener('click', findRandomGame);
+            cancelFindBtn.addEventListener('click', cancelMatchmaking);
             
             // Mobile menu toggle
             mobileMenuBtn.addEventListener('click', function() {
