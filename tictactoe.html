@@ -1088,7 +1088,7 @@
         let matchmakingListener = null;
         let isSearching = false;
         let matchmakingTimeout = null;
-        let matchmakingGameId = null;
+        let matchmakingCleanupInterval = null;
         
         // Winning Conditions
         const winConditions = [
@@ -1578,36 +1578,66 @@
             }, 300000); // 5 minutes timeout
             
             // Check for existing games waiting for players
-            matchmakingListener = matchmakingRef.orderByChild('status').equalTo('waiting').limitToFirst(1).on('value', snapshot => {
+            matchmakingListener = matchmakingRef.orderByChild('status').equalTo('waiting').on('value', snapshot => {
                 if (!snapshot.exists() || !isSearching) return;
                 
-                const matchmakingData = snapshot.val();
-                const availableGameId = Object.keys(matchmakingData)[0];
+                const matches = snapshot.val();
+                let oldestMatchId = null;
+                let oldestTimestamp = Number.MAX_SAFE_INTEGER;
                 
-                if (availableGameId) {
-                    // Use a transaction to safely claim this game
-                    database.ref('matchmaking/' + availableGameId).transaction(currentData => {
+                // Find the oldest waiting match
+                for (const matchId in matches) {
+                    if (matches[matchId].status === 'waiting' && matches[matchId].createdAt < oldestTimestamp) {
+                        oldestMatchId = matchId;
+                        oldestTimestamp = matches[matchId].createdAt;
+                    }
+                }
+                
+                if (oldestMatchId) {
+                    // Use transaction to safely claim the match
+                    database.ref('matchmaking/' + oldestMatchId).transaction(currentData => {
                         if (currentData && currentData.status === 'waiting') {
                             currentData.status = 'matched';
+                            currentData.joinedAt = firebase.database.ServerValue.TIMESTAMP;
                             return currentData;
                         }
-                        return; // Abort transaction if game is no longer available
+                        return; // Abort if no longer available
                     }, (error, committed) => {
                         if (error) {
                             console.error("Transaction error:", error);
                             showToast("Error joining game. Please try again.");
                             cancelRandomSearch();
                         } else if (committed) {
-                            // Successfully claimed the game - now join it
-                            joinRandomGame(availableGameId);
+                            // Successfully claimed the match - now join the game
+                            joinRandomGame(oldestMatchId);
                         } else {
-                            // Game was already taken, try again
+                            // Match was already taken, try again
                             findRandomGame();
                         }
                     });
                 } else {
-                    // No games waiting, create a new one
+                    // No matches waiting, create a new one
                     createRandomGame();
+                }
+            });
+            
+            // Start periodic cleanup of stale matchmaking entries
+            if (!matchmakingCleanupInterval) {
+                matchmakingCleanupInterval = setInterval(cleanupStaleMatches, 60000); // Every minute
+            }
+        }
+        
+        function cleanupStaleMatches() {
+            const oneHourAgo = Date.now() - 3600000; // 1 hour in ms
+            matchmakingRef.orderByChild('createdAt').endAt(oneHourAgo).once('value', snapshot => {
+                if (snapshot.exists()) {
+                    const updates = {};
+                    snapshot.forEach(child => {
+                        updates[child.key] = null; // Mark for deletion
+                    });
+                    matchmakingRef.update(updates).catch(error => {
+                        console.error("Error cleaning up stale matches:", error);
+                    });
                 }
             });
         }
@@ -1618,8 +1648,7 @@
             playerId = 'X'; // Host is always X
             
             // Generate a random game ID
-            matchmakingGameId = 'random-' + Math.random().toString(36).substr(2, 8);
-            gameId = matchmakingGameId;
+            gameId = 'random-' + Math.random().toString(36).substr(2, 8);
             
             // Create game in Firebase
             gameRef = database.ref('games/' + gameId);
@@ -1643,26 +1672,39 @@
             };
             
             // Add to matchmaking queue
-            database.ref('matchmaking/' + matchmakingGameId).set({
+            const matchmakingData = {
                 status: 'waiting',
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
-                hostReady: true
-            }).catch(error => {
-                console.error("Error adding to matchmaking:", error);
-                showToast("Error creating game. Please try again.");
-                cancelRandomSearch();
-            });
+                gameId: gameId
+            };
             
-            gameRef.set(gameData)
-                .then(() => {
-                    showRandomLobby(true);
-                    listenForGameChanges();
-                })
-                .catch(error => {
-                    console.error("Error creating random game:", error);
+            // Use transaction to ensure atomic creation
+            database.ref('matchmaking/' + gameId).transaction(currentData => {
+                if (currentData === null) {
+                    return matchmakingData;
+                }
+                return; // Abort if already exists
+            }, (error, committed) => {
+                if (error) {
+                    console.error("Transaction error:", error);
                     showToast("Error creating game. Please try again.");
                     cancelRandomSearch();
-                });
+                } else if (committed) {
+                    gameRef.set(gameData)
+                        .then(() => {
+                            showRandomLobby(true);
+                            listenForGameChanges();
+                        })
+                        .catch(error => {
+                            console.error("Error creating game:", error);
+                            showToast("Error creating game. Please try again.");
+                            cancelRandomSearch();
+                        });
+                } else {
+                    // Race condition - someone else created the same game ID
+                    findRandomGame(); // Try again
+                }
+            });
         }
         
         function joinRandomGame(gameIdToJoin) {
@@ -1699,16 +1741,15 @@
                     cancelRandomSearch();
                 } else {
                     // Successfully joined the game
-                    showRandomLobby(false);
-                    listenForGameChanges();
+                    clearTimeout(matchmakingTimeout);
                     
                     // Remove from matchmaking queue
                     database.ref('matchmaking/' + gameId).remove().catch(error => {
                         console.error("Error removing from matchmaking:", error);
                     });
                     
-                    // Clear timeout
-                    clearTimeout(matchmakingTimeout);
+                    showRandomLobby(false);
+                    listenForGameChanges();
                 }
             });
         }
@@ -1754,8 +1795,9 @@
             }
             
             // Remove from matchmaking if we were hosting
-            if (matchmakingGameId) {
-                database.ref('matchmaking/' + matchmakingGameId).remove();
+            if (gameId && gameRef && isHost) {
+                database.ref('matchmaking/' + gameId).remove();
+                gameRef.remove();
             }
             
             // Reset UI
@@ -1895,8 +1937,8 @@
                         });
                     
                     // If it was a random game, remove from matchmaking
-                    if (matchmakingGameId) {
-                        database.ref('matchmaking/' + matchmakingGameId).remove();
+                    if (gameId) {
+                        database.ref('matchmaking/' + gameId).remove();
                     }
                 } else {
                     // Player leaves - mark as not ready
@@ -1923,7 +1965,6 @@
             isHost = false;
             gameRef = null;
             isSearching = false;
-            matchmakingGameId = null;
             hideLobby();
             
             // Reset buttons
@@ -1942,7 +1983,6 @@
             
             // Show friend tab button again
             document.querySelector('.tab-btn[data-tab="friend-tab"]').style.display = 'block';
-            document.getElementById('friend-tab').style.display = 'block';
             
             statusText.textContent = 'Select a game mode to start';
         }
