@@ -1020,7 +1020,7 @@
                     }
                 } else if (gameMode === 'mp') {
                     if (currentPlayer === playerId) {
-                        statusText.innerHTML = `Your turn (<span class="current-player">${playerId === 'X' ? 'X' : 'O'}</span>)`;
+                        statusText.innerHTML = `Your turn (<span class="current-player">${playerId}</span>)`;
                     } else {
                         statusText.innerHTML = `Waiting for opponent...`;
                     }
@@ -1037,17 +1037,9 @@
                 if (board[cellIndex] !== '') return;
                 
                 // In multiplayer mode, only allow current player to move
-                if (gameMode === 'mp') {
-                    if (currentPlayer !== playerId) {
-                        showToast("It's not your turn!");
-                        return;
-                    }
-                    
-                    // Only allow move if it's the current player's turn
-                    if (currentPlayer !== playerId) {
-                        showToast("Wait for your turn!");
-                        return;
-                    }
+                if (gameMode === 'mp' && currentPlayer !== playerId) {
+                    showToast("It's not your turn!");
+                    return;
                 }
                 
                 // Update board and UI
@@ -1121,12 +1113,15 @@
                         }
                     }
                     
-                    // In multiplayer, update game state
+                    // Update game state in multiplayer
                     if (gameMode === 'mp' && gameRef) {
                         gameRef.update({
                             gameActive: false
+                        }).catch(error => {
+                            console.error("Error updating game state:", error);
                         });
                     }
+                    
                     return;
                 }
                 
@@ -1135,10 +1130,12 @@
                     gameActive = false;
                     gameResult.textContent = `Game ended in a draw!`;
                     
-                    // In multiplayer, update game state
+                    // Update game state in multiplayer
                     if (gameMode === 'mp' && gameRef) {
                         gameRef.update({
                             gameActive: false
+                        }).catch(error => {
+                            console.error("Error updating game state:", error);
                         });
                     }
                 }
@@ -1442,6 +1439,14 @@
                         .then(() => {
                             showLobby();
                             listenForGameChanges();
+                            
+                            // Update UI to show multiplayer is active
+                            mpBtn.classList.remove('btn-outline');
+                            mpBtn.classList.add('btn-primary');
+                            pvpBtn.classList.remove('btn-primary');
+                            pvpBtn.classList.add('btn-outline');
+                            pvcBtn.classList.remove('btn-primary');
+                            pvcBtn.classList.add('btn-outline');
                         })
                         .catch(error => {
                             console.error("Error joining game:", error);
@@ -1479,11 +1484,12 @@
                     
                     // Update UI
                     updateBoardUI();
-                    updateStatus();
                     
-                    // Check result if game is not active
+                    // Check for game result if game is not active
                     if (!gameActive) {
                         checkResult();
+                    } else {
+                        updateStatus();
                     }
                 });
             }
@@ -1494,17 +1500,18 @@
                 
                 // Update player 1 (X)
                 player1Card.querySelector('.player-name').textContent = 
-                    players.X.name + (isHost ? ' (You)' : '');
+                    players.X.name + (isHost && playerId === 'X' ? ' (You)' : '');
                 
                 // Update player 2 (O)
                 if (players.O.ready) {
                     player2Card.classList.remove('waiting');
                     player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user';
                     player2Card.querySelector('.player-name').textContent = 
-                        players.O.name + (!isHost ? ' (You)' : '');
+                        players.O.name + (!isHost && playerId === 'O' ? ' (You)' : '');
                     
                     lobbyMessage.textContent = "Game is ready!";
                     hideLobby();
+                    initGame();
                 } else {
                     player2Card.classList.add('waiting');
                     player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user-clock';
@@ -1631,14 +1638,6 @@
                 if (gameIdFromURL) {
                     // Join the game from URL
                     joinMultiplayerGame(gameIdFromURL);
-                    
-                    // Update UI to show multiplayer is active
-                    mpBtn.classList.remove('btn-outline');
-                    mpBtn.classList.add('btn-primary');
-                    pvpBtn.classList.remove('btn-primary');
-                    pvpBtn.classList.add('btn-outline');
-                    pvcBtn.classList.remove('btn-primary');
-                    pvcBtn.classList.add('btn-outline');
                 }
             }
             
