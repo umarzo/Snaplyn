@@ -1037,9 +1037,17 @@
                 if (board[cellIndex] !== '') return;
                 
                 // In multiplayer mode, only allow current player to move
-                if (gameMode === 'mp' && currentPlayer !== playerId) {
-                    showToast("It's not your turn!");
-                    return;
+                if (gameMode === 'mp') {
+                    if (currentPlayer !== playerId) {
+                        showToast("It's not your turn!");
+                        return;
+                    }
+                    
+                    // Only allow move if it's the current player's turn
+                    if (currentPlayer !== playerId) {
+                        showToast("Wait for your turn!");
+                        return;
+                    }
                 }
                 
                 // Update board and UI
@@ -1112,6 +1120,13 @@
                             gameResult.textContent = `Opponent wins!`;
                         }
                     }
+                    
+                    // In multiplayer, update game state
+                    if (gameMode === 'mp' && gameRef) {
+                        gameRef.update({
+                            gameActive: false
+                        });
+                    }
                     return;
                 }
                 
@@ -1119,6 +1134,13 @@
                 if (!board.includes('')) {
                     gameActive = false;
                     gameResult.textContent = `Game ended in a draw!`;
+                    
+                    // In multiplayer, update game state
+                    if (gameMode === 'mp' && gameRef) {
+                        gameRef.update({
+                            gameActive: false
+                        });
+                    }
                 }
             }
             
@@ -1450,18 +1472,17 @@
                     // Update lobby players
                     updateLobbyPlayers(gameData.players);
                     
-                    // Update game state if game is active
-                    if (gameData.gameActive) {
-                        board = gameData.board;
-                        currentPlayer = gameData.currentPlayer;
-                        gameActive = true;
-                        
-                        // Update UI
-                        updateBoardUI();
-                        updateStatus();
-                    } else {
-                        // Game ended
-                        gameActive = false;
+                    // Update game state
+                    board = gameData.board;
+                    currentPlayer = gameData.currentPlayer;
+                    gameActive = gameData.gameActive;
+                    
+                    // Update UI
+                    updateBoardUI();
+                    updateStatus();
+                    
+                    // Check result if game is not active
+                    if (!gameActive) {
                         checkResult();
                     }
                 });
@@ -1473,18 +1494,17 @@
                 
                 // Update player 1 (X)
                 player1Card.querySelector('.player-name').textContent = 
-                    players.X.name + (isHost && playerId === 'X' ? ' (You)' : '');
+                    players.X.name + (isHost ? ' (You)' : '');
                 
                 // Update player 2 (O)
                 if (players.O.ready) {
                     player2Card.classList.remove('waiting');
                     player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user';
                     player2Card.querySelector('.player-name').textContent = 
-                        players.O.name + (!isHost && playerId === 'O' ? ' (You)' : '');
+                        players.O.name + (!isHost ? ' (You)' : '');
                     
                     lobbyMessage.textContent = "Game is ready!";
                     hideLobby();
-                    initGame();
                 } else {
                     player2Card.classList.add('waiting');
                     player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user-clock';
@@ -1497,7 +1517,7 @@
             function updateBoardUI() {
                 cells.forEach((cell, index) => {
                     cell.textContent = board[index];
-                    cell.classList.remove('x', 'o');
+                    cell.classList.remove('x', 'o', 'winner');
                     if (board[index] === 'X') {
                         cell.classList.add('x');
                     } else if (board[index] === 'O') {
