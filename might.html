@@ -1102,11 +1102,8 @@
         let playerName = "Player " + Math.floor(Math.random() * 1000);
         let gameRef = null;
         let playerRef = null;
-        
-        // Random matchmaking variables
-        let matchmakingRef = null;
-        let matchmakingListener = null;
         let isSearching = false;
+        let matchmakingQueueId = null;
         
         // Winning Conditions
         const winConditions = [
@@ -1513,13 +1510,15 @@
                         ready: false
                     }
                 },
-                createdAt: firebase.database.ServerValue.TIMESTAMP
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                lastActivity: firebase.database.ServerValue.TIMESTAMP
             };
             
             gameRef.set(gameData)
                 .then(() => {
                     showLobby();
                     listenForGameChanges();
+                    startGameCleanupTimer();
                 })
                 .catch(error => {
                     console.error("Error creating game:", error);
@@ -1558,11 +1557,13 @@
                     // Update player info
                     gameRef.update({
                         'players/O/name': playerName,
-                        'players/O/ready': true
+                        'players/O/ready': true,
+                        'lastActivity': firebase.database.ServerValue.TIMESTAMP
                     })
                     .then(() => {
                         showLobby();
                         listenForGameChanges();
+                        startGameCleanupTimer();
                     })
                     .catch(error => {
                         console.error("Error joining game:", error);
@@ -1577,114 +1578,125 @@
                 });
         }
         
-        // Random Matchmaking Functions - Updated Version
+        // Random Matchmaking Functions
         function findRandomGame() {
             isSearching = true;
             findGameBtn.style.display = 'none';
             waitingMessage.style.display = 'flex';
             cancelFindBtn.style.display = 'block';
 
-            // Create a reference to the matchmaking queue
-            matchmakingRef = database.ref('matchmaking');
+            // Generate a unique player ID for matchmaking
+            const matchmakingPlayerId = 'player-' + Math.random().toString(36).substr(2, 8);
+            
+            // Add to matchmaking queue
+            matchmakingQueueId = database.ref('matchmaking').push().key;
+            database.ref('matchmaking/' + matchmakingQueueId).set({
+                playerId: matchmakingPlayerId,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                // Listen for matchmaking changes
+                listenForRandomMatch(matchmakingQueueId, matchmakingPlayerId);
+            }).catch(error => {
+                console.error("Error joining matchmaking:", error);
+                showToast("Error joining matchmaking. Please try again.");
+                cancelRandomSearch();
+            });
+        }
 
-            // Set a timeout for matchmaking (5 minutes)
-            const matchmakingTimeout = setTimeout(() => {
-                if (isSearching) {
-                    showToast("Couldn't find an opponent. Please try again.");
-                    cancelRandomSearch();
-                }
-            }, 300000); // 5 minutes timeout
-
-            // Check for existing games waiting for players
-            matchmakingListener = matchmakingRef.orderByChild('status').equalTo('waiting').on('value', snapshot => {
-                if (!snapshot.exists() || !isSearching) return;
-
+        function listenForRandomMatch(queueId, matchmakingPlayerId) {
+            // First check if there's an existing waiting player
+            database.ref('matchmaking').orderByChild('timestamp').limitToFirst(1).once('value', snapshot => {
+                if (!isSearching) return;
+                
                 const matchmakingData = snapshot.val();
-                let foundGame = null;
-
-                // Find the oldest waiting game
-                let oldestTimestamp = Number.MAX_SAFE_INTEGER;
-                for (const gameId in matchmakingData) {
-                    if (matchmakingData[gameId].status === 'waiting' && matchmakingData[gameId].createdAt < oldestTimestamp) {
-                        foundGame = gameId;
-                        oldestTimestamp = matchmakingData[gameId].createdAt;
+                let otherPlayerId = null;
+                let otherQueueId = null;
+                
+                // Find another player who is waiting
+                for (const key in matchmakingData) {
+                    if (key !== queueId) {
+                        otherQueueId = key;
+                        otherPlayerId = matchmakingData[key].playerId;
+                        break;
                     }
                 }
-
-                if (foundGame) {
-                    // Use a transaction to prevent multiple players joining the same game
-                    database.ref('matchmaking/' + foundGame).transaction(currentData => {
-                        if (currentData && currentData.status === 'waiting') {
-                            currentData.status = 'matched';
-                            return currentData;
-                        }
-                        return currentData; // Abort transaction if game is no longer available
-                    }, (error, committed) => {
-                        clearTimeout(matchmakingTimeout);
-                        if (error) {
-                            console.error("Transaction error:", error);
-                            showToast("Error joining game. Please try again.");
-                            cancelRandomSearch();
-                        } else if (committed) {
-                            // Successfully claimed the game - now join it
-                            joinRandomGame(foundGame);
-                        } else {
-                            // Game was already taken, try again
-                            findRandomGame();
+                
+                if (otherPlayerId) {
+                    // Found another player - create a game
+                    createRandomGameForPlayers(queueId, otherQueueId, matchmakingPlayerId, otherPlayerId);
+                } else {
+                    // No other player found - wait for one to join
+                    const newPlayerListener = database.ref('matchmaking').orderByChild('timestamp').startAt(Date.now()).on('child_added', newPlayerSnapshot => {
+                        if (!isSearching) return;
+                        
+                        const newPlayerKey = newPlayerSnapshot.key;
+                        const newPlayerData = newPlayerSnapshot.val();
+                        
+                        if (newPlayerKey !== queueId) {
+                            // Found a new player - create a game
+                            database.ref('matchmaking').off('child_added', newPlayerListener);
+                            createRandomGameForPlayers(queueId, newPlayerKey, matchmakingPlayerId, newPlayerData.playerId);
                         }
                     });
-                } else {
-                    // No games waiting, create a new one
-                    createRandomGame();
-                    clearTimeout(matchmakingTimeout);
+                    
+                    // Set timeout to clean up if no match found
+                    setTimeout(() => {
+                        if (isSearching) {
+                            database.ref('matchmaking').off('child_added', newPlayerListener);
+                            showToast("Couldn't find an opponent. Please try again.");
+                            cancelRandomSearch();
+                        }
+                    }, 30000); // 30 seconds timeout
                 }
             });
         }
 
-        function createRandomGame() {
-            gameMode = 'mp';
-            isHost = true;
-            playerId = 'X'; // Host is always X
-
+        function createRandomGameForPlayers(queueId1, queueId2, playerId1, playerId2) {
             // Generate a random game ID
             gameId = 'random-' + Math.random().toString(36).substr(2, 8);
-
+            
+            // Remove both players from matchmaking queue
+            database.ref('matchmaking/' + queueId1).remove();
+            database.ref('matchmaking/' + queueId2).remove();
+            
+            // Randomly assign X and O
+            const isPlayer1X = Math.random() >= 0.5;
+            const xPlayer = isPlayer1X ? playerId1 : playerId2;
+            const oPlayer = isPlayer1X ? playerId2 : playerId1;
+            
             // Create game in Firebase
             gameRef = database.ref('games/' + gameId);
-
+            
             const gameData = {
                 board: ['', '', '', '', '', '', '', '', ''],
                 currentPlayer: 'X',
-                gameActive: false, // Not active until both players join
+                gameActive: true,
                 players: {
                     X: {
-                        name: playerName,
+                        name: "Player " + xPlayer.substr(7, 4),
+                        id: xPlayer,
                         ready: true
                     },
                     O: {
-                        name: '',
-                        ready: false
+                        name: "Player " + oPlayer.substr(7, 4),
+                        id: oPlayer,
+                        ready: true
                     }
                 },
                 createdAt: firebase.database.ServerValue.TIMESTAMP,
-                isRandomMatch: true
+                isRandomMatch: true,
+                lastActivity: firebase.database.ServerValue.TIMESTAMP
             };
-
-            // Add to matchmaking queue
-            database.ref('matchmaking/' + gameId).set({
-                status: 'waiting',
-                createdAt: firebase.database.ServerValue.TIMESTAMP,
-                hostReady: true
-            }).catch(error => {
-                console.error("Error adding to matchmaking:", error);
-                showToast("Error creating game. Please try again.");
-                cancelRandomSearch();
-            });
-
+            
             gameRef.set(gameData)
                 .then(() => {
-                    showRandomLobby(true);
+                    // Determine if current player is X or O
+                    playerId = (playerId1 === xPlayer) ? 'X' : 'O';
+                    isHost = (playerId === 'X');
+                    
+                    showRandomLobby(isHost);
                     listenForGameChanges();
+                    startGameCleanupTimer();
                 })
                 .catch(error => {
                     console.error("Error creating random game:", error);
@@ -1693,49 +1705,31 @@
                 });
         }
 
-        function joinRandomGame(gameIdToJoin) {
-            gameMode = 'mp';
-            isHost = false;
-            playerId = 'O'; // Joining player is O
-
-            gameId = gameIdToJoin;
-
-            gameRef = database.ref('games/' + gameId);
-
-            // Check if game exists using transaction to prevent race conditions
-            gameRef.transaction(currentGameData => {
-                if (!currentGameData) {
-                    return; // Game doesn't exist
-                }
-
-                if (currentGameData.players.O.ready) {
-                    return; // Game already has two players
-                }
-
-                // Update player info and activate game
-                currentGameData.players.O.name = playerName;
-                currentGameData.players.O.ready = true;
-                currentGameData.gameActive = true;
-                return currentGameData;
-            }, (error, committed, snapshot) => {
-                if (error) {
-                    console.error("Transaction error:", error);
-                    showToast("Error joining game. Please try again.");
-                    cancelRandomSearch();
-                } else if (!committed) {
-                    showToast("Game is no longer available.");
-                    cancelRandomSearch();
-                } else {
-                    // Successfully joined the game
-                    showRandomLobby(false);
-                    listenForGameChanges();
-                    
-                    // Remove from matchmaking queue
-                    database.ref('matchmaking/' + gameId).remove().catch(error => {
-                        console.error("Error removing from matchmaking:", error);
+        function startGameCleanupTimer() {
+            // Set up a timer to clean up abandoned games
+            if (!gameRef) return;
+            
+            gameRef.child('lastActivity').onDisconnect().remove();
+            
+            // Update activity timestamp every 30 seconds
+            const activityInterval = setInterval(() => {
+                if (gameRef && gameMode === 'mp') {
+                    gameRef.update({
+                        lastActivity: firebase.database.ServerValue.TIMESTAMP
                     });
+                } else {
+                    clearInterval(activityInterval);
                 }
-            });
+            }, 30000);
+            
+            // Clean up old games periodically
+            if (isHost) {
+                database.ref('games').orderByChild('lastActivity').endAt(Date.now() - 3600000).limitToFirst(10).once('value', snapshot => {
+                    snapshot.forEach(gameSnapshot => {
+                        gameSnapshot.ref.remove();
+                    });
+                });
+            }
         }
         
         function showRandomLobby(isHost) {
@@ -1768,15 +1762,10 @@
             
             isSearching = false;
             
-            // Stop listening for matchmaking changes
-            if (matchmakingListener && matchmakingRef) {
-                matchmakingRef.off('value', matchmakingListener);
-            }
-            
-            // Remove from matchmaking if we were hosting
-            if (gameId && gameRef && isHost) {
-                database.ref('matchmaking/' + gameId).remove();
-                gameRef.remove();
+            // Remove from matchmaking queue
+            if (matchmakingQueueId) {
+                database.ref('matchmaking/' + matchmakingQueueId).remove();
+                matchmakingQueueId = null;
             }
             
             // Reset UI
@@ -1875,7 +1864,8 @@
             gameRef.update({
                 board: board,
                 currentPlayer: currentPlayer,
-                gameActive: gameActive
+                gameActive: gameActive,
+                lastActivity: firebase.database.ServerValue.TIMESTAMP
             })
             .catch(error => {
                 console.error("Error updating game:", error);
@@ -1910,11 +1900,6 @@
                         .catch(error => {
                             console.error("Error deleting game:", error);
                         });
-                    
-                    // If it was a random game, remove from matchmaking
-                    if (gameId) {
-                        database.ref('matchmaking/' + gameId).remove();
-                    }
                 } else {
                     // Player leaves - mark as not ready
                     gameRef.update({
@@ -1940,6 +1925,7 @@
             isHost = false;
             gameRef = null;
             isSearching = false;
+            matchmakingQueueId = null;
             hideLobby();
             
             // Reset buttons
@@ -2056,7 +2042,8 @@
                     gameRef.update({
                         board: ['', '', '', '', '', '', '', '', ''],
                         currentPlayer: 'X',
-                        gameActive: true
+                        gameActive: true,
+                        lastActivity: firebase.database.ServerValue.TIMESTAMP
                     })
                     .then(() => {
                         initGame();
@@ -2138,20 +2125,21 @@
                         behavior: 'smooth'
                     });
                     
-                    // Close mobile menu if open
-                    if (window.innerWidth <= 768) {
-                        navLinks.classList.remove('show');
-                        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth <= 768) {
+                            navLinks.classList.remove('show');
+                            mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        }
                     }
-                }
+                });
             });
-        });
-        
-        // Initialize with PvP mode by default
-        pvpBtn.click();
-        
-        // Check if there's a game ID in the URL
+            
+            // Initialize with PvP mode by default
+            pvpBtn.click();
+            
+            // Check if there's a game ID in the URL
             checkForGameInURL();
         });
     </script>
