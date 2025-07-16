@@ -1043,40 +1043,44 @@
                         return;
                     }
                     
-                    // Only allow move if it's the current player's turn
-                    if (currentPlayer !== playerId) {
-                        showToast("Wait for your turn!");
-                        return;
-                    }
-                }
-                
-                // Update board and UI
-                board[cellIndex] = currentPlayer;
-                e.target.textContent = currentPlayer;
-                e.target.classList.add(currentPlayer.toLowerCase());
-                
-                // In multiplayer mode, update the database
-                if (gameMode === 'mp') {
+                    // Update board locally first for better UX
+                    board[cellIndex] = playerId;
+                    e.target.textContent = playerId;
+                    e.target.classList.add(playerId.toLowerCase());
+                    
+                    // Update the game state in Firebase
                     updateGameState();
-                }
-                
-                // Check for win or draw
-                checkResult();
-                
-                // If player wins, remember their winning pattern
-                if (!gameActive && gameResult.textContent.includes('win') && currentPlayer === 'X' && gameMode === 'pvc') {
-                    const winPattern = findWinningPattern(currentPlayer);
-                    if (winPattern) playerPatterns.push(winPattern);
-                }
-                
-                // Switch player if game is still active
-                if (gameActive) {
-                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    
+                    // Switch turn after updating Firebase
+                    currentPlayer = playerId === 'X' ? 'O' : 'X';
                     updateStatus();
                     
-                    // If in PVC mode and it's computer's turn
-                    if (gameMode === 'pvc' && currentPlayer === 'O') {
-                        computerMove();
+                    // Check for win or draw
+                    checkResult();
+                } else {
+                    // For non-multiplayer modes
+                    board[cellIndex] = currentPlayer;
+                    e.target.textContent = currentPlayer;
+                    e.target.classList.add(currentPlayer.toLowerCase());
+                    
+                    // Check for win or draw
+                    checkResult();
+                    
+                    // If player wins, remember their winning pattern
+                    if (!gameActive && gameResult.textContent.includes('win') && currentPlayer === 'X' && gameMode === 'pvc') {
+                        const winPattern = findWinningPattern(currentPlayer);
+                        if (winPattern) playerPatterns.push(winPattern);
+                    }
+                    
+                    // Switch player if game is still active
+                    if (gameActive) {
+                        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                        updateStatus();
+                        
+                        // If in PVC mode and it's computer's turn
+                        if (gameMode === 'pvc' && currentPlayer === 'O') {
+                            computerMove();
+                        }
                     }
                 }
             }
@@ -1105,7 +1109,22 @@
                 // If won
                 if (roundWon) {
                     gameActive = false;
-                    if (gameMode === 'pvp') {
+                    if (gameMode === 'mp') {
+                        // Update game state in Firebase
+                        if (gameRef) {
+                            gameRef.update({
+                                gameActive: false
+                            }).catch(error => {
+                                console.error("Error updating game state:", error);
+                            });
+                        }
+                        
+                        if (currentPlayer === playerId) {
+                            gameResult.textContent = `You win!`;
+                        } else {
+                            gameResult.textContent = `Opponent wins!`;
+                        }
+                    } else if (gameMode === 'pvp') {
                         gameResult.textContent = `Player ${currentPlayer} wins!`;
                     } else if (gameMode === 'pvc') {
                         if (currentPlayer === 'X') {
@@ -1113,19 +1132,6 @@
                         } else {
                             gameResult.textContent = `Computer wins!`;
                         }
-                    } else if (gameMode === 'mp') {
-                        if (currentPlayer === playerId) {
-                            gameResult.textContent = `You win!`;
-                        } else {
-                            gameResult.textContent = `Opponent wins!`;
-                        }
-                    }
-                    
-                    // In multiplayer, update game state
-                    if (gameMode === 'mp' && gameRef) {
-                        gameRef.update({
-                            gameActive: false
-                        });
                     }
                     return;
                 }
@@ -1133,14 +1139,14 @@
                 // If draw
                 if (!board.includes('')) {
                     gameActive = false;
-                    gameResult.textContent = `Game ended in a draw!`;
-                    
-                    // In multiplayer, update game state
                     if (gameMode === 'mp' && gameRef) {
                         gameRef.update({
                             gameActive: false
+                        }).catch(error => {
+                            console.error("Error updating game state:", error);
                         });
                     }
+                    gameResult.textContent = `Game ended in a draw!`;
                 }
             }
             
@@ -1481,7 +1487,7 @@
                     updateBoardUI();
                     updateStatus();
                     
-                    // Check result if game is not active
+                    // Check for game result if game is not active
                     if (!gameActive) {
                         checkResult();
                     }
@@ -1505,6 +1511,7 @@
                     
                     lobbyMessage.textContent = "Game is ready!";
                     hideLobby();
+                    initGame();
                 } else {
                     player2Card.classList.add('waiting');
                     player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user-clock';
@@ -1517,7 +1524,7 @@
             function updateBoardUI() {
                 cells.forEach((cell, index) => {
                     cell.textContent = board[index];
-                    cell.classList.remove('x', 'o', 'winner');
+                    cell.classList.remove('x', 'o');
                     if (board[index] === 'X') {
                         cell.classList.add('x');
                     } else if (board[index] === 'O') {
