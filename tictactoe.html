@@ -1097,6 +1097,18 @@
             [0, 4, 8], [2, 4, 6]             // diagonals
         ];
         
+        // Helper function to compare arrays
+        function arraysEqual(a, b) {
+            if (a === b) return true;
+            if (a == null || b == null) return false;
+            if (a.length !== b.length) return false;
+
+            for (let i = 0; i < a.length; ++i) {
+                if (a[i] !== b[i]) return false;
+            }
+            return true;
+        }
+
         // Tab switching
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1153,36 +1165,60 @@
             
             const cellIndex = parseInt(e.target.getAttribute('data-index'));
             
+            // Check if cell is empty
             if (board[cellIndex] !== '') return;
             
-            if (gameMode === 'mp' && currentPlayer !== playerId) {
-                showToast("It's not your turn!");
-                return;
+            // In multiplayer mode, enforce turn order strictly
+            if (gameMode === 'mp') {
+                // Verify it's the current player's turn
+                if (currentPlayer !== playerId) {
+                    showToast("Please wait for your turn!");
+                    return;
+                }
+                
+                // Verify the game state matches local state
+                if (gameRef) {
+                    gameRef.once('value').then(snapshot => {
+                        const gameData = snapshot.val();
+                        if (!gameData || !gameData.gameActive || gameData.currentPlayer !== playerId) {
+                            showToast("Invalid move - please wait for sync");
+                            return;
+                        }
+                        
+                        // All checks passed - process the move
+                        processMove(cellIndex, e.target);
+                    });
+                    return;
+                }
             }
             
+            // For non-multiplayer modes
+            processMove(cellIndex, e.target);
+        }
+
+        // Centralized move processing function
+        function processMove(cellIndex, cellElement) {
+            // Update board and UI
             board[cellIndex] = currentPlayer;
-            e.target.textContent = currentPlayer;
-            e.target.classList.add(currentPlayer.toLowerCase());
+            cellElement.textContent = currentPlayer;
+            cellElement.classList.add(currentPlayer.toLowerCase());
             
+            // Check for win/draw
             checkResult();
             
-            if (!gameActive && gameResult.textContent.includes('win') && currentPlayer === 'X' && gameMode === 'pvc') {
-                const winPattern = findWinningPattern(currentPlayer);
-                if (winPattern) playerPatterns.push(winPattern);
-            }
-            
+            // Switch player if game is still active
             if (gameActive) {
                 currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
                 updateStatus();
                 
+                // Computer move in PVC mode
                 if (gameMode === 'pvc' && currentPlayer === 'O') {
                     computerMove();
                 }
-                
-                if (gameMode === 'mp') {
-                    updateGameState();
-                }
-            } else if (gameMode === 'mp') {
+            }
+            
+            // Update Firebase in multiplayer mode
+            if (gameMode === 'mp') {
                 updateGameState();
             }
         }
@@ -1590,29 +1626,36 @@
                 
                 const gameData = snapshot.val();
                 
+                // Update local game state from Firebase
+                board = gameData.board || board;
+                currentPlayer = gameData.currentPlayer || currentPlayer;
+                gameActive = gameData.gameActive !== undefined ? gameData.gameActive : gameActive;
+                
+                // Update UI
+                updateBoardUI();
+                updateStatus();
+                
+                // Check for game result if game is not active
+                if (!gameActive) {
+                    checkResult();
+                }
+                
+                // For random matches, update opponent info
                 if (gameData.isRandomMatch) {
                     if (isHost && gameData.players.O.ready) {
                         randomPlayer2Name.textContent = gameData.players.O.name;
-                        hideLobby();
-                        initGame();
+                        if (!gameBoard.style.display || gameBoard.style.display === 'none') {
+                            hideLobby();
+                            initGame();
+                        }
                     } else if (!isHost && gameData.players.X.ready) {
                         randomPlayer2Name.textContent = gameData.players.X.name;
                     }
                 }
                 
+                // For friend matches, update lobby
                 if (!gameData.isRandomMatch) {
                     updateLobbyPlayers(gameData.players);
-                }
-                
-                board = gameData.board;
-                currentPlayer = gameData.currentPlayer;
-                gameActive = gameData.gameActive;
-                
-                updateBoardUI();
-                updateStatus();
-                
-                if (!gameActive) {
-                    checkResult();
                 }
             });
         }
@@ -1657,13 +1700,41 @@
         function updateGameState() {
             if (!gameRef) return;
             
-            gameRef.update({
-                board: board,
-                currentPlayer: currentPlayer,
-                gameActive: gameActive
-            })
-            .catch(error => {
-                console.error("Error updating game:", error);
+            // Use transaction to prevent race conditions
+            gameRef.transaction(currentGameData => {
+                if (!currentGameData) return;
+                
+                // Verify game state hasn't changed since our move
+                if (currentGameData.currentPlayer !== playerId || 
+                    !arraysEqual(currentGameData.board, board)) {
+                    return; // Abort transaction if state changed
+                }
+                
+                // Update game state
+                return {
+                    ...currentGameData,
+                    board: board,
+                    currentPlayer: currentPlayer,
+                    gameActive: gameActive
+                };
+            }, (error, committed) => {
+                if (error) {
+                    console.error("Transaction failed:", error);
+                    showToast("Error updating game state. Please try again.");
+                } else if (!committed) {
+                    showToast("Game state changed - please refresh your move");
+                    // Refresh game state
+                    gameRef.once('value').then(snapshot => {
+                        const gameData = snapshot.val();
+                        if (gameData) {
+                            board = gameData.board;
+                            currentPlayer = gameData.currentPlayer;
+                            gameActive = gameData.gameActive;
+                            updateBoardUI();
+                            updateStatus();
+                        }
+                    });
+                }
             });
         }
         
