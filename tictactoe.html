@@ -1613,121 +1613,55 @@ firebase.database().ref('.info/connected').on('value', (snapshot) => {
 }
             
             function createRandomGame() {
-                gameMode = 'mp';
-                isHost = true;
-                playerId = 'X'; // Host is always X
-                
-                // Generate a random game ID
-                gameId = 'random-' + Math.random().toString(36).substr(2, 8);
-                
-                // Create game in Firebase
-                gameRef = database.ref('games/' + gameId);
-                
-                const gameData = {
-                    board: ['', '', '', '', '', '', '', '', ''],
-                    currentPlayer: 'X',
-                    gameActive: false, // Not active until both players join
-                    players: {
-                        X: {
-                            name: playerName,
-                            ready: true
-                        },
-                        O: {
-                            name: '',
-                            ready: false
-                        }
-                    },
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    isRandomMatch: true
-                };
-                
-                // Add to matchmaking queue
-                database.ref('matchmaking/' + gameId).set({
-                    status: 'waiting',
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    hostReady: true
-                }).catch(error => {
-                    console.error("Error adding to matchmaking:", error);
-                    showToast("Error creating game. Please try again.");
-                    cancelRandomSearch();
-                });
-                
-                gameRef.set(gameData)
-                    .then(() => {
-                        showRandomLobby(true);
-                        listenForGameChanges();
-                    })
-                    .catch(error => {
-                        console.error("Error creating random game:", error);
-                        showToast("Error creating game. Please try again.");
-                        cancelRandomSearch();
-                    });
-            }
-            
-            function joinRandomGame(gameIdToJoin) {
     gameMode = 'mp';
-    isHost = false;
-    playerId = 'O';
-    gameId = gameIdToJoin;
-    
-    // Step 1: Try to claim the matchmaking slot
-    database.ref('matchmaking/' + gameId).transaction(matchData => {
-        if (!matchData || matchData.status !== 'waiting') {
-            return; // Abort transaction
-        }
-        return {
-            status: 'matched',
-            createdAt: matchData.createdAt,
-            joinedAt: firebase.database.ServerValue.TIMESTAMP
-        };
-    }, (error, committed) => {
-        if (error) {
-            console.error("Transaction error:", error);
-            showToast("Error joining game. Please try again.");
-            cancelRandomSearch();
-            return;
-        }
-        
-        if (!committed) {
-            // Game was already taken, try to find another one
-            showToast("Game was already taken. Searching again...");
-            findRandomGame();
-            return;
-        }
-        
-        // Step 2: Now join the actual game
-        gameRef = database.ref('games/' + gameId);
-        
-        gameRef.transaction(gameData => {
-            if (!gameData || !gameData.gameActive || gameData.players.O.ready) {
-                return; // Abort transaction
-            }
-            
-            // Update game data
-            gameData.players.O = {
+    isHost = true;
+    playerId = 'X';
+
+    // Generate a random game ID
+    gameId = 'random-' + Math.random().toString(36).substr(2, 8);
+
+    // Create game data
+    const gameData = {
+        board: ['', '', '', '', '', '', '', '', ''],
+        currentPlayer: 'X',
+        gameActive: false, // Will be activated when opponent joins
+        players: {
+            X: {
                 name: playerName,
                 ready: true
-            };
-            gameData.gameActive = true;
-            
-            return gameData;
-        }, (error, committed) => {
-            if (error || !committed) {
-                console.error("Game join failed:", error);
-                showToast("Couldn't join game. Please try again.");
-                cancelRandomSearch();
-                return;
+            },
+            O: {
+                name: '',
+                ready: false
             }
-            
-            // Successfully joined
-            isSearching = false;
-            showRandomLobby(false);
-            listenForGameChanges();
-            
-            // Remove from matchmaking
-            database.ref('matchmaking/' + gameId).remove();
+        },
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        isRandomMatch: true
+    };
+
+    // Add to matchmaking queue first
+    database.ref('matchmaking/' + gameId).set({
+        status: 'waiting',
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        hostReady: true
+    }).then(() => {
+        // Then create the game
+        gameRef = database.ref('games/' + gameId);
+        return gameRef.set(gameData).catch((error) => {
+            console.error("🔥 Game creation failed due to permission or structure:", error);
+            showToast("Firebase denied game creation. Check rules.");
+            cancelRandomSearch();
         });
+    }).then(() => {
+        showRandomLobby(true);
+        listenForGameChanges();
+    }).catch(error => {
+        console.error("🔥 Error creating random game:", error);
+        showToast("Error creating game. Please try again.");
+        cancelRandomSearch();
     });
+
+    console.log("📦 Attempted to create random game:", gameId, gameData);
 }
             
             function cancelRandomSearch() {
@@ -2139,7 +2073,8 @@ firebase.database().ref('.info/connected').on('value', (snapshot) => {
             
             // Check if there's a game ID in the URL
             checkForGameInURL();
-cleanupOldGames();
+cleanupOldGames(); // Clean old entries
+console.log("✅ Firebase matchmaking initialized.");
         });
     </script>
 </body>
