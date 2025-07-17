@@ -1081,15 +1081,11 @@
         let isHost = false;
         let playerName = "Player " + Math.floor(Math.random() * 1000);
         let gameRef = null;
-        let playerRef = null;
         
         // Random matchmaking variables
         let matchmakingRef = null;
-        let queueRef = null;
-        let queueListener = null;
-        let isSearching = false;
         let matchmakingTimeout = null;
-        let playerQueueId = null;
+        let isSearching = false;
         
         // Winning Conditions
         const winConditions = [
@@ -1097,17 +1093,15 @@
             [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
             [0, 4, 8], [2, 4, 6]             // diagonals
         ];
-
+        
         // Tab switching
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const tabId = btn.getAttribute('data-tab');
                 
-                // Update active tab button
                 tabBtns.forEach(tb => tb.classList.remove('active'));
                 btn.classList.add('active');
                 
-                // Update active tab content
                 tabContents.forEach(content => content.classList.remove('active'));
                 document.getElementById(tabId).classList.add('active');
             });
@@ -1156,45 +1150,36 @@
             
             const cellIndex = parseInt(e.target.getAttribute('data-index'));
             
-            // Check if cell is empty
             if (board[cellIndex] !== '') return;
             
-            // In multiplayer mode, only allow current player to move
             if (gameMode === 'mp' && currentPlayer !== playerId) {
                 showToast("It's not your turn!");
                 return;
             }
             
-            // Update board and UI
             board[cellIndex] = currentPlayer;
             e.target.textContent = currentPlayer;
             e.target.classList.add(currentPlayer.toLowerCase());
             
-            // Check for win or draw
             checkResult();
             
-            // If player wins, remember their winning pattern
             if (!gameActive && gameResult.textContent.includes('win') && currentPlayer === 'X' && gameMode === 'pvc') {
                 const winPattern = findWinningPattern(currentPlayer);
                 if (winPattern) playerPatterns.push(winPattern);
             }
             
-            // Switch player if game is still active
             if (gameActive) {
                 currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
                 updateStatus();
                 
-                // If in PVC mode and it's computer's turn
                 if (gameMode === 'pvc' && currentPlayer === 'O') {
                     computerMove();
                 }
                 
-                // In multiplayer mode, update the database after the turn is complete
                 if (gameMode === 'mp') {
                     updateGameState();
                 }
             } else if (gameMode === 'mp') {
-                // Game ended, update the state
                 updateGameState();
             }
         }
@@ -1203,7 +1188,6 @@
         function checkResult() {
             let roundWon = false;
             
-            // Check win conditions
             for (let i = 0; i < winConditions.length; i++) {
                 const [a, b, c] = winConditions[i];
                 
@@ -1211,8 +1195,6 @@
                 
                 if (board[a] === board[b] && board[b] === board[c]) {
                     roundWon = true;
-                    
-                    // Highlight winning cells
                     cells[a].classList.add('winner');
                     cells[b].classList.add('winner');
                     cells[c].classList.add('winner');
@@ -1220,7 +1202,6 @@
                 }
             }
             
-            // If won
             if (roundWon) {
                 gameActive = false;
                 if (gameMode === 'pvp') {
@@ -1241,14 +1222,12 @@
                 return;
             }
             
-            // If draw
             if (!board.includes('')) {
                 gameActive = false;
                 gameResult.textContent = `Game ended in a draw!`;
             }
         }
         
-        // Find winning pattern for a player
         function findWinningPattern(player) {
             for (let i = 0; i < winConditions.length; i++) {
                 const [a, b, c] = winConditions[i];
@@ -1266,21 +1245,16 @@
             computerThinking = true;
             updateStatus();
             
-            // Add slight delay for better UX
             setTimeout(() => {
                 let move = findBestMove();
                 
-                // Update board and UI
                 board[move] = 'O';
                 cells[move].textContent = 'O';
                 cells[move].classList.add('o');
                 
                 computerThinking = false;
-                
-                // Check for win or draw
                 checkResult();
                 
-                // Switch back to player if game is still active
                 if (gameActive) {
                     currentPlayer = 'X';
                     updateStatus();
@@ -1288,9 +1262,8 @@
             }, 800);
         }
         
-        // Enhanced AI Logic to find best move
         function findBestMove() {
-            // 1. Check if computer can win in the next move
+            // 1. Check if computer can win
             for (let i = 0; i < board.length; i++) {
                 if (board[i] === '') {
                     board[i] = 'O';
@@ -1302,7 +1275,7 @@
                 }
             }
             
-            // 2. Check if player can win in the next move and block them
+            // 2. Block player from winning
             for (let i = 0; i < board.length; i++) {
                 if (board[i] === '') {
                     board[i] = 'X';
@@ -1314,47 +1287,41 @@
                 }
             }
             
-            // 3. Check if player is trying to set up a fork (two ways to win)
+            // 3. Check for forks
             const playerForks = findForks('X');
             if (playerForks.length > 0) {
-                // Try to block the fork by taking a strategic position
                 const strategicMove = findStrategicBlock(playerForks);
                 if (strategicMove !== -1) return strategicMove;
             }
             
-            // 4. Check for player's previous winning patterns and block similar setups
+            // 4. Check player patterns
             if (playerPatterns.length > 0) {
                 const patternMove = blockPlayerPattern();
                 if (patternMove !== -1) return patternMove;
             }
             
-            // 5. Try to take the center if available
+            // 5. Take center
             if (board[4] === '') return 4;
             
-            // 6. Try to take a corner if available
+            // 6. Take corner
             const corners = [0, 2, 6, 8];
             const availableCorners = corners.filter(i => board[i] === '');
             if (availableCorners.length > 0) {
-                // Prefer corners that create opportunities
                 const bestCorner = findBestCorner(availableCorners);
                 if (bestCorner !== -1) return bestCorner;
-                
-                // Otherwise choose random corner
                 return availableCorners[Math.floor(Math.random() * availableCorners.length)];
             }
             
-            // 7. Take any available edge
+            // 7. Take edge
             const edges = [1, 3, 5, 7];
             const availableEdges = edges.filter(i => board[i] === '');
             if (availableEdges.length > 0) {
                 return availableEdges[Math.floor(Math.random() * availableEdges.length)];
             }
             
-            // Fallback (shouldn't happen as we check for draw earlier)
             return board.indexOf('');
         }
         
-        // Check if a player has won
         function checkWin(player) {
             for (let i = 0; i < winConditions.length; i++) {
                 const [a, b, c] = winConditions[i];
@@ -1365,7 +1332,6 @@
             return false;
         }
         
-        // Find forks (positions where player can create two ways to win)
         function findForks(player) {
             const forks = [];
             
@@ -1375,7 +1341,6 @@
                 board[i] = player;
                 let winningMoves = 0;
                 
-                // Check how many winning moves this creates
                 for (let j = 0; j < winConditions.length; j++) {
                     const [a, b, c] = winConditions[j];
                     if ((board[a] === player && board[b] === player && board[c] === '') ||
@@ -1395,12 +1360,9 @@
             return forks;
         }
         
-        // Find strategic block to prevent forks
         function findStrategicBlock(forks) {
-            // Try to force player into a position where they can't fork
-            if (forks.includes(4)) return 4; // Center is always good
+            if (forks.includes(4)) return 4;
             
-            // Look for a move that creates our own potential win while blocking
             for (let i = 0; i < board.length; i++) {
                 if (board[i] !== '') continue;
                 
@@ -1412,17 +1374,13 @@
                 board[i] = '';
             }
             
-            // Otherwise just pick a random fork position to block
             return forks.length > 0 ? forks[0] : -1;
         }
         
-        // Block player's known winning patterns
         function blockPlayerPattern() {
             for (const pattern of playerPatterns) {
-                // Find empty cell in this pattern
                 for (const cellIndex of pattern) {
                     if (board[cellIndex] === '') {
-                        // Check if blocking this would be useful
                         board[cellIndex] = 'X';
                         const wouldWin = checkWin('X');
                         board[cellIndex] = '';
@@ -1436,26 +1394,16 @@
             return -1;
         }
         
-        // Find best corner move that creates opportunities
         function findBestCorner(corners) {
-            // Prefer corners that are opposite to player's corners
+            const oppositeCorners = { 0: 8, 2: 6, 6: 2, 8: 0 };
             const playerCorners = [0, 2, 6, 8].filter(i => board[i] === 'X');
             
             for (const corner of corners) {
-                // If player has opposite corner, take it to create diagonal potential
-                const oppositeCorners = {
-                    0: 8,
-                    2: 6,
-                    6: 2,
-                    8: 0
-                };
-                
                 if (playerCorners.includes(oppositeCorners[corner])) {
                     return corner;
                 }
             }
             
-            // Otherwise look for corners that create winning opportunities
             for (const corner of corners) {
                 board[corner] = 'O';
                 const winningMoves = findForks('O');
@@ -1469,17 +1417,18 @@
             return -1;
         }
         
-        // Multiplayer Functions
+        // =============================================
+        // MULTIPLAYER FUNCTIONS (INVITE + RANDOM)
+        // =============================================
+        
         function createMultiplayerGame() {
             gameMode = 'mp';
             isHost = true;
-            playerId = 'X'; // Host is always X
+            playerId = 'X';
             
-            // Generate a random game ID
             gameId = 'game-' + Math.random().toString(36).substr(2, 8);
             gameIdDisplay.textContent = gameId;
             
-            // Create game in Firebase
             gameRef = database.ref('games/' + gameId);
             
             const gameData = {
@@ -1514,14 +1463,13 @@
         function joinMultiplayerGame(gameIdToJoin) {
             gameMode = 'mp';
             isHost = false;
-            playerId = 'O'; // Joining player is O
+            playerId = 'O';
             
             gameId = gameIdToJoin;
             gameIdDisplay.textContent = gameId;
             
             gameRef = database.ref('games/' + gameId);
             
-            // Check if game exists
             gameRef.once('value')
                 .then(snapshot => {
                     if (!snapshot.exists()) {
@@ -1538,7 +1486,6 @@
                         return;
                     }
                     
-                    // Update player info
                     gameRef.update({
                         'players/O/name': playerName,
                         'players/O/ready': true
@@ -1560,223 +1507,184 @@
                 });
         }
         
-        // Random Matchmaking Functions
+        // =============================================
+        // RANDOM MATCHMAKING FUNCTIONS
+        // =============================================
+        
         function findRandomGame() {
-            if (!playerName || playerName.trim() === "") {
-                playerName = prompt("Enter your name:") || "Player " + Math.floor(Math.random() * 1000);
+            const newName = prompt("Enter your name (or leave blank for random):", playerName);
+            if (newName !== null) {
+                playerName = newName.trim() || playerName;
             }
-
+            
             isSearching = true;
             findGameBtn.style.display = 'none';
             waitingMessage.style.display = 'flex';
             cancelFindBtn.style.display = 'block';
             
-            // Set a timeout for matchmaking (30 seconds)
-            matchmakingTimeout = setTimeout(() => {
-                if (isSearching) {
-                    showToast("Couldn't find an opponent. Please try again.");
-                    cancelRandomSearch();
-                }
-            }, 30000); // 30 seconds timeout
+            const playerId = 'player-' + Math.random().toString(36).substr(2, 9);
+            matchmakingRef = database.ref('matchmaking/' + playerId);
             
-            // Create a reference to the queue
-            queueRef = database.ref('queue');
-            playerQueueId = 'player-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4);
-            
-            // Check for existing players waiting
-            queueRef.once('value').then(snapshot => {
-                const queue = snapshot.val() || {};
-                const waitingPlayers = Object.keys(queue);
-                
-                if (waitingPlayers.length > 0) {
-                    // Found a waiting player - match with them
-                    const opponentId = waitingPlayers[0];
-                    const opponentData = queue[opponentId];
-                    
-                    // Create a new game
-                    createRandomGame(opponentId, opponentData.name);
-                    
-                    // Remove both players from queue
-                    queueRef.child(opponentId).remove();
-                    queueRef.child(playerQueueId).remove();
-                } else {
-                    // No players waiting - add to queue
-                    joinQueue();
-                }
-            }).catch(error => {
-                console.error("Queue check error:", error);
-                showToast("Error connecting to matchmaking. Please try again.");
-                cancelRandomSearch();
-            });
-        }
-        
-        function joinQueue() {
-            queueRef.child(playerQueueId).set({
+            const playerData = {
                 name: playerName,
-                joinedAt: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                // Listen for changes in the queue
-                queueListener = queueRef.on('value', snapshot => {
-                    const queue = snapshot.val() || {};
-                    
-                    // Check if we've been matched (removed from queue)
-                    if (!queue[playerQueueId] && isSearching) {
-                        // We've been matched - stop listening
-                        queueRef.off('value', queueListener);
-                        
-                        // Clear timeout as we've found a match
-                        clearTimeout(matchmakingTimeout);
-                        
-                        // The game creation is handled by the other player
-                        // We just need to wait for the game to appear in /games
-                        waitForGameToStart();
-                    }
-                });
-            }).catch(error => {
-                console.error("Queue join error:", error);
-                showToast("Error joining queue. Please try again.");
-                cancelRandomSearch();
-            });
-        }
-        
-        function createRandomGame(opponentId, opponentName) {
-            gameMode = 'mp';
-            isHost = true;
-            playerId = 'X'; // Host is always X
-            
-            // Generate a random game ID
-            gameId = 'random-' + Math.random().toString(36).substr(2, 8);
-            
-            // Create game in Firebase
-            gameRef = database.ref('games/' + gameId);
-            
-            const gameData = {
-                board: ['', '', '', '', '', '', '', '', ''],
-                currentPlayer: 'X',
-                gameActive: true,
-                players: {
-                    X: {
-                        name: playerName,
-                        ready: true
-                    },
-                    O: {
-                        name: opponentName,
-                        ready: true
-                    }
-                },
-                createdAt: firebase.database.ServerValue.TIMESTAMP,
-                isRandomMatch: true
+                status: 'waiting',
+                createdAt: firebase.database.ServerValue.TIMESTAMP
             };
             
-            gameRef.set(gameData)
-                .then(() => {
-                    isSearching = false;
-                    showRandomLobby(true);
-                    listenForGameChanges();
-                })
-                .catch(error => {
-                    console.error("Game creation error:", error);
-                    showToast("Error creating game. Please try again.");
-                    cancelRandomSearch();
-                });
+            matchmakingRef.set(playerData).then(() => {
+                matchmakingRef.onDisconnect().remove();
+                
+                matchmakingTimeout = setTimeout(() => {
+                    if (isSearching) {
+                        showToast("Couldn't find an opponent. Please try again.");
+                        cancelRandomSearch();
+                    }
+                }, 30000);
+                
+                findMatch(playerId);
+            });
         }
         
-        function waitForGameToStart() {
-            // Listen for a game where we're player O
-            const gamesRef = database.ref('games');
-            const gameListener = gamesRef.orderByChild('isRandomMatch').equalTo(true).on('value', snapshot => {
-                const games = snapshot.val() || {};
+        function findMatch(playerId) {
+            const queueRef = database.ref('matchmaking')
+                .orderByChild('status')
+                .equalTo('waiting');
+            
+            queueRef.once('value').then(snapshot => {
+                if (!isSearching) return;
                 
-                for (const gid in games) {
-                    const game = games[gid];
-                    if (game.players.O && game.players.O.name === playerName) {
-                        // This is our game!
-                        gamesRef.off('value', gameListener);
-                        
-                        gameId = gid;
-                        gameRef = database.ref('games/' + gameId);
-                        playerId = 'O';
-                        isHost = false;
-                        isSearching = false;
-                        
-                        showRandomLobby(false);
-                        listenForGameChanges();
-                        return;
+                const players = snapshot.val() || {};
+                let oldestPlayerId = null;
+                let oldestTimestamp = Number.MAX_SAFE_INTEGER;
+                
+                for (const id in players) {
+                    if (id !== playerId && players[id].createdAt < oldestTimestamp) {
+                        oldestPlayerId = id;
+                        oldestTimestamp = players[id].createdAt;
+                    }
+                }
+                
+                if (oldestPlayerId) {
+                    createRandomGame(playerId, oldestPlayerId);
+                } else {
+                    const listener = queueRef.on('child_added', newPlayerSnap => {
+                        const newPlayerId = newPlayerSnap.key;
+                        if (newPlayerId !== playerId) {
+                            queueRef.off('child_added', listener);
+                            createRandomGame(playerId, newPlayerId);
+                        }
+                    });
+                    
+                    if (!isSearching) {
+                        queueRef.off('child_added', listener);
                     }
                 }
             });
+        }
+        
+        function createRandomGame(playerId1, playerId2) {
+            const player1Ref = database.ref('matchmaking/' + playerId1);
+            const player2Ref = database.ref('matchmaking/' + playerId2);
             
-            // Set a timeout in case something goes wrong
-            setTimeout(() => {
-                if (isSearching) {
-                    gamesRef.off('value', gameListener);
-                    showToast("Error joining game. Please try again.");
-                    cancelRandomSearch();
+            Promise.all([
+                player1Ref.once('value'),
+                player2Ref.once('value')
+            ]).then(([snap1, snap2]) => {
+                if (!isSearching) return;
+                
+                const player1Data = snap1.val();
+                const player2Data = snap2.val();
+                
+                if (!player1Data || player1Data.status !== 'waiting' ||
+                    !player2Data || player2Data.status !== 'waiting') {
+                    showToast("Opponent is no longer available. Searching again...");
+                    findMatch(playerId1);
+                    return;
                 }
-            }, 10000);
+                
+                const gameId = 'game-' + Math.random().toString(36).substr(2, 8);
+                gameRef = database.ref('games/' + gameId);
+                
+                const gameData = {
+                    board: ['', '', '', '', '', '', '', '', ''],
+                    currentPlayer: 'X',
+                    gameActive: true,
+                    players: {
+                        X: {
+                            id: playerId1,
+                            name: player1Data.name,
+                            ready: true
+                        },
+                        O: {
+                            id: playerId2,
+                            name: player2Data.name,
+                            ready: true
+                        }
+                    },
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    isRandomMatch: true
+                };
+                
+                gameRef.set(gameData).then(() => {
+                    player1Ref.remove();
+                    player2Ref.remove();
+                    clearTimeout(matchmakingTimeout);
+                    
+                    if (playerId1 === playerId) {
+                        isHost = true;
+                        playerId = 'X';
+                        showRandomLobby(true, player2Data.name);
+                    } else {
+                        isHost = false;
+                        playerId = 'O';
+                        showRandomLobby(false, player1Data.name);
+                    }
+                    
+                    gameMode = 'mp';
+                    gameId = gameId;
+                    listenForGameChanges();
+                    initGame();
+                });
+            });
+        }
+        
+        function showRandomLobby(isHost, opponentName) {
+            waitingMessage.style.display = 'none';
+            randomLobbyPlayers.style.display = 'flex';
+            cancelFindBtn.style.display = 'none';
+            
+            randomPlayerSymbol.textContent = isHost ? 'X' : 'O';
+            opponentSymbol.textContent = isHost ? 'O' : 'X';
+            
+            randomPlayer1Name.textContent = playerName + ' (You)';
+            randomPlayer2Name.textContent = opponentName;
+            
+            document.querySelector('.tab-btn[data-tab="friend-tab"]').style.display = 'none';
+            document.getElementById('friend-tab').style.display = 'none';
         }
         
         function cancelRandomSearch() {
             if (!isSearching) return;
             
             isSearching = false;
+            clearTimeout(matchmakingTimeout);
             
-            // Clear timeout
-            if (matchmakingTimeout) {
-                clearTimeout(matchmakingTimeout);
+            if (matchmakingRef) {
+                matchmakingRef.remove();
+                matchmakingRef.onDisconnect().cancel();
             }
             
-            // Remove from queue if we're in it
-            if (queueRef && playerQueueId) {
-                queueRef.child(playerQueueId).remove().catch(error => {
-                    console.error("Queue leave error:", error);
-                });
-            }
-            
-            // Stop listening to queue changes
-            if (queueListener && queueRef) {
-                queueRef.off('value', queueListener);
-            }
-            
-            // Reset UI
             findGameBtn.style.display = 'block';
             waitingMessage.style.display = 'none';
             randomLobbyPlayers.style.display = 'none';
             cancelFindBtn.style.display = 'none';
             
-            // Reset game mode
             resetGameMode();
-        }
-        
-        function showRandomLobby(isHost) {
-            // Update UI for random lobby
-            waitingMessage.style.display = 'none';
-            randomLobbyPlayers.style.display = 'flex';
-            cancelFindBtn.style.display = 'none';
-            
-            // Set player symbols
-            randomPlayerSymbol.textContent = isHost ? 'X' : 'O';
-            opponentSymbol.textContent = isHost ? 'O' : 'X';
-            
-            // Set player names
-            randomPlayer1Name.textContent = playerName + ' (You)';
-            randomPlayer2Name.textContent = isHost ? 'Waiting for opponent...' : 'Opponent';
-            
-            // Hide the friend multiplayer tab
-            document.querySelector('.tab-btn[data-tab="friend-tab"]').style.display = 'none';
-            document.getElementById('friend-tab').style.display = 'none';
-            
-            // Show the game board when opponent joins
-            if (!isHost) {
-                hideLobby();
-                initGame();
-            }
         }
         
         function listenForGameChanges() {
             gameRef.on('value', snapshot => {
                 if (!snapshot.exists()) {
-                    // Game was deleted
                     if (gameMode === 'mp') {
                         showToast("Game was ended by the other player.");
                         leaveMultiplayerGame();
@@ -1786,7 +1694,6 @@
                 
                 const gameData = snapshot.val();
                 
-                // For random games, update opponent info
                 if (gameData.isRandomMatch) {
                     if (isHost && gameData.players.O.ready) {
                         randomPlayer2Name.textContent = gameData.players.O.name;
@@ -1797,21 +1704,17 @@
                     }
                 }
                 
-                // Update lobby players for friend games
                 if (!gameData.isRandomMatch) {
                     updateLobbyPlayers(gameData.players);
                 }
                 
-                // Update game state
                 board = gameData.board;
                 currentPlayer = gameData.currentPlayer;
                 gameActive = gameData.gameActive;
                 
-                // Update UI
                 updateBoardUI();
                 updateStatus();
                 
-                // Check for game result if game is not active
                 if (!gameActive) {
                     checkResult();
                 }
@@ -1822,11 +1725,9 @@
             const player1Card = lobbyPlayers.children[0];
             const player2Card = lobbyPlayers.children[1];
             
-            // Update player 1 (X)
             player1Card.querySelector('.player-name').textContent = 
                 players.X.name + (playerId === 'X' ? ' (You)' : '');
             
-            // Update player 2 (O)
             if (players.O.ready) {
                 player2Card.classList.remove('waiting');
                 player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user';
@@ -1875,8 +1776,6 @@
             gameBoard.style.display = 'none';
             statusText.textContent = 'Waiting for opponent...';
             gameResult.textContent = '';
-            
-            // Show friend tab by default
             document.querySelector('.tab-btn[data-tab="friend-tab"]').click();
         }
         
@@ -1893,28 +1792,18 @@
             
             if (gameRef) {
                 if (isHost) {
-                    // Host leaves - delete the game
-                    gameRef.remove()
-                        .catch(error => {
-                            console.error("Error deleting game:", error);
-                        });
-                    
-                    // If it was a random game, remove from matchmaking
+                    gameRef.remove();
                     if (gameId) {
                         database.ref('matchmaking/' + gameId).remove();
                     }
                 } else {
-                    // Player leaves - mark as not ready
                     gameRef.update({
                         'players/O/name': '',
                         'players/O/ready': false
-                    })
-                    .catch(error => {
-                        console.error("Error updating player status:", error);
                     });
                 }
                 
-                gameRef.off(); // Stop listening for changes
+                gameRef.off();
             }
             
             resetGameMode();
@@ -1930,7 +1819,6 @@
             isSearching = false;
             hideLobby();
             
-            // Reset buttons
             pvpBtn.classList.remove('btn-primary');
             pvpBtn.classList.add('btn-outline');
             pvcBtn.classList.remove('btn-primary');
@@ -1938,15 +1826,12 @@
             mpBtn.classList.remove('btn-primary');
             mpBtn.classList.add('btn-outline');
             
-            // Reset random multiplayer UI
             findGameBtn.style.display = 'block';
             waitingMessage.style.display = 'none';
             randomLobbyPlayers.style.display = 'none';
             cancelFindBtn.style.display = 'none';
             
-            // Show friend tab button again
             document.querySelector('.tab-btn[data-tab="friend-tab"]').style.display = 'block';
-            
             statusText.textContent = 'Select a game mode to start';
         }
         
@@ -1984,10 +1869,8 @@
             const gameIdFromURL = urlParams.get('game');
             
             if (gameIdFromURL) {
-                // Join the game from URL
                 joinMultiplayerGame(gameIdFromURL);
                 
-                // Update UI to show multiplayer is active
                 mpBtn.classList.remove('btn-outline');
                 mpBtn.classList.add('btn-primary');
                 pvpBtn.classList.remove('btn-primary');
@@ -2040,7 +1923,6 @@
         resetBtn.addEventListener('click', () => {
             if (gameMode === 'mp') {
                 if (isHost) {
-                    // Reset the multiplayer game
                     gameRef.update({
                         board: ['', '', '', '', '', '', '', '', ''],
                         currentPlayer: 'X',
@@ -2062,14 +1944,10 @@
         });
         
         copyBtn.addEventListener('click', copyGameLink);
-        
         leaveBtn.addEventListener('click', leaveMultiplayerGame);
-        
-        // Random multiplayer events
         findGameBtn.addEventListener('click', findRandomGame);
         cancelFindBtn.addEventListener('click', cancelRandomSearch);
         
-        // Mobile menu toggle
         mobileMenuBtn.addEventListener('click', function() {
             navLinks.classList.toggle('show');
             this.setAttribute('aria-expanded', navLinks.classList.contains('show'));
@@ -2085,7 +1963,6 @@
         window.addEventListener('scroll', function() {
             const currentScroll = window.pageYOffset;
             
-            // Clear any existing timeout
             clearTimeout(scrollTimeout);
             
             if (currentScroll <= 0) {
@@ -2095,15 +1972,12 @@
             }
             
             if (currentScroll > lastScroll && currentScroll > 100) {
-                // Scroll down
                 header.classList.add('hidden');
             } else if (currentScroll < lastScroll) {
-                // Scroll up
                 header.classList.remove('hidden');
                 header.classList.add('scrolled');
             }
             
-            // Set timeout to remove scrolled class when not scrolling
             scrollTimeout = setTimeout(() => {
                 header.classList.remove('scrolled');
             }, 1000);
@@ -2126,7 +2000,6 @@
                         behavior: 'smooth'
                     });
                     
-                    // Close mobile menu if open
                     if (window.innerWidth <= 768) {
                         navLinks.classList.remove('show');
                         mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
@@ -2141,15 +2014,6 @@
         
         // Check if there's a game ID in the URL
         checkForGameInURL();
-
-        // Clean up queue on page unload
-        window.addEventListener('beforeunload', function() {
-            if (isSearching && queueRef && playerQueueId) {
-                queueRef.child(playerQueueId).remove().catch(error => {
-                    console.error("Queue cleanup error:", error);
-                });
-            }
-        });
     });
 </script>
 </body>
