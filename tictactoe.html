@@ -1086,7 +1086,6 @@
         // Random matchmaking variables
         let isSearching = false;
         let matchmakingTimeout = null;
-        let matchmakingInterval = null;
         let queueRef = null;
         let currentPlayerQueueId = null;
 
@@ -1097,18 +1096,6 @@
             [0, 4, 8], [2, 4, 6]             // diagonals
         ];
         
-        // Helper function to compare arrays
-        function arraysEqual(a, b) {
-            if (a === b) return true;
-            if (a == null || b == null) return false;
-            if (a.length !== b.length) return false;
-
-            for (let i = 0; i < a.length; ++i) {
-                if (a[i] !== b[i]) return false;
-            }
-            return true;
-        }
-
         // Tab switching
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1168,57 +1155,42 @@
             // Check if cell is empty
             if (board[cellIndex] !== '') return;
             
-            // In multiplayer mode, enforce turn order strictly
-            if (gameMode === 'mp') {
-                // Verify it's the current player's turn
-                if (currentPlayer !== playerId) {
-                    showToast("Please wait for your turn!");
-                    return;
-                }
-                
-                // Verify the game state matches local state
-                if (gameRef) {
-                    gameRef.once('value').then(snapshot => {
-                        const gameData = snapshot.val();
-                        if (!gameData || !gameData.gameActive || gameData.currentPlayer !== playerId) {
-                            showToast("Invalid move - please wait for sync");
-                            return;
-                        }
-                        
-                        // All checks passed - process the move
-                        processMove(cellIndex, e.target);
-                    });
-                    return;
-                }
+            // In multiplayer mode, only allow current player to move
+            if (gameMode === 'mp' && currentPlayer !== playerId) {
+                showToast("It's not your turn!");
+                return;
             }
             
-            // For non-multiplayer modes
-            processMove(cellIndex, e.target);
-        }
-
-        // Centralized move processing function
-        function processMove(cellIndex, cellElement) {
             // Update board and UI
             board[cellIndex] = currentPlayer;
-            cellElement.textContent = currentPlayer;
-            cellElement.classList.add(currentPlayer.toLowerCase());
+            e.target.textContent = currentPlayer;
+            e.target.classList.add(currentPlayer.toLowerCase());
             
-            // Check for win/draw
+            // Check for win or draw
             checkResult();
+            
+            // If player wins, remember their winning pattern
+            if (!gameActive && gameResult.textContent.includes('win') && currentPlayer === 'X' && gameMode === 'pvc') {
+                const winPattern = findWinningPattern(currentPlayer);
+                if (winPattern) playerPatterns.push(winPattern);
+            }
             
             // Switch player if game is still active
             if (gameActive) {
                 currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
                 updateStatus();
                 
-                // Computer move in PVC mode
+                // If in PVC mode and it's computer's turn
                 if (gameMode === 'pvc' && currentPlayer === 'O') {
                     computerMove();
                 }
-            }
-            
-            // Update Firebase in multiplayer mode
-            if (gameMode === 'mp') {
+                
+                // In multiplayer mode, update the database after the turn is complete
+                if (gameMode === 'mp') {
+                    updateGameState();
+                }
+            } else if (gameMode === 'mp') {
+                // Game ended, update the state
                 updateGameState();
             }
         }
@@ -1227,6 +1199,7 @@
         function checkResult() {
             let roundWon = false;
             
+            // Check win conditions
             for (let i = 0; i < winConditions.length; i++) {
                 const [a, b, c] = winConditions[i];
                 
@@ -1235,6 +1208,7 @@
                 if (board[a] === board[b] && board[b] === board[c]) {
                     roundWon = true;
                     
+                    // Highlight winning cells
                     cells[a].classList.add('winner');
                     cells[b].classList.add('winner');
                     cells[c].classList.add('winner');
@@ -1242,6 +1216,7 @@
                 }
             }
             
+            // If won
             if (roundWon) {
                 gameActive = false;
                 if (gameMode === 'pvp') {
@@ -1262,13 +1237,14 @@
                 return;
             }
             
+            // If draw
             if (!board.includes('')) {
                 gameActive = false;
                 gameResult.textContent = `Game ended in a draw!`;
             }
         }
         
-        // Find winning pattern
+        // Find winning pattern for a player
         function findWinningPattern(player) {
             for (let i = 0; i < winConditions.length; i++) {
                 const [a, b, c] = winConditions[i];
@@ -1286,17 +1262,21 @@
             computerThinking = true;
             updateStatus();
             
+            // Add slight delay for better UX
             setTimeout(() => {
                 let move = findBestMove();
                 
+                // Update board and UI
                 board[move] = 'O';
                 cells[move].textContent = 'O';
                 cells[move].classList.add('o');
                 
                 computerThinking = false;
                 
+                // Check for win or draw
                 checkResult();
                 
+                // Switch back to player if game is still active
                 if (gameActive) {
                     currentPlayer = 'X';
                     updateStatus();
@@ -1304,9 +1284,9 @@
             }, 800);
         }
         
-        // Enhanced AI Logic
+        // Enhanced AI Logic to find best move
         function findBestMove() {
-            // 1. Check for immediate win
+            // 1. Check if computer can win in the next move
             for (let i = 0; i < board.length; i++) {
                 if (board[i] === '') {
                     board[i] = 'O';
@@ -1318,7 +1298,7 @@
                 }
             }
             
-            // 2. Block player win
+            // 2. Check if player can win in the next move and block them
             for (let i = 0; i < board.length; i++) {
                 if (board[i] === '') {
                     board[i] = 'X';
@@ -1330,10 +1310,10 @@
                 }
             }
             
-            // 3. Take center if available
+            // 3. Try to take the center if available
             if (board[4] === '') return 4;
             
-            // 4. Take corners
+            // 4. Try to take a corner if available
             const corners = [0, 2, 6, 8];
             const availableCorners = corners.filter(i => board[i] === '');
             if (availableCorners.length > 0) {
@@ -1347,6 +1327,7 @@
                 return availableEdges[Math.floor(Math.random() * availableEdges.length)];
             }
             
+            // Fallback (shouldn't happen as we check for draw earlier)
             return board.indexOf('');
         }
         
@@ -1365,11 +1346,13 @@
         function createMultiplayerGame() {
             gameMode = 'mp';
             isHost = true;
-            playerId = 'X';
+            playerId = 'X'; // Host is always X
             
+            // Generate a random game ID
             gameId = 'game-' + Math.random().toString(36).substr(2, 8);
             gameIdDisplay.textContent = gameId;
             
+            // Create game in Firebase
             gameRef = database.ref('games/' + gameId);
             
             const gameData = {
@@ -1386,7 +1369,8 @@
                         ready: false
                     }
                 },
-                createdAt: firebase.database.ServerValue.TIMESTAMP
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                lastMoveAt: firebase.database.ServerValue.TIMESTAMP
             };
             
             gameRef.set(gameData)
@@ -1404,13 +1388,14 @@
         function joinMultiplayerGame(gameIdToJoin) {
             gameMode = 'mp';
             isHost = false;
-            playerId = 'O';
+            playerId = 'O'; // Joining player is O
             
             gameId = gameIdToJoin;
             gameIdDisplay.textContent = gameId;
             
             gameRef = database.ref('games/' + gameId);
             
+            // Check if game exists
             gameRef.once('value')
                 .then(snapshot => {
                     if (!snapshot.exists()) {
@@ -1427,9 +1412,11 @@
                         return;
                     }
                     
+                    // Update player info
                     gameRef.update({
                         'players/O/name': playerName,
-                        'players/O/ready': true
+                        'players/O/ready': true,
+                        lastMoveAt: firebase.database.ServerValue.TIMESTAMP
                     })
                     .then(() => {
                         showLobby();
@@ -1462,11 +1449,14 @@
             currentPlayerQueueId = 'player-' + Math.random().toString(36).substr(2, 8);
             queueRef = database.ref('queues/tic-tac-toe/' + currentPlayerQueueId);
             
+            // Add player to queue with status
             queueRef.set({
                 name: playerName,
+                status: 'waiting',
                 createdAt: firebase.database.ServerValue.TIMESTAMP
             })
             .then(() => {
+                // Start listening for matches
                 setupMatchmakingListener();
             })
             .catch(error => {
@@ -1477,90 +1467,124 @@
         }
 
         function setupMatchmakingListener() {
-            matchmakingInterval = setInterval(() => {
-                if (!isSearching) {
-                    clearInterval(matchmakingInterval);
+            // Check for existing matches first
+            database.ref('queues/tic-tac-toe').orderByChild('status').equalTo('waiting').once('value')
+            .then(snapshot => {
+                if (!snapshot.exists()) {
+                    // No matches yet, just wait
+                    startQueueListener();
                     return;
                 }
 
-                database.ref('queues/tic-tac-toe').once('value')
-                    .then(snapshot => {
-                        if (!snapshot.exists()) return;
-
-                        const players = snapshot.val();
-                        const playerIds = Object.keys(players);
-                        
-                        // Ensure there are at least 2 players (including current player)
-                        if (playerIds.length < 2) return;
-                        
-                        // Find the oldest player who isn't us
-                        let oldestPlayerId = null;
-                        let oldestTimestamp = Date.now();
-                        
-                        for (const id in players) {
-                            if (id !== currentPlayerQueueId && players[id].createdAt < oldestTimestamp) {
-                                oldestPlayerId = id;
-                                oldestTimestamp = players[id].createdAt;
-                            }
-                        }
-                        
-                        if (oldestPlayerId) {
-                            // Create a match
-                            createRandomMatch(currentPlayerQueueId, playerName, oldestPlayerId, players[oldestPlayerId].name)
-                                .then(gameId => {
-                                    clearInterval(matchmakingInterval);
-                                    queueRef.remove();
-                                    joinRandomGame(gameId, true);
-                                })
-                                .catch(error => {
-                                    console.error("Error creating match:", error);
-                                });
-                        }
+                const players = snapshot.val();
+                const playerIds = Object.keys(players);
+                
+                // Find oldest waiting player who isn't us
+                let oldestPlayerId = null;
+                let oldestTimestamp = Date.now();
+                
+                for (const id in players) {
+                    if (id !== currentPlayerQueueId && 
+                        players[id].status === 'waiting' && 
+                        players[id].createdAt < oldestTimestamp) {
+                        oldestPlayerId = id;
+                        oldestTimestamp = players[id].createdAt;
+                    }
+                }
+                
+                if (oldestPlayerId) {
+                    // Found a match - mark both as matched
+                    const updates = {};
+                    updates[currentPlayerQueueId + '/status'] = 'matched';
+                    updates[oldestPlayerId + '/status'] = 'matched';
+                    
+                    database.ref('queues/tic-tac-toe').update(updates)
+                    .then(() => {
+                        // Create the game
+                        createRandomMatch(currentPlayerQueueId, playerName, oldestPlayerId, players[oldestPlayerId].name);
                     });
-            }, 1000);
+                } else {
+                    // No match yet - set up listener
+                    startQueueListener();
+                }
+            });
 
+            // Timeout after 5 minutes
             matchmakingTimeout = setTimeout(() => {
                 if (isSearching) {
                     showToast("Couldn't find an opponent. Please try again.");
                     cancelRandomSearch();
                 }
-            }, 180000);
+            }, 300000);
+        }
+
+        function startQueueListener() {
+            queueRef.on('value', (snapshot) => {
+                if (!snapshot.exists() || !isSearching) return;
+                
+                const playerData = snapshot.val();
+                if (playerData.status === 'matched') {
+                    // We've been matched - find our game
+                    findOurMatchGame();
+                }
+            });
+        }
+
+        function findOurMatchGame() {
+            database.ref('games').orderByChild('isRandomMatch').equalTo(true).once('value')
+            .then(snapshot => {
+                if (!snapshot.exists()) return;
+
+                const games = snapshot.val();
+                for (const gameId in games) {
+                    const game = games[gameId];
+                    if ((game.players.X.playerId === currentPlayerQueueId) || 
+                        (game.players.O.playerId === currentPlayerQueueId)) {
+                        // Found our game - join it
+                        joinRandomGame(gameId, game.players.X.playerId === currentPlayerQueueId);
+                        return;
+                    }
+                }
+            });
         }
 
         function createRandomMatch(player1Id, player1Name, player2Id, player2Name) {
-            return new Promise((resolve, reject) => {
-                const gameId = 'random-' + Math.random().toString(36).substr(2, 8);
-                
-                const gameData = {
-                    board: ['', '', '', '', '', '', '', '', ''],
-                    currentPlayer: 'X',
-                    gameActive: true,
-                    players: {
-                        X: {
-                            name: player1Name,
-                            ready: true,
-                            playerId: player1Id
-                        },
-                        O: {
-                            name: player2Name,
-                            ready: true,
-                            playerId: player2Id
-                        }
+            const gameId = 'random-' + Math.random().toString(36).substr(2, 8);
+            
+            const gameData = {
+                board: ['', '', '', '', '', '', '', '', ''],
+                currentPlayer: 'X',
+                gameActive: true,
+                players: {
+                    X: {
+                        name: player1Name,
+                        ready: true,
+                        playerId: player1Id
                     },
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    isRandomMatch: true
-                };
+                    O: {
+                        name: player2Name,
+                        ready: true,
+                        playerId: player2Id
+                    }
+                },
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                isRandomMatch: true,
+                lastMoveAt: firebase.database.ServerValue.TIMESTAMP
+            };
 
-                database.ref('games/' + gameId).set(gameData)
-                    .then(() => {
-                        // Clean up both players from queue
-                        database.ref('queues/tic-tac-toe/' + player1Id).remove();
-                        database.ref('queues/tic-tac-toe/' + player2Id).remove();
-                        resolve(gameId);
-                    })
-                    .catch(error => {
-                        reject(error);
-                    });
+            database.ref('games/' + gameId).set(gameData)
+            .then(() => {
+                // Clean up both players from queue
+                database.ref('queues/tic-tac-toe/' + player1Id).remove();
+                database.ref('queues/tic-tac-toe/' + player2Id).remove();
+                
+                // Join the game
+                joinRandomGame(gameId, player1Id === currentPlayerQueueId);
+            })
+            .catch(error => {
+                console.error("Error creating match:", error);
+                showToast("Error creating game. Please try again.");
+                cancelRandomSearch();
             });
         }
 
@@ -1570,7 +1594,12 @@
             gameId = gameId;
             gameRef = database.ref('games/' + gameId);
 
+            // Clear any matchmaking states
             isSearching = false;
+            if (matchmakingTimeout) clearTimeout(matchmakingTimeout);
+            if (queueRef) queueRef.off();
+
+            // Update UI
             waitingMessage.style.display = 'none';
             randomLobbyPlayers.style.display = 'flex';
             cancelFindBtn.style.display = 'none';
@@ -1578,42 +1607,29 @@
             randomPlayerSymbol.textContent = playerId;
             opponentSymbol.textContent = playerId === 'X' ? 'O' : 'X';
 
-            listenForGameChanges();
-
+            // Hide friend multiplayer tab
             document.querySelector('.tab-btn[data-tab="friend-tab"]').style.display = 'none';
             document.getElementById('friend-tab').style.display = 'none';
 
-            if (!isHost) {
-                hideLobby();
-                initGame();
-            }
+            // Start listening to game changes
+            listenForGameChanges();
 
+            // Initialize game if both players are ready
             gameRef.once('value').then(snapshot => {
                 const gameData = snapshot.val();
                 if (gameData) {
                     randomPlayer1Name.textContent = gameData.players.X.name + (playerId === 'X' ? ' (You)' : '');
                     randomPlayer2Name.textContent = gameData.players.O.name + (playerId === 'O' ? ' (You)' : '');
+
+                    if (gameData.players.X.ready && gameData.players.O.ready) {
+                        hideLobby();
+                        initGame();
+                    }
                 }
             });
         }
 
-        function cancelRandomSearch() {
-            if (!isSearching) return;
-
-            isSearching = false;
-
-            if (matchmakingTimeout) clearTimeout(matchmakingTimeout);
-            if (matchmakingInterval) clearInterval(matchmakingInterval);
-            if (queueRef) queueRef.remove();
-
-            findGameBtn.style.display = 'block';
-            waitingMessage.style.display = 'none';
-            randomLobbyPlayers.style.display = 'none';
-            cancelFindBtn.style.display = 'none';
-
-            resetGameMode();
-        }
-
+        // Enhanced game state listener
         function listenForGameChanges() {
             gameRef.on('value', snapshot => {
                 if (!snapshot.exists()) {
@@ -1626,10 +1642,10 @@
                 
                 const gameData = snapshot.val();
                 
-                // Update local game state from Firebase
-                board = gameData.board || board;
-                currentPlayer = gameData.currentPlayer || currentPlayer;
-                gameActive = gameData.gameActive !== undefined ? gameData.gameActive : gameActive;
+                // Update board state
+                board = gameData.board;
+                currentPlayer = gameData.currentPlayer;
+                gameActive = gameData.gameActive;
                 
                 // Update UI
                 updateBoardUI();
@@ -1639,52 +1655,9 @@
                 if (!gameActive) {
                     checkResult();
                 }
-                
-                // For random matches, update opponent info
-                if (gameData.isRandomMatch) {
-                    if (isHost && gameData.players.O.ready) {
-                        randomPlayer2Name.textContent = gameData.players.O.name;
-                        if (!gameBoard.style.display || gameBoard.style.display === 'none') {
-                            hideLobby();
-                            initGame();
-                        }
-                    } else if (!isHost && gameData.players.X.ready) {
-                        randomPlayer2Name.textContent = gameData.players.X.name;
-                    }
-                }
-                
-                // For friend matches, update lobby
-                if (!gameData.isRandomMatch) {
-                    updateLobbyPlayers(gameData.players);
-                }
             });
         }
-        
-        function updateLobbyPlayers(players) {
-            const player1Card = lobbyPlayers.children[0];
-            const player2Card = lobbyPlayers.children[1];
-            
-            player1Card.querySelector('.player-name').textContent = 
-                players.X.name + (playerId === 'X' ? ' (You)' : '');
-            
-            if (players.O.ready) {
-                player2Card.classList.remove('waiting');
-                player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user';
-                player2Card.querySelector('.player-name').textContent = 
-                    players.O.name + (playerId === 'O' ? ' (You)' : '');
-                
-                lobbyMessage.textContent = "Game is ready!";
-                hideLobby();
-                initGame();
-            } else {
-                player2Card.classList.add('waiting');
-                player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user-clock';
-                player2Card.querySelector('.player-name').textContent = 'Waiting...';
-                
-                lobbyMessage.textContent = "Share the game link with a friend to start playing";
-            }
-        }
-        
+
         function updateBoardUI() {
             cells.forEach((cell, index) => {
                 cell.textContent = board[index];
@@ -1700,41 +1673,19 @@
         function updateGameState() {
             if (!gameRef) return;
             
-            // Use transaction to prevent race conditions
-            gameRef.transaction(currentGameData => {
-                if (!currentGameData) return;
-                
-                // Verify game state hasn't changed since our move
-                if (currentGameData.currentPlayer !== playerId || 
-                    !arraysEqual(currentGameData.board, board)) {
-                    return; // Abort transaction if state changed
-                }
-                
-                // Update game state
-                return {
-                    ...currentGameData,
-                    board: board,
-                    currentPlayer: currentPlayer,
-                    gameActive: gameActive
-                };
-            }, (error, committed) => {
-                if (error) {
-                    console.error("Transaction failed:", error);
-                    showToast("Error updating game state. Please try again.");
-                } else if (!committed) {
-                    showToast("Game state changed - please refresh your move");
-                    // Refresh game state
-                    gameRef.once('value').then(snapshot => {
-                        const gameData = snapshot.val();
-                        if (gameData) {
-                            board = gameData.board;
-                            currentPlayer = gameData.currentPlayer;
-                            gameActive = gameData.gameActive;
-                            updateBoardUI();
-                            updateStatus();
-                        }
-                    });
-                }
+            const updates = {
+                board: board,
+                currentPlayer: currentPlayer === 'X' ? 'O' : 'X',
+                lastMoveAt: firebase.database.ServerValue.TIMESTAMP
+            };
+            
+            if (!gameActive) {
+                updates.gameActive = false;
+            }
+            
+            gameRef.update(updates)
+            .catch(error => {
+                console.error("Error updating game:", error);
             });
         }
         
@@ -1760,15 +1711,18 @@
             
             if (gameRef) {
                 if (isHost) {
+                    // Host leaves - delete the game
                     gameRef.remove()
                         .catch(error => {
                             console.error("Error deleting game:", error);
                         });
                     
+                    // If it was a random game, remove from matchmaking
                     if (gameId) {
                         database.ref('matchmaking/' + gameId).remove();
                     }
                 } else {
+                    // Player leaves - mark as not ready
                     gameRef.update({
                         'players/O/name': '',
                         'players/O/ready': false
@@ -1778,11 +1732,27 @@
                     });
                 }
                 
-                gameRef.off();
+                gameRef.off(); // Stop listening for changes
             }
             
             resetGameMode();
             initGame();
+        }
+        
+        function cancelRandomSearch() {
+            if (!isSearching) return;
+
+            isSearching = false;
+
+            if (matchmakingTimeout) clearTimeout(matchmakingTimeout);
+            if (queueRef) queueRef.remove();
+
+            findGameBtn.style.display = 'block';
+            waitingMessage.style.display = 'none';
+            randomLobbyPlayers.style.display = 'none';
+            cancelFindBtn.style.display = 'none';
+
+            resetGameMode();
         }
         
         function resetGameMode() {
@@ -1902,7 +1872,8 @@
                     gameRef.update({
                         board: ['', '', '', '', '', '', '', '', ''],
                         currentPlayer: 'X',
-                        gameActive: true
+                        gameActive: true,
+                        lastMoveAt: firebase.database.ServerValue.TIMESTAMP
                     })
                     .then(() => {
                         initGame();
