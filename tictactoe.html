@@ -2139,6 +2139,7 @@ firebase.database().ref('.info/connected').on('value', (snapshot) => {
             
             // Check if there's a game ID in the URL
             checkForGameInURL();
+cleanupOldGames();
         });
     </script>
 </body>
