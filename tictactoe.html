@@ -698,6 +698,50 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* Toast Notification Styles */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--rounded-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            max-width: 300px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background-color: var(--success);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--rounded-full);
+            z-index: 999;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        .connection-status.offline {
+            background-color: var(--danger);
+        }
+        
         /* Responsive Styles */
         @media (max-width: 992px) {
             .section-title {
@@ -791,6 +835,12 @@
                 border-left-color: var(--primary);
                 border-bottom-color: transparent;
             }
+            
+            .connection-status {
+                top: 70px;
+                right: 10px;
+                font-size: 0.7rem;
+            }
         }
         
         @media (max-width: 576px) {
@@ -826,16 +876,16 @@
     <header id="header">
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo">
+                <a class='logo' href='/'>
                     <i class="fas fa-bolt logo-icon"></i>
                     Snaplyn
                 </a>
                 
                 <div class="nav-links" id="navLinks">
-                    <a href="index.html" class="nav-link">Home</a>
-                    <a href="index.html#features" class="nav-link">Features</a>
-                    <a href="index.html#how-it-works" class="nav-link">How It Works</a>
-                    <a href="index.html#testimonials" class="nav-link">Testimonials</a>
+                    <a class='nav-link' href='/'>Home</a>
+                    <a class='nav-link' href='/#features'>Features</a>
+                    <a class='nav-link' href='/#how-it-works'>How It Works</a>
+                    <a class='nav-link' href='/#testimonials'>Testimonials</a>
                     <a href="https://snaplay.wuaze.com/" class="nav-link">More Games</a>
                 </div>
                 
@@ -846,13 +896,18 @@
         </div>
     </header>
 
+    <!-- Connection Status Indicator -->
+    <div class="connection-status" id="connectionStatus" style="display: none;">
+        <i class="fas fa-wifi"></i> <span>Connected</span>
+    </div>
+
     <!-- Main Content -->
     <main>
         <section class="section">
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Tic-Tac-Toe</h2>
-                    <p class="section-subtitle">The classic game of X's and O's with a modern Snaplyn twist</p>
+                    <p class="section-subtitle">The classic game of X's and O's with modern multiplayer matchmaking</p>
                 </div>
                 
                 <div class="game-container">
@@ -897,7 +952,7 @@
                         <!-- Random Multiplayer Tab -->
                         <div class="tab-content" id="random-tab">
                             <h3 class="lobby-title">Random Multiplayer</h3>
-                            <p>Play against a random opponent online</p>
+                            <p>Play against a random opponent online. Find a match in seconds!</p>
                             <button id="findGameBtn" class="btn btn-primary find-game-btn">
                                 <i class="fas fa-search"></i> Find Random Game
                             </button>
@@ -987,19 +1042,19 @@
                 <div class="footer-col">
                     <h3 class="footer-links-title">Company</h3>
                     <ul class="footer-links">
-                        <li class="footer-link"><a href="about.html">About Us</a></li>
-                        <li class="footer-link"><a href="blog.html">Blog</a></li>
+                        <li class="footer-link"><a href='/about'>About Us</a></li>
+                        <li class="footer-link"><a href='/blog'>Blog</a></li>
                         <li class="footer-link"><a href="#">Careers</a></li>
-                        <li class="footer-link"><a href="contact.html">Contact</a></li>
+                        <li class="footer-link"><a href='/contact'>Contact</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-col">
                     <h3 class="footer-links-title">Legal</h3>
                     <ul class="footer-links">
-                        <li class="footer-link"><a href="terms.html">Terms of Service</a></li>
-                        <li class="footer-link"><a href="privacy.html">Privacy Policy</a></li>
-                        <li class="footer-link"><a href="cookie.html">Cookie Policy</a></li>
+                        <li class="footer-link"><a href='/terms'>Terms of Service</a></li>
+                        <li class="footer-link"><a href='/privacy'>Privacy Policy</a></li>
+                        <li class="footer-link"><a href='/cookie'>Cookie Policy</a></li>
                     </ul>
                 </div>
             </div>
@@ -1043,6 +1098,7 @@
             const resetBtn = document.getElementById('resetBtn');
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const navLinks = document.getElementById('navLinks');
+            const connectionStatus = document.getElementById('connectionStatus');
             
             // Multiplayer elements
             const lobbyContainer = document.getElementById('lobbyContainer');
@@ -1079,15 +1135,54 @@
             let gameId = null;
             let playerId = null;
             let isHost = false;
-            let playerName = "Player " + Math.floor(Math.random() * 1000);
+            let playerName = "Player" + Math.floor(Math.random() * 1000);
             let gameRef = null;
             let playerRef = null;
             
             // Random matchmaking variables
             let matchmakingRef = null;
-            let matchmakingListener = null;
             let isSearching = false;
             let matchmakingTimeout = null;
+            let matchmakingInterval = null;
+            let cleanupInterval = null;
+            
+            // Connection monitoring
+            let isOnline = navigator.onLine;
+            let firebaseConnected = false;
+            
+            // Monitor connection status
+            window.addEventListener('online', () => {
+                isOnline = true;
+                updateConnectionStatus();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOnline = false;
+                updateConnectionStatus();
+                if (gameMode === 'mp') {
+                    showToast("You are offline. Multiplayer features disabled.");
+                    if (isSearching) cancelRandomSearch();
+                }
+            });
+            
+            // Firebase connection monitoring
+            const connectedRef = database.ref(".info/connected");
+            connectedRef.on("value", function(snap) {
+                firebaseConnected = snap.val() === true;
+                updateConnectionStatus();
+            });
+            
+            function updateConnectionStatus() {
+                if (firebaseConnected && isOnline) {
+                    connectionStatus.style.display = 'flex';
+                    connectionStatus.innerHTML = '<i class="fas fa-wifi"></i> <span>Connected</span>';
+                    connectionStatus.classList.remove('offline');
+                } else {
+                    connectionStatus.style.display = 'flex';
+                    connectionStatus.innerHTML = '<i class="fas fa-wifi-slash"></i> <span>Offline</span>';
+                    connectionStatus.classList.add('offline');
+                }
+            }
             
             // Winning Conditions
             const winConditions = [
@@ -1467,14 +1562,23 @@
                 return -1;
             }
             
-            // Multiplayer Functions
+            // ============ MULTIPLAYER FUNCTIONS ============
+            
             function createMultiplayerGame() {
                 gameMode = 'mp';
                 isHost = true;
                 playerId = 'X'; // Host is always X
                 
+                // Get player name if not set
+                if (!playerName || playerName.trim() === "") {
+                    const nameInput = prompt("Enter your name for multiplayer:", "Player" + Math.floor(Math.random() * 1000));
+                    if (nameInput && nameInput.trim() !== "") {
+                        playerName = nameInput.trim();
+                    }
+                }
+                
                 // Generate a random game ID
-                gameId = 'game-' + Math.random().toString(36).substr(2, 8);
+                gameId = 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 gameIdDisplay.textContent = gameId;
                 
                 // Create game in Firebase
@@ -1483,24 +1587,29 @@
                 const gameData = {
                     board: ['', '', '', '', '', '', '', '', ''],
                     currentPlayer: 'X',
-                    gameActive: true,
+                    gameActive: false,
                     players: {
                         X: {
                             name: playerName,
-                            ready: true
+                            ready: true,
+                            id: generatePlayerId()
                         },
                         O: {
                             name: '',
-                            ready: false
+                            ready: false,
+                            id: ''
                         }
                     },
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    lastActivity: firebase.database.ServerValue.TIMESTAMP,
+                    status: 'waiting'
                 };
                 
                 gameRef.set(gameData)
                     .then(() => {
                         showLobby();
                         listenForGameChanges();
+                        startCleanupInterval();
                     })
                     .catch(error => {
                         console.error("Error creating game:", error);
@@ -1509,15 +1618,22 @@
                     });
             }
             
-            function joinMultiplayerGame(gameIdToJoin) {
+            function joinMultiplayerGame(gameIdToJoin, isFromURL = false) {
                 gameMode = 'mp';
                 isHost = false;
                 playerId = 'O'; // Joining player is O
-                
                 gameId = gameIdToJoin;
-                gameIdDisplay.textContent = gameId;
+                
+                // Get player name if not set
+                if (!playerName || playerName.trim() === "") {
+                    const nameInput = prompt("Enter your name:", "Player" + Math.floor(Math.random() * 1000));
+                    if (nameInput && nameInput.trim() !== "") {
+                        playerName = nameInput.trim();
+                    }
+                }
                 
                 gameRef = database.ref('games/' + gameId);
+                gameIdDisplay.textContent = gameId;
                 
                 // Check if game exists
                 gameRef.once('value')
@@ -1537,107 +1653,156 @@
                         }
                         
                         // Update player info
-                        gameRef.update({
+                        const playerUniqueId = generatePlayerId();
+                        return gameRef.update({
                             'players/O/name': playerName,
-                            'players/O/ready': true
-                        })
-                        .then(() => {
-                            showLobby();
-                            listenForGameChanges();
-                        })
-                        .catch(error => {
-                            console.error("Error joining game:", error);
-                            showToast("Error joining game. Please try again.");
-                            resetGameMode();
+                            'players/O/ready': true,
+                            'players/O/id': playerUniqueId,
+                            'gameActive': true,
+                            'lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                            'status': 'active'
                         });
                     })
+                    .then(() => {
+                        showLobby();
+                        listenForGameChanges();
+                        startCleanupInterval();
+                        
+                        if (!isFromURL) {
+                            hideLobby();
+                            initGame();
+                        }
+                    })
                     .catch(error => {
-                        console.error("Error checking game:", error);
-                        showToast("Error checking game. Please try again.");
+                        console.error("Error joining game:", error);
+                        showToast("Error joining game. Please try again.");
                         resetGameMode();
                     });
             }
             
-            // Random Matchmaking Functions
-         function findRandomGame() {
-    // 🔐 Ask for name if not already set
-    if (!playerName || playerName.trim() === "") {
-        playerName = prompt("Enter your name:");
-        if (!playerName || playerName.trim() === "") {
-            showToast("Name is required to play multiplayer.");
-            return;
-        }
-    }
-
-    isSearching = true;
-    findGameBtn.style.display = 'none';
-    waitingMessage.style.display = 'flex';
-    cancelFindBtn.style.display = 'block';
+            // ============ RANDOM MATCHMAKING FUNCTIONS ============
+            
+            function findRandomGame() {
+                if (isSearching) return;
+                
+                // Check if online
+                if (!isOnline || !firebaseConnected) {
+                    showToast("You are offline. Please check your connection.");
+                    return;
+                }
+                
+                // Get player name
+                const nameInput = prompt("Enter your name for multiplayer:", playerName);
+                if (nameInput && nameInput.trim() !== "") {
+                    playerName = nameInput.trim();
+                }
+                
+                isSearching = true;
+                findGameBtn.style.display = 'none';
+                waitingMessage.style.display = 'flex';
+                cancelFindBtn.style.display = 'block';
                 
                 // Create a reference to the matchmaking queue
                 matchmakingRef = database.ref('matchmaking');
                 
-                // Set a timeout for matchmaking (5 minutes)
+                // Set a timeout for matchmaking (2 minutes)
                 matchmakingTimeout = setTimeout(() => {
                     if (isSearching) {
                         showToast("Couldn't find an opponent. Please try again.");
                         cancelRandomSearch();
                     }
-                }, 300000); // 5 minutes timeout
+                }, 120000);
                 
-                // Check for existing games waiting for players
-                matchmakingListener = matchmakingRef.orderByChild('status').equalTo('waiting').on('value', snapshot => {
-                    if (!snapshot.exists() || !isSearching) return;
-                    
-                    const matchmakingData = snapshot.val();
-                    let foundGame = null;
-                    
-                    // Find the oldest waiting game
-                    let oldestTimestamp = Number.MAX_SAFE_INTEGER;
-                    for (const gameId in matchmakingData) {
-                        if (matchmakingData[gameId].status === 'waiting' && matchmakingData[gameId].createdAt < oldestTimestamp) {
-                            foundGame = gameId;
-                            oldestTimestamp = matchmakingData[gameId].createdAt;
-                        }
-                    }
-                    
-                    if (foundGame) {
-                        // Use a transaction to prevent multiple players joining the same game
-                        database.ref('matchmaking/' + foundGame).transaction(currentData => {
-                            if (currentData && currentData.status === 'waiting') {
-                                currentData.status = 'matched';
-                                return currentData;
+                // Start checking for available games
+                checkForAvailableGames();
+            }
+            
+            function checkForAvailableGames() {
+                if (!isSearching) return;
+                
+                // Look for games waiting for players
+                matchmakingRef.orderByChild('status').equalTo('waiting').once('value')
+                    .then(snapshot => {
+                        if (snapshot.exists()) {
+                            const games = snapshot.val();
+                            let availableGameId = null;
+                            let oldestTime = Date.now();
+                            
+                            // Find the oldest waiting game
+                            for (const gameId in games) {
+                                if (games[gameId].status === 'waiting' && 
+                                    games[gameId].createdAt < oldestTime) {
+                                    availableGameId = gameId;
+                                    oldestTime = games[gameId].createdAt;
+                                }
                             }
-                            return currentData; // Abort transaction if game is no longer available
-                        }, (error, committed) => {
-                            clearTimeout(matchmakingTimeout);
-                            if (error) {
-                                console.error("Transaction error:", error);
-                                showToast("Error joining game. Please try again.");
-                                cancelRandomSearch();
-                            } else if (committed) {
-                                // Successfully claimed the game - now join it
-                                joinRandomGame(foundGame);
+                            
+                            if (availableGameId) {
+                                // Try to join this game
+                                joinAvailableGame(availableGameId);
                             } else {
-                                // Game was already taken, try again
-                                findRandomGame();
+                                // No games found, create a new one
+                                createNewMatchmakingGame();
                             }
-                        });
-                    } else {
-                        // No games waiting, create a new one
-                        createRandomGame();
+                        } else {
+                            // No games found, create a new one
+                            createNewMatchmakingGame();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error checking for games:", error);
+                        showToast("Error finding game. Please try again.");
+                        cancelRandomSearch();
+                    });
+            }
+            
+            function joinAvailableGame(gameIdToJoin) {
+                // Use a transaction to ensure only one player joins
+                const gameMatchmakingRef = database.ref('matchmaking/' + gameIdToJoin);
+                
+                gameMatchmakingRef.transaction(currentData => {
+                    if (currentData && currentData.status === 'waiting') {
+                        // Mark as matched
+                        currentData.status = 'matched';
+                        currentData.player2Name = playerName;
+                        currentData.matchedAt = firebase.database.ServerValue.TIMESTAMP;
+                        return currentData;
+                    }
+                    return currentData;
+                }, (error, committed, snapshot) => {
+                    if (error) {
+                        console.error("Transaction error:", error);
+                        showToast("Error joining game. Please try again.");
+                        setTimeout(() => checkForAvailableGames(), 1000);
+                    } else if (committed) {
+                        // Successfully joined the game
                         clearTimeout(matchmakingTimeout);
+                        isSearching = false;
+                        
+                        // Get game data and join
+                        const matchData = snapshot.val();
+                        joinMultiplayerGame(gameIdToJoin, false);
+                        
+                        // Update UI
+                        showRandomLobby(false);
+                        showToast("Found an opponent! Game starting...");
+                        
+                        // Remove from matchmaking queue
+                        gameMatchmakingRef.remove();
+                    } else {
+                        // Game was taken by someone else, try again
+                        setTimeout(() => checkForAvailableGames(), 1000);
                     }
                 });
             }
             
-            function createRandomGame() {
+            function createNewMatchmakingGame() {
                 gameMode = 'mp';
                 isHost = true;
-                playerId = 'X'; // Host is always X
+                playerId = 'X';
                 
-                // Generate a random game ID
-                gameId = 'random-' + Math.random().toString(36).substr(2, 8);
+                // Generate a unique game ID
+                gameId = 'match_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 
                 // Create game in Firebase
                 gameRef = database.ref('games/' + gameId);
@@ -1645,89 +1810,81 @@
                 const gameData = {
                     board: ['', '', '', '', '', '', '', '', ''],
                     currentPlayer: 'X',
-                    gameActive: false, // Not active until both players join
+                    gameActive: false,
                     players: {
                         X: {
                             name: playerName,
-                            ready: true
+                            ready: true,
+                            id: generatePlayerId()
                         },
                         O: {
                             name: '',
-                            ready: false
+                            ready: false,
+                            id: ''
                         }
                     },
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    isRandomMatch: true
+                    lastActivity: firebase.database.ServerValue.TIMESTAMP,
+                    isRandomMatch: true,
+                    status: 'waiting'
                 };
                 
                 // Add to matchmaking queue
                 database.ref('matchmaking/' + gameId).set({
                     status: 'waiting',
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    hostReady: true
-                }).catch(error => {
-                    console.error("Error adding to matchmaking:", error);
+                    hostName: playerName,
+                    gameId: gameId
+                })
+                .then(() => {
+                    // Create the actual game
+                    return gameRef.set(gameData);
+                })
+                .then(() => {
+                    showRandomLobby(true);
+                    listenForGameChanges();
+                    startCleanupInterval();
+                    
+                    // Start checking if someone joined
+                    startMatchmakingCheck();
+                })
+                .catch(error => {
+                    console.error("Error creating game:", error);
                     showToast("Error creating game. Please try again.");
                     cancelRandomSearch();
                 });
-                
-                gameRef.set(gameData)
-                    .then(() => {
-                        showRandomLobby(true);
-                        listenForGameChanges();
-                    })
-                    .catch(error => {
-                        console.error("Error creating random game:", error);
-                        showToast("Error creating game. Please try again.");
-                        cancelRandomSearch();
-                    });
             }
             
-            function joinRandomGame(gameIdToJoin) {
-    gameMode = 'mp';
-    isHost = false;
-    playerId = 'O';
-    gameId = gameIdToJoin;
-    gameRef = database.ref('games/' + gameId);
-
-    // Step 1: Check if game is still available
-    database.ref('matchmaking/' + gameId).once('value')
-    .then(snapshot => {
-        if (!snapshot.exists()) {
-            showToast("Game is no longer available.");
-            cancelRandomSearch();
-            return;
-        }
-
-        // Step 2: Set matchmaking status to matched using transaction
-        database.ref('matchmaking/' + gameId).transaction(matchData => {
-            if (!matchData || matchData.status !== 'waiting') return;
-            matchData.status = 'matched';
-            return matchData;
-        }, (error, committed) => {
-            if (error || !committed) {
-                showToast("Game is already matched or error occurred.");
-                cancelRandomSearch();
-                return;
+            function startMatchmakingCheck() {
+                if (matchmakingInterval) clearInterval(matchmakingInterval);
+                
+                matchmakingInterval = setInterval(() => {
+                    if (!isSearching && gameId) {
+                        // Check if opponent joined
+                        gameRef.once('value').then(snapshot => {
+                            const gameData = snapshot.val();
+                            if (gameData && gameData.players.O.ready) {
+                                // Opponent joined!
+                                clearInterval(matchmakingInterval);
+                                hideLobby();
+                                initGame();
+                                
+                                // Remove from matchmaking queue
+                                database.ref('matchmaking/' + gameId).remove();
+                                
+                                // Update game to active
+                                gameRef.update({
+                                    gameActive: true,
+                                    status: 'active',
+                                    lastActivity: firebase.database.ServerValue.TIMESTAMP
+                                });
+                                
+                                showToast("Opponent joined! Game starting...");
+                            }
+                        });
+                    }
+                }, 2000);
             }
-
-            // Step 3: Update player O info and activate game
-            gameRef.update({
-                'players/O/name': playerName,
-                'players/O/ready': true,
-                gameActive: true
-            }).then(() => {
-                isSearching = false;
-                showRandomLobby(false);
-                listenForGameChanges();
-                database.ref('matchmaking/' + gameId).remove();
-            }).catch(error => {
-                console.error("Game join update failed:", error);
-                cancelRandomSearch();
-            });
-        });
-    });
-}
             
             function showRandomLobby(isHost) {
                 // Update UI for random lobby
@@ -1755,30 +1912,39 @@
             }
             
             function cancelRandomSearch() {
-                if (!isSearching) return;
+                if (!isSearching && !gameId) return;
                 
                 isSearching = false;
                 
-                // Clear timeout
+                // Clear timeouts and intervals
                 if (matchmakingTimeout) {
                     clearTimeout(matchmakingTimeout);
+                    matchmakingTimeout = null;
                 }
                 
-                // Stop listening for matchmaking changes
-                if (matchmakingListener && matchmakingRef) {
-                    matchmakingRef.off('value', matchmakingListener);
+                if (matchmakingInterval) {
+                    clearInterval(matchmakingInterval);
+                    matchmakingInterval = null;
                 }
                 
                 // Remove from matchmaking if we were hosting
-                if (gameId && gameRef && isHost) {
+                if (gameId && isHost) {
                     database.ref('matchmaking/' + gameId).remove();
-                    gameRef.remove();
+                    
+                    // Also remove the game if no one joined
+                    setTimeout(() => {
+                        gameRef.once('value').then(snapshot => {
+                            const gameData = snapshot.val();
+                            if (gameData && !gameData.players.O.ready) {
+                                gameRef.remove();
+                            }
+                        });
+                    }, 1000);
                 }
                 
                 // Reset UI
                 findGameBtn.style.display = 'block';
                 waitingMessage.style.display = 'none';
-                randomLobbyPlayers.style.display = 'none';
                 cancelFindBtn.style.display = 'none';
                 
                 // Reset game mode
@@ -1797,22 +1963,6 @@
                     }
                     
                     const gameData = snapshot.val();
-                    
-                    // For random games, update opponent info
-                    if (gameData.isRandomMatch) {
-                        if (isHost && gameData.players.O.ready) {
-                            randomPlayer2Name.textContent = gameData.players.O.name;
-                            hideLobby();
-                            initGame();
-                        } else if (!isHost && gameData.players.X.ready) {
-                            randomPlayer2Name.textContent = gameData.players.X.name;
-                        }
-                    }
-                    
-                    // Update lobby players for friend games
-                    if (!gameData.isRandomMatch) {
-                        updateLobbyPlayers(gameData.players);
-                    }
                     
                     // Update game state
                     board = gameData.board;
@@ -1845,9 +1995,13 @@
                     player2Card.querySelector('.player-name').textContent = 
                         players.O.name + (playerId === 'O' ? ' (You)' : '');
                     
-                    lobbyMessage.textContent = "Game is ready!";
-                    hideLobby();
-                    initGame();
+                    lobbyMessage.textContent = "Game is ready! Starting...";
+                    
+                    // Start the game after a short delay
+                    setTimeout(() => {
+                        hideLobby();
+                        initGame();
+                    }, 1500);
                 } else {
                     player2Card.classList.add('waiting');
                     player2Card.querySelector('.player-icon').className = 'player-icon fas fa-user-clock';
@@ -1875,7 +2029,8 @@
                 gameRef.update({
                     board: board,
                     currentPlayer: currentPlayer,
-                    gameActive: gameActive
+                    gameActive: gameActive,
+                    lastActivity: firebase.database.ServerValue.TIMESTAMP
                 })
                 .catch(error => {
                     console.error("Error updating game:", error);
@@ -1907,19 +2062,23 @@
                     if (isHost) {
                         // Host leaves - delete the game
                         gameRef.remove()
+                            .then(() => {
+                                // Also remove from matchmaking if it exists
+                                if (gameId) {
+                                    database.ref('matchmaking/' + gameId).remove();
+                                }
+                            })
                             .catch(error => {
                                 console.error("Error deleting game:", error);
                             });
-                        
-                        // If it was a random game, remove from matchmaking
-                        if (gameId) {
-                            database.ref('matchmaking/' + gameId).remove();
-                        }
                     } else {
                         // Player leaves - mark as not ready
                         gameRef.update({
                             'players/O/name': '',
-                            'players/O/ready': false
+                            'players/O/ready': false,
+                            'players/O/id': '',
+                            'gameActive': false,
+                            'lastActivity': firebase.database.ServerValue.TIMESTAMP
                         })
                         .catch(error => {
                             console.error("Error updating player status:", error);
@@ -1942,6 +2101,17 @@
                 isSearching = false;
                 hideLobby();
                 
+                // Clear intervals
+                if (matchmakingInterval) {
+                    clearInterval(matchmakingInterval);
+                    matchmakingInterval = null;
+                }
+                
+                if (cleanupInterval) {
+                    clearInterval(cleanupInterval);
+                    cleanupInterval = null;
+                }
+                
                 // Reset buttons
                 pvpBtn.classList.remove('btn-primary');
                 pvpBtn.classList.add('btn-outline');
@@ -1958,6 +2128,7 @@
                 
                 // Show friend tab button again
                 document.querySelector('.tab-btn[data-tab="friend-tab"]').style.display = 'block';
+                document.getElementById('friend-tab').style.display = 'block';
                 
                 statusText.textContent = 'Select a game mode to start';
             }
@@ -1991,13 +2162,31 @@
                     });
             }
             
+            function generatePlayerId() {
+                return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            function startCleanupInterval() {
+                if (cleanupInterval) clearInterval(cleanupInterval);
+                
+                // Cleanup old games every 5 minutes
+                cleanupInterval = setInterval(() => {
+                    if (gameId && gameRef && isHost) {
+                        // Update last activity timestamp
+                        gameRef.update({
+                            lastActivity: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    }
+                }, 300000); // 5 minutes
+            }
+            
             function checkForGameInURL() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const gameIdFromURL = urlParams.get('game');
                 
                 if (gameIdFromURL) {
                     // Join the game from URL
-                    joinMultiplayerGame(gameIdFromURL);
+                    joinMultiplayerGame(gameIdFromURL, true);
                     
                     // Update UI to show multiplayer is active
                     mpBtn.classList.remove('btn-outline');
@@ -2008,6 +2197,13 @@
                     pvcBtn.classList.add('btn-outline');
                 }
             }
+            
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', function() {
+                if (gameMode === 'mp') {
+                    leaveMultiplayerGame();
+                }
+            });
             
             // Event Listeners
             cells.forEach(cell => {
@@ -2039,6 +2235,10 @@
             });
             
             mpBtn.addEventListener('click', () => {
+                if (!isOnline || !firebaseConnected) {
+                    showToast("You are offline. Please check your connection.");
+                    return;
+                }
                 resetGameMode();
                 createMultiplayerGame();
                 mpBtn.classList.remove('btn-outline');
@@ -2056,7 +2256,8 @@
                         gameRef.update({
                             board: ['', '', '', '', '', '', '', '', ''],
                             currentPlayer: 'X',
-                            gameActive: true
+                            gameActive: true,
+                            lastActivity: firebase.database.ServerValue.TIMESTAMP
                         })
                         .then(() => {
                             initGame();
@@ -2153,6 +2354,12 @@
             
             // Check if there's a game ID in the URL
             checkForGameInURL();
+            
+            // Show connection status
+            updateConnectionStatus();
+            
+            console.log("Tic-Tac-Toe Multiplayer Game Loaded Successfully!");
+            console.log("Firebase Connected:", firebaseConnected);
         });
     </script>
 </body>
