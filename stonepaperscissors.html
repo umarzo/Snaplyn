@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snaplyn Battle Pro - Stone Paper Scissors</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --neon-blue: #38bdf8;
+            --neon-purple: #a855f7;
+            --neon-pink: #f472b6;
+            --neon-green: #22c55e;
+            --neon-red: #ef4444;
+            --text: #f8fafc;
+            --text-dim: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', system-ui, sans-serif; 
+        }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        header { 
+            padding: 1rem; 
+            text-align: center; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(10px); 
+            z-index: 100; 
+            position: sticky;
+            top: 0;
+        }
+        
+        .logo { 
+            font-size: 1.4rem; 
+            font-weight: 800; 
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        main { 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+            width: 100%; 
+            position: relative;
+        }
+        
+        .game-card { 
+            background: var(--card); 
+            width: 100%; 
+            max-width: 650px; 
+            border-radius: 24px; 
+            padding: 2rem; 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .view { 
+            display: none; 
+            text-align: center; 
+            position: relative;
+            z-index: 1;
+        }
+        
+        .view.active { 
+            display: block; 
+            animation: slideIn 0.3s ease-out; 
+        }
+        
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Menu */
+        .btn-list { 
+            display: grid; 
+            gap: 1rem; 
+            margin-top: 2rem; 
+        }
+        
+        .btn { 
+            padding: 1.2rem; 
+            border-radius: 16px; 
+            border: none; 
+            font-size: 1rem; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            color: white; 
+            background: rgba(255,255,255,0.05); 
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .btn:hover::after {
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+        
+        .btn:hover { 
+            transform: translateY(-3px); 
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid var(--neon-blue); 
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+        }
+        
+        .btn-main { 
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); 
+        }
+        
+        .btn-main:hover {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+            border-color: var(--neon-purple);
+        }
+
+        /* Game Layouts */
+        .split-screen { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 2rem; 
+            margin-top: 1rem; 
+        }
+        
+        .player-zone { 
+            padding: 1.5rem; 
+            border-radius: 16px; 
+            background: rgba(0,0,0,0.2); 
+            border: 2px solid transparent; 
+            transition: all 0.3s; 
+        }
+        
+        .player-zone.active { 
+            border-color: var(--neon-blue); 
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3); 
+        }
+        
+        .player-zone.ready { 
+            border-color: var(--success); 
+            opacity: 0.8; 
+        }
+        
+        .choices-row { 
+            display: flex; 
+            justify-content: center; 
+            gap: 1rem; 
+            margin-top: 15px; 
+            flex-wrap: wrap;
+        }
+        
+        .choice-item { 
+            width: 70px; 
+            height: 70px; 
+            font-size: 2rem; 
+            border-radius: 50%; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            background: linear-gradient(145deg, #1a253f, #0f172a); 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: all 0.2s; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .choice-item:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); 
+            border-color: var(--neon-blue);
+        }
+        
+        .choice-item:active { 
+            transform: scale(0.9); 
+        }
+        
+        .choice-item.selected { 
+            background: var(--neon-blue); 
+            border-color: white; 
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
+            transform: scale(1.1);
+        }
+
+        /* Result View */
+        .vs-container { 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            margin: 2rem 0; 
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .result-emoji { 
+            font-size: 4rem; 
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); 
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .win-text { 
+            font-size: 2.8rem; 
+            font-weight: 900; 
+            margin-bottom: 1.5rem; 
+            text-transform: uppercase; 
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s infinite alternate;
+        }
+        
+        @keyframes gradientShift {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        /* Online Info */
+        .share-box { 
+            background: rgba(0,0,0,0.3); 
+            padding: 1rem; 
+            border-radius: 12px; 
+            margin: 1.5rem 0; 
+            word-break: break-all; 
+            font-family: monospace; 
+            border: 1px dashed var(--neon-blue); 
+            cursor: pointer; 
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .share-box:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-style: solid;
+        }
+        
+        .share-box::after {
+            content: '📋';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .loader { 
+            width: 50px; 
+            height: 50px; 
+            border: 4px solid var(--text-dim); 
+            border-top-color: var(--neon-blue); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin: 30px auto; 
+        }
+        
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
+        }
+
+        footer { 
+            padding: 1.5rem; 
+            text-align: center; 
+            color: var(--text-dim); 
+            font-size: 0.8rem; 
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .timer { 
+            font-size: 4.5rem; 
+            font-weight: 900; 
+            color: var(--neon-pink); 
+            text-shadow: 0 0 20px rgba(244, 114, 182, 0.5);
+            animation: timerPulse 1s infinite;
+        }
+        
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            background: rgba(0,0,0,0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon-blue);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--neon-green);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            display: none;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .exit-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--neon-red);
+            border: 1px solid var(--neon-red);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .exit-btn:hover {
+            background: var(--neon-red);
+            color: white;
+        }
+        
+        .player-label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .game-card { padding: 1.5rem; }
+            .choice-item { width: 60px; height: 60px; font-size: 1.8rem; }
+            .win-text { font-size: 2.2rem; }
+            .result-emoji { font-size: 3rem; }
+            .timer { font-size: 3.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="notification" id="notification">Link Copied!</div>
+
+<header>
+    <div class="logo">
+        <i class="fas fa-gamepad"></i>
+        SNAPLYN BATTLE PRO
+    </div>
+</header>
+
+<main>
+    <div class="game-card">
+        <div id="view-menu" class="view active">
+            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Choose Battle</h2>
+            <p style="color: var(--text-dim); margin-bottom: 2rem;">Challenge AI, friends, or play locally</p>
+            <div class="btn-list">
+                <button class="btn btn-main" onclick="initGame('pvc')">
+                    <i class="fas fa-robot"></i> vs Computer
+                </button>
+                <button class="btn" onclick="initGame('pvp')">
+                    <i class="fas fa-users"></i> Simultaneous PvP (Local)
+                </button>
+                <button class="btn" onclick="initGame('pvf')">
+                    <i class="fas fa-globe"></i> Play Friend (Online)
+                </button>
+                <button class="btn" onclick="showRules()">
+                    <i class="fas fa-book"></i> How to Play
+                </button>
+            </div>
+            
+            <div class="score-container" style="margin-top: 2rem; display: none;" id="global-score">
+                <div class="score-item">
+                    <div>Wins</div>
+                    <div class="score-value" id="wins-count">0</div>
+                </div>
+                <div class="score-item">
+                    <div>Losses</div>
+                    <div class="score-value" id="losses-count">0</div>
+                </div>
+                <div class="score-item">
+                    <div>Draws</div>
+                    <div class="score-value" id="draws-count">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-rules" class="view">
+            <div class="exit-btn" onclick="showView('view-menu')">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">How to Play</h2>
+            <div style="text-align: left; margin-bottom: 2rem;">
+                <div style="background: rgba(56, 189, 248, 0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                    <h3 style="color: var(--neon-blue); margin-bottom: 0.5rem;">Rules</h3>
+                    <ul style="padding-left: 1.5rem; color: var(--text-dim);">
+                        <li style="margin-bottom: 0.5rem;">🪨 Stone beats ✂️ Scissors</li>
+                        <li style="margin-bottom: 0.5rem;">📄 Paper beats 🪨 Stone</li>
+                        <li style="margin-bottom: 0.5rem;">✂️ Scissors beats 📄 Paper</li>
+                        <li>Same choice results in a Draw</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(168, 85, 247, 0.1); padding: 1.5rem; border-radius: 12px;">
+                    <h3 style="color: var(--neon-purple); margin-bottom: 0.5rem;">Game Modes</h3>
+                    <ul style="padding-left: 1.5rem; color: var(--text-dim);">
+                        <li style="margin-bottom: 0.5rem;"><strong>vs Computer</strong>: Play against AI opponent</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Local PvP</strong>: Two players on same device</li>
+                        <li><strong>Online PvP</strong>: Play with friends via shareable link</li>
+                    </ul>
+                </div>
+            </div>
+            <button class="btn btn-main" onclick="showView('view-menu')" style="width: 100%;">
+                <i class="fas fa-play"></i> Start Playing
+            </button>
+        </div>
+
+        <div id="view-lobby" class="view">
+            <div class="exit-btn" onclick="exitLobby()">
+                <i class="fas fa-times"></i>
+            </div>
+            <h2 id="lobby-status" style="margin-bottom: 1rem;">Creating Room...</h2>
+            <div class="loader" id="lobby-loader"></div>
+            <div id="lobby-share" style="display: none;">
+                <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.5rem;">Send this to your friend:</p>
+                <div class="share-box" id="share-url" onclick="copyURL()">Loading...</div>
+                <p style="font-size: 0.7rem; color: var(--neon-blue); margin-top: 0.5rem;">
+                    <i class="fas fa-copy"></i> Click to copy link
+                </p>
+            </div>
+            <div class="timer" id="lobby-timer" style="display: none;">3</div>
+            <div id="player-status" style="margin-top: 1rem; display: none;">
+                <div style="display: flex; justify-content: center; gap: 2rem;">
+                    <div><i class="fas fa-user" style="color: var(--neon-blue);"></i> Player 1 <span id="p1-status">✓</span></div>
+                    <div><i class="fas fa-user" style="color: var(--neon-purple);"></i> Player 2 <span id="p2-status">...</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-game" class="view">
+            <div class="exit-btn" onclick="exitGame()">
+                <i class="fas fa-home"></i>
+            </div>
+            
+            <div class="score-container" id="game-score">
+                <div class="score-item">
+                    <div id="score-label-1">PLAYER 1</div>
+                    <div class="score-value" id="score-value-1">0</div>
+                </div>
+                <div class="score-item">
+                    <div>ROUND</div>
+                    <div class="score-value" id="round-count">1</div>
+                </div>
+                <div class="score-item">
+                    <div id="score-label-2">PLAYER 2</div>
+                    <div class="score-value" id="score-value-2">0</div>
+                </div>
+            </div>
+            
+            <h3 id="game-sub" style="color: var(--neon-blue); margin-bottom: 0.5rem; font-size: 1.2rem;">Battle</h3>
+            <div id="game-status" style="margin-bottom: 1.5rem; font-weight: 600; font-size: 1.1rem;">Waiting for moves...</div>
+
+            <div id="local-pvp-layout" class="split-screen" style="display: none;">
+                <div class="player-zone" id="p1-zone">
+                    <div class="player-label">
+                        <i class="fas fa-user" style="color: var(--neon-blue);"></i> PLAYER 1
+                    </div>
+                    <div class="choices-row">
+                        <div class="choice-item" onclick="handleLocalPress(1, 'stone')">🪨</div>
+                        <div class="choice-item" onclick="handleLocalPress(1, 'paper')">📄</div>
+                        <div class="choice-item" onclick="handleLocalPress(1, 'scissors')">✂️</div>
+                    </div>
+                    <div id="p1-move" style="margin-top: 10px; color: var(--text-dim); font-size: 0.9rem;"></div>
+                </div>
+                <div class="player-zone" id="p2-zone">
+                    <div class="player-label">
+                        <i class="fas fa-user" style="color: var(--neon-purple);"></i> PLAYER 2
+                    </div>
+                    <div class="choices-row">
+                        <div class="choice-item" onclick="handleLocalPress(2, 'stone')">🪨</div>
+                        <div class="choice-item" onclick="handleLocalPress(2, 'paper')">📄</div>
+                        <div class="choice-item" onclick="handleLocalPress(2, 'scissors')">✂️</div>
+                    </div>
+                    <div id="p2-move" style="margin-top: 10px; color: var(--text-dim); font-size: 0.9rem;"></div>
+                </div>
+            </div>
+
+            <div id="general-layout" class="choices-row" style="margin: 2rem 0; display: none;">
+                <div class="choice-item" style="width: 90px; height: 90px; font-size: 2.5rem;" onclick="submitMove('stone')" title="Stone (1)">🪨</div>
+                <div class="choice-item" style="width: 90px; height: 90px; font-size: 2.5rem;" onclick="submitMove('paper')" title="Paper (2)">📄</div>
+                <div class="choice-item" style="width: 90px; height: 90px; font-size: 2.5rem;" onclick="submitMove('scissors')" title="Scissors (3)">✂️</div>
+            </div>
+            
+            <div id="keyboard-hint" style="margin-top: 1.5rem; color: var(--text-dim); font-size: 0.9rem; display: none;">
+                <i class="fas fa-keyboard"></i> Press 1, 2, or 3 for quick selection
+            </div>
+        </div>
+
+        <div id="view-result" class="view">
+            <div class="exit-btn" onclick="showView('view-menu')">
+                <i class="fas fa-home"></i>
+            </div>
+            
+            <div class="win-text" id="result-title">YOU WIN!</div>
+            <div class="vs-container">
+                <div>
+                    <div class="result-emoji" id="res-p1">?</div>
+                    <p style="margin-top: 10px; color: var(--text-dim); font-weight: 600;" id="label-p1">You</p>
+                </div>
+                <div style="font-weight: 900; opacity: 0.3; font-size: 2rem;">VS</div>
+                <div>
+                    <div class="result-emoji" id="res-p2">?</div>
+                    <p style="margin-top: 10px; color: var(--text-dim); font-weight: 600;" id="label-p2">Opponent</p>
+                </div>
+            </div>
+            
+            <div style="margin: 2rem 0; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 12px;">
+                <h4 style="margin-bottom: 1rem; color: var(--neon-blue);">Round Result</h4>
+                <div id="result-description" style="color: var(--text);">Stone beats Scissors!</div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn" style="flex: 1;" onclick="showView('view-menu')">
+                    <i class="fas fa-home"></i> Menu
+                </button>
+                <button class="btn btn-main" style="flex: 2;" onclick="requestRematch()">
+                    <i class="fas fa-redo"></i> Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    Snaplyn Game Studio &bull; Precise Sync Engine v3.0 &bull; 
+    <span id="connection-status" style="color: var(--neon-green);"><i class="fas fa-wifi"></i> Online</span>
+</footer>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, update, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyADpppt8wUpiNrTa-axQD238ln-PI98PJc",
+        authDomain: "stonepaperscissors-6c5e7.firebaseapp.com",
+        databaseURL: "https://stonepaperscissors-6c5e7-default-rtdb.firebaseio.com",
+        projectId: "stonepaperscissors-6c5e7",
+        storageBucket: "stonepaperscissors-6c5e7.firebasestorage.app",
+        messagingSenderId: "514346330500",
+        appId: "1:514346330500:web:6e869a2dd9531d10c6d5d1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // STATE
+    let mode = ''; 
+    let roomID = null;
+    let myRole = ''; // 'p1' or 'p2'
+    let localP1Move = null;
+    let localP2Move = null;
+    let gameActive = false;
+    let scores = { p1: 0, p2: 0 };
+    let round = 1;
+    let globalStats = {
+        wins: parseInt(localStorage.getItem('rps_wins') || '0'),
+        losses: parseInt(localStorage.getItem('rps_losses') || '0'),
+        draws: parseInt(localStorage.getItem('rps_draws') || '0')
+    };
+    
+    const emojiMap = { stone: '🪨', paper: '📄', scissors: '✂️' };
+    const moveNames = { stone: 'Stone', paper: 'Paper', scissors: 'Scissors' };
+    const winConditions = {
+        stone: 'scissors',
+        paper: 'stone',
+        scissors: 'paper'
+    };
+
+    // Initialize global stats display
+    function updateGlobalStats() {
+        document.getElementById('wins-count').textContent = globalStats.wins;
+        document.getElementById('losses-count').textContent = globalStats.losses;
+        document.getElementById('draws-count').textContent = globalStats.draws;
+        document.getElementById('global-score').style.display = 'flex';
+        
+        // Save to localStorage
+        localStorage.setItem('rps_wins', globalStats.wins);
+        localStorage.setItem('rps_losses', globalStats.losses);
+        localStorage.setItem('rps_draws', globalStats.draws);
+    }
+
+    // NAVIGATION
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        
+        // Update global stats when showing menu
+        if (id === 'view-menu') {
+            updateGlobalStats();
+        }
+    }
+
+    window.showRules = () => {
+        showView('view-rules');
+    };
+
+    window.initGame = (m) => {
+        mode = m;
+        scores = { p1: 0, p2: 0 };
+        round = 1;
+        updateScoreDisplay();
+        
+        if (m === 'pvf') {
+            setupOnline();
+        } else {
+            showView('view-game');
+            setupLocalLayout(m);
+        }
+    };
+
+    function setupLocalLayout(m) {
+        gameActive = true;
+        document.getElementById('view-result').classList.remove('active');
+        
+        // Reset player zones
+        document.querySelectorAll('.player-zone').forEach(z => {
+            z.classList.remove('ready', 'active');
+        });
+        
+        // Clear move displays
+        document.getElementById('p1-move').textContent = '';
+        document.getElementById('p2-move').textContent = '';
+        
+        if (m === 'pvp') {
+            document.getElementById('local-pvp-layout').style.display = 'flex';
+            document.getElementById('general-layout').style.display = 'none';
+            document.getElementById('keyboard-hint').style.display = 'none';
+            document.getElementById('game-status').innerText = 'Both players select simultaneously!';
+            document.getElementById('score-label-1').textContent = 'PLAYER 1';
+            document.getElementById('score-label-2').textContent = 'PLAYER 2';
+            
+            // Reset local moves
+            localP1Move = null;
+            localP2Move = null;
+        } else {
+            document.getElementById('local-pvp-layout').style.display = 'none';
+            document.getElementById('general-layout').style.display = 'flex';
+            document.getElementById('keyboard-hint').style.display = 'block';
+            document.getElementById('game-status').innerText = 'Choose your move';
+            document.getElementById('score-label-1').textContent = 'YOU';
+            document.getElementById('score-label-2').textContent = 'COMPUTER';
+        }
+    }
+
+    // Update score display
+    function updateScoreDisplay() {
+        document.getElementById('score-value-1').textContent = scores.p1;
+        document.getElementById('score-value-2').textContent = scores.p2;
+        document.getElementById('round-count').textContent = round;
+    }
+
+    // LOCAL LOGIC
+    window.handleLocalPress = (pNum, move) => {
+        if (!gameActive) return;
+        
+        const zone = document.getElementById(`p${pNum}-zone`);
+        const moveDisplay = document.getElementById(`p${pNum}-move`);
+        
+        // Remove selected class from all choices for this player
+        document.querySelectorAll(`#p${pNum}-zone .choice-item`).forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked choice
+        event.target.classList.add('selected');
+        
+        if (pNum === 1) {
+            localP1Move = move;
+            zone.classList.add('ready');
+        } else {
+            localP2Move = move;
+            zone.classList.add('ready');
+        }
+        
+        moveDisplay.textContent = `Selected: ${moveNames[move]}`;
+        moveDisplay.style.color = 'var(--neon-blue)';
+
+        if (localP1Move && localP2Move) {
+            setTimeout(() => {
+                calculateWinner(localP1Move, localP2Move, 'Player 1', 'Player 2');
+            }, 500);
+        }
+    };
+
+    window.submitMove = (move) => {
+        if (!gameActive) return;
+        
+        // Visual feedback
+        document.querySelectorAll('#general-layout .choice-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        event.target.classList.add('selected');
+        
+        if (mode === 'pvc') {
+            const botMoves = ['stone', 'paper', 'scissors'];
+            const bot = botMoves[Math.floor(Math.random() * 3)];
+            
+            // Show both moves before calculating
+            document.getElementById('game-status').innerText = `You chose ${moveNames[move]}, Computer chose ${moveNames[bot]}`;
+            
+            setTimeout(() => {
+                calculateWinner(move, bot, 'You', 'CPU');
+            }, 1000);
+        } else if (mode === 'pvf') {
+            update(ref(db, `rooms/${roomID}`), { [`${myRole}Move`]: move });
+            document.getElementById('game-status').innerText = `You chose ${moveNames[move]}! Waiting for friend...`;
+            document.getElementById('general-layout').style.opacity = '0.3';
+            document.getElementById('general-layout').style.pointerEvents = 'none';
+        }
+    };
+
+    // WIN LOGIC
+    function calculateWinner(m1, m2, name1, name2) {
+        gameActive = false;
+        round++;
+        
+        // Update score display
+        updateScoreDisplay();
+        
+        showView('view-result');
+        
+        document.getElementById('res-p1').innerText = emojiMap[m1];
+        document.getElementById('res-p2').innerText = emojiMap[m2];
+        document.getElementById('label-p1').innerText = name1;
+        document.getElementById('label-p2').innerText = name2;
+
+        const title = document.getElementById('result-title');
+        const description = document.getElementById('result-description');
+        
+        if (m1 === m2) {
+            title.innerText = "DRAW!";
+            title.style.color = "var(--text-dim)";
+            description.innerText = "Both chose the same!";
+            globalStats.draws++;
+        } else if (winConditions[m1] === m2) {
+            // Player 1 wins
+            title.innerText = (mode === 'pvf' && myRole === 'p2') ? `${name2} WINS!` : `${name1} WINS!`;
+            title.style.color = "var(--success)";
+            description.innerText = `${moveNames[m1]} beats ${moveNames[m2]}!`;
+            
+            if (mode === 'pvf') {
+                if (myRole === 'p1') {
+                    scores.p1++;
+                    globalStats.wins++;
+                } else {
+                    scores.p2++;
+                    globalStats.losses++;
+                }
+            } else {
+                scores.p1++;
+                if (mode === 'pvc') globalStats.wins++;
+            }
+        } else {
+            // Player 2 wins
+            title.innerText = (mode === 'pvf' && myRole === 'p2') ? `${name1} WINS!` : `${name2} WINS!`;
+            title.style.color = "var(--danger)";
+            description.innerText = `${moveNames[m2]} beats ${moveNames[m1]}!`;
+            
+            if (mode === 'pvf') {
+                if (myRole === 'p1') {
+                    scores.p2++;
+                    globalStats.losses++;
+                } else {
+                    scores.p1++;
+                    globalStats.wins++;
+                }
+            } else {
+                scores.p2++;
+                if (mode === 'pvc') globalStats.losses++;
+            }
+        }
+        
+        updateGlobalStats();
+    }
+
+    // ONLINE ENGINE
+    function setupOnline() {
+        const params = new URLSearchParams(window.location.search);
+        roomID = params.get('room');
+
+        showView('view-lobby');
+
+        if (!roomID) {
+            myRole = 'p1';
+            roomID = Math.random().toString(36).substring(2, 10).toUpperCase();
+            
+            // Update URL without reloading
+            const newUrl = window.location.origin + window.location.pathname + "?room=" + roomID;
+            window.history.pushState({}, '', newUrl);
+            
+            set(ref(db, `rooms/${roomID}`), {
+                p1Joined: true,
+                p2Joined: false,
+                p1Move: null,
+                p2Move: null,
+                gameState: 'waiting',
+                createdAt: Date.now()
+            });
+            
+            document.getElementById('lobby-share').style.display = 'block';
+            document.getElementById('share-url').innerText = newUrl;
+            document.getElementById('lobby-status').innerText = 'Room Created!';
+            document.getElementById('player-status').style.display = 'block';
+            
+            // Cleanup on disconnect
+            onDisconnect(ref(db, `rooms/${roomID}`)).remove();
+        } else {
+            myRole = 'p2';
+            update(ref(db, `rooms/${roomID}`), { p2Joined: true });
+            document.getElementById('lobby-status').innerText = 'Joining Room...';
+            document.getElementById('player-status').style.display = 'block';
+            document.getElementById('p2-status').innerHTML = '<span style="color: var(--neon-green);">✓</span>';
+        }
+
+        listenOnline();
+    }
+
+    function listenOnline() {
+        onValue(ref(db, `rooms/${roomID}`), (snap) => {
+            const data = snap.val();
+            if (!data) {
+                // Room was deleted
+                showNotification('Room no longer exists');
+                setTimeout(() => {
+                    window.location.href = window.location.pathname;
+                }, 2000);
+                return;
+            }
+
+            // Update player status
+            if (data.p1Joined) {
+                document.getElementById('p1-status').innerHTML = '<span style="color: var(--neon-green);">✓</span>';
+            }
+            if (data.p2Joined) {
+                document.getElementById('p2-status').innerHTML = '<span style="color: var(--neon-green);">✓</span>';
+            }
+
+            // Start Game
+            if (data.p1Joined && data.p2Joined && data.gameState === 'waiting') {
+                startCountdown();
+            }
+
+            // Reveal Results
+            if (data.p1Move && data.p2Move && gameActive) {
+                calculateWinner(data.p1Move, data.p2Move, 
+                    (myRole === 'p1' ? 'You' : 'Friend'), 
+                    (myRole === 'p1' ? 'Friend' : 'You'));
+            }
+
+            // Sync Rematch
+            if (data.gameState === 'reset') {
+                resetOnlineState();
+            }
+        });
+    }
+
+    function startCountdown() {
+        update(ref(db, `rooms/${roomID}`), { gameState: 'starting' });
+        document.getElementById('lobby-loader').style.display = 'none';
+        document.getElementById('lobby-share').style.display = 'none';
+        const timerEl = document.getElementById('lobby-timer');
+        timerEl.style.display = 'block';
+
+        let count = 3;
+        const interval = setInterval(() => {
+            count--;
+            timerEl.innerText = count;
+            if (count <= 0) {
+                clearInterval(interval);
+                gameActive = true;
+                showView('view-game');
+                setupLocalLayout('pvf');
+                document.getElementById('score-label-1').textContent = myRole === 'p1' ? 'YOU' : 'PLAYER 1';
+                document.getElementById('score-label-2').textContent = myRole === 'p2' ? 'YOU' : 'PLAYER 2';
+            }
+        }, 1000);
+    }
+
+    window.requestRematch = () => {
+        if (mode === 'pvf') {
+            update(ref(db, `rooms/${roomID}`), {
+                gameState: 'reset',
+                p1Move: null,
+                p2Move: null
+            });
+        } else {
+            localP1Move = null;
+            localP2Move = null;
+            document.querySelectorAll('.player-zone').forEach(z => z.classList.remove('ready'));
+            document.querySelectorAll('.choice-item').forEach(item => item.classList.remove('selected'));
+            document.getElementById('p1-move').textContent = '';
+            document.getElementById('p2-move').textContent = '';
+            showView('view-game');
+            setupLocalLayout(mode);
+        }
+    };
+
+    function resetOnlineState() {
+        gameActive = true;
+        document.getElementById('general-layout').style.opacity = '1';
+        document.getElementById('general-layout').style.pointerEvents = 'all';
+        document.getElementById('game-status').innerText = 'Round Reset! Choose your move.';
+        showView('view-game');
+        update(ref(db, `rooms/${roomID}`), { gameState: 'playing' });
+    }
+
+    window.copyURL = () => {
+        const url = document.getElementById('share-url').innerText;
+        navigator.clipboard.writeText(url).then(() => {
+            showNotification('Link Copied! Send it to your friend.');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    };
+
+    function showNotification(message) {
+        const notif = document.getElementById('notification');
+        notif.textContent = message;
+        notif.style.display = 'block';
+        notif.style.background = 'var(--neon-green)';
+        
+        setTimeout(() => {
+            notif.style.display = 'none';
+        }, 3000);
+    }
+
+    function exitLobby() {
+        if (roomID && myRole === 'p1') {
+            remove(ref(db, `rooms/${roomID}`));
+        }
+        window.history.replaceState({}, '', window.location.pathname);
+        showView('view-menu');
+    }
+
+    function exitGame() {
+        if (mode === 'pvf' && roomID) {
+            if (myRole === 'p1') {
+                remove(ref(db, `rooms/${roomID}`));
+            } else {
+                update(ref(db, `rooms/${roomID}`), { [`${myRole}Joined`]: false });
+            }
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+        showView('view-menu');
+    }
+
+    // Auto-join from URL
+    if (window.location.search.includes('room=')) {
+        initGame('pvf');
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (!gameActive || mode === 'pvp') return;
+        
+        switch(e.key) {
+            case '1':
+                submitMove('stone');
+                break;
+            case '2':
+                submitMove('paper');
+                break;
+            case '3':
+                submitMove('scissors');
+                break;
+            case 'r':
+            case 'R':
+                if (document.getElementById('view-result').classList.contains('active')) {
+                    requestRematch();
+                }
+                break;
+        }
+    });
+
+    // Initialize global stats
+    updateGlobalStats();
+    
+    // Update connection status
+    document.getElementById('connection-status').innerHTML = '<i class="fas fa-wifi"></i> Online';
+
+</script>
+</body>
+</html>
