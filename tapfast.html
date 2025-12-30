@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tap Faster | Snaplyn Elite</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --snaplyn-primary: #5d5ae5;
+            --snaplyn-winning: #2563eb;
+            --snaplyn-losing: #dc2626;
+            --snaplyn-secondary: #ff4d97;
+            --snaplyn-grad: linear-gradient(135deg, #5d5ae5 0%, #a29bfe 100%);
+            --glass: rgba(255, 255, 255, 0.9);
+            --dark: #0f172a;
+            --text-muted: #64748b;
+            --radius-xl: 24px;
+            --radius-lg: 18px;
+            --shadow: 0 20px 40px rgba(93, 90, 229, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation; }
+        body { background-color: #f8faff; color: var(--dark); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .brand { font-weight: 800; font-size: 1.4rem; color: var(--snaplyn-primary); }
+        .mode-status { background: white; padding: 6px 16px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(93, 90, 229, 0.1); }
+
+        #arena { flex: 1; position: relative; }
+        .screen { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+        .screen.active { display: flex; animation: screenIn 0.4s forwards; }
+        @keyframes screenIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-card { background: var(--glass); backdrop-filter: blur(12px); padding: 2.5rem; border-radius: var(--radius-xl); box-shadow: var(--shadow); width: 100%; max-width: 420px; text-align: center; border: 1px solid rgba(255,255,255,0.4); }
+        .btn-elite { width: 100%; padding: 1.2rem; margin: 0.75rem 0; border: none; border-radius: var(--radius-lg); font-size: 1.1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; gap: 10px; }
+        .btn-elite:active { transform: scale(0.98); }
+        .btn-main { background: var(--snaplyn-grad); color: white; }
+        .btn-ghost { background: transparent; border: 2px solid #e2e8f0; color: var(--dark); }
+        .btn-pvs { background: #0f172a; color: white; }
+
+        .tap-score { font-size: 8rem; font-weight: 900; background: var(--snaplyn-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .rival-container { width: 100%; max-width: 320px; margin-top: 2rem; }
+        .rival-bar-bg { height: 20px; background: #e2e8f0; border-radius: 20px; overflow: hidden; margin-top: 8px; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        #rival-fill { height: 100%; width: 50%; background: var(--snaplyn-primary); transition: width 0.25s cubic-bezier(0.17, 0.67, 0.83, 0.67), background 0.3s; }
+
+        .split-view { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .zone { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; color: white; overflow: hidden; }
+        .zone-top { background: var(--snaplyn-secondary); transform: rotate(180deg); }
+        .zone-bottom { background: var(--snaplyn-primary); }
+        .zone-score { font-size: 6rem; font-weight: 900; pointer-events: none; }
+
+        #count-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 1000; display: none; align-items: center; justify-content: center; color: white; font-size: 10rem; font-weight: 900; }
+        footer { padding: 1.5rem 2.5rem; background: white; display: flex; justify-content: space-between; border-top: 1px solid rgba(0,0,0,0.05); }
+        .stat-label { font-size: 0.65rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
+        .stat-value { font-size: 1.4rem; font-weight: 800; color: var(--snaplyn-primary); }
+
+        /* Loader */
+        .loader-ring { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid var(--snaplyn-primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .punch { animation: punchAnim 0.1s ease-out; }
+        @keyframes punchAnim { 50% { transform: scale(1.1); } }
+    </style>
+</head>
+<body>
+
+    <div id="count-overlay">3</div>
+
+    <header>
+        <div class="brand">SNAPLYN</div>
+        <div id="mode-badge" class="mode-status">Elite Arena</div>
+    </header>
+
+    <main id="arena">
+        <div id="screen-menu" class="screen active">
+            <h1 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem;">Tap Faster</h1>
+            <div class="glass-card">
+                <button class="btn-elite btn-pvs" onclick="initPVS()">🎲 Random Duel</button>
+                <button class="btn-elite btn-main" onclick="initMultiplayer()">👥 Online Battle</button>
+                <button class="btn-elite btn-ghost" onclick="initLocal()">⚔️ Local 1vs1</button>
+                <button class="btn-elite btn-ghost" onclick="initPractice()">🤖 Adaptive Bot</button>
+            </div>
+        </div>
+
+        <div id="screen-matchmaking" class="screen">
+            <div class="glass-card">
+                <h2 style="font-weight: 900;">Searching...</h2>
+                <div class="loader-ring"></div>
+                <p id="mm-status" style="font-size: 0.9rem; color: var(--text-muted);">Finding a worthy opponent</p>
+                <div id="mm-timer" style="margin: 15px 0; font-weight: 800; color: var(--snaplyn-primary);">0s</div>
+                <button class="btn-elite btn-ghost" onclick="cancelMatchmaking()">Cancel Search</button>
+            </div>
+        </div>
+
+        <div id="screen-local" class="screen" style="padding:0">
+            <div class="split-view">
+                <div class="zone zone-top" id="p2-area"><div class="zone-score" id="p2-score">0</div></div>
+                <div class="zone zone-bottom" id="p1-area"><div class="zone-score" id="p1-score">0</div></div>
+            </div>
+        </div>
+
+        <div id="screen-solo" class="screen">
+            <div id="tap-trigger" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <span class="stat-label">Your Taps</span>
+                <div id="main-score" class="tap-score">0</div>
+                <div class="rival-container">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800;">
+                        <span id="rival-status">CALIBRATING...</span>
+                    </div>
+                    <div class="rival-bar-bg"><div id="rival-fill"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-lobby" class="screen">
+            <div class="glass-card">
+                <div class="mode-status" style="margin-bottom: 1rem;">Waiting for Opponent</div>
+                <input type="text" id="share-link" readonly style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 1rem; text-align: center; font-size: 0.8rem;">
+                <button class="btn-elite btn-main" onclick="copyInvite()">Copy Link</button>
+                <button class="btn-elite btn-ghost" onclick="location.reload()">Cancel</button>
+            </div>
+        </div>
+
+        <div id="screen-results" class="screen">
+            <div class="glass-card">
+                <h1 id="result-title" style="font-size: 2.2rem; font-weight: 900; margin-bottom: 1rem;">Victory!</h1>
+                <div id="result-desc" style="margin-bottom: 1.5rem;"></div>
+                <div id="replay-msg" style="font-size: 0.8rem; color: var(--snaplyn-primary); margin-bottom: 10px; font-weight: 700;"></div>
+                <button id="btn-replay" class="btn-elite btn-main" onclick="requestReplay()">Request Rematch</button>
+                <button class="btn-elite btn-ghost" onclick="location.href=window.location.pathname">Quit to Menu</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="stat-group"><div class="stat-label">Time</div><div class="stat-value" id="timer-txt">10.0</div></div>
+        <div class="stat-group"><div class="stat-label">Best</div><div class="stat-value" id="highscore-txt">0</div></div>
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyADpppt8wUpiNrTa-axQD238ln-PI98PJc",
+            authDomain: "stonepaperscissors-6c5e7.firebaseapp.com",
+            databaseURL: "https://stonepaperscissors-6c5e7-default-rtdb.firebaseio.com",
+            projectId: "stonepaperscissors-6c5e7",
+            storageBucket: "stonepaperscissors-6c5e7.firebasestorage.app",
+            appId: "1:514346330500:web:6e869a2dd9531d10c6d5d1"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
+        let game = {
+            state: 'menu',
+            active: false,
+            score: 0,
+            oppScore: 0,
+            time: 10.0,
+            room: null,
+            uid: 'P' + Math.floor(Math.random()*99999),
+            highScore: localStorage.getItem('tapBest') || 0,
+            mmTimerInterval: null,
+            mmSeconds: 0
+        };
+
+        document.getElementById('highscore-txt').innerText = game.highScore;
+
+        function setScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-${id}`).classList.add('active');
+        }
+
+        // --- PVS MATCHMAKING ---
+        async function initPVS() {
+            setScreen('matchmaking');
+            game.mmSeconds = 0;
+            document.getElementById('mm-timer').innerText = "0s";
+            
+            // Cleanup abandoned entries
+            const now = Date.now();
+            db.ref('tap_faster/matchmaking_queue').orderByChild('timestamp').endAt(now - 30000).once('value', s => {
+                if(s.exists()) s.forEach(child => child.ref.remove());
+            });
+
+            game.mmTimerInterval = setInterval(() => {
+                game.mmSeconds++;
+                document.getElementById('mm-timer').innerText = game.mmSeconds + "s";
+                if(game.mmSeconds >= 30) {
+                    cancelMatchmaking();
+                    alert("Matchmaking timed out. Try again!");
+                }
+            }, 1000);
+
+            const queueRef = db.ref('tap_faster/matchmaking_queue');
+            queueRef.orderByChild('status').equalTo('waiting').limitToFirst(1).once('value', async (snap) => {
+                if (snap.exists()) {
+                    const hostId = Object.keys(snap.val())[0];
+                    const hostData = snap.val()[hostId];
+                    if (hostId !== game.uid) {
+                        game.room = hostData.roomId;
+                        game.state = 'multi';
+                        await db.ref(`tap_faster/matchmaking_queue/${hostId}`).remove();
+                        await db.ref(`tap_faster/rooms/${game.room}/players/${game.uid}`).set({ score: 0 });
+                        await db.ref(`tap_faster/rooms/${game.room}`).update({ status: 'live' });
+                        clearInterval(game.mmTimerInterval);
+                        startMultiListener();
+                    }
+                } else {
+                    const roomId = 'PVS-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+                    game.room = roomId;
+                    game.state = 'multi';
+                    await db.ref(`tap_faster/rooms/${roomId}`).set({ status: 'waiting', players: { [game.uid]: { score: 0 } } });
+                    await queueRef.child(game.uid).set({ roomId: roomId, status: 'waiting', timestamp: firebase.database.ServerValue.TIMESTAMP });
+                    queueRef.child(game.uid).on('value', (s) => {
+                        if (!s.exists()) {
+                            clearInterval(game.mmTimerInterval);
+                            startMultiListener();
+                        }
+                    });
+                }
+            });
+        }
+
+        function cancelMatchmaking() {
+            clearInterval(game.mmTimerInterval);
+            db.ref(`tap_faster/matchmaking_queue/${game.uid}`).remove();
+            setScreen('menu');
+        }
+
+        // --- MULTIPLAYER LOGIC ---
+        async function initMultiplayer() {
+            game.state = 'multi';
+            const params = new URLSearchParams(window.location.search);
+            let roomId = params.get('join');
+
+            if(!roomId) {
+                roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+                game.room = roomId;
+                document.getElementById('share-link').value = window.location.origin + window.location.pathname + '?join=' + roomId;
+                setScreen('lobby');
+                db.ref(`tap_faster/rooms/${roomId}`).set({ status: 'waiting', players: { [game.uid]: { score: 0 } } });
+            } else {
+                game.room = roomId;
+                db.ref(`tap_faster/rooms/${roomId}/players/${game.uid}`).set({ score: 0 });
+                db.ref(`tap_faster/rooms/${roomId}`).update({ status: 'live' });
+            }
+            startMultiListener();
+        }
+
+        function startMultiListener() {
+            db.ref(`tap_faster/rooms/${game.room}/players/${game.uid}`).onDisconnect().remove();
+            db.ref(`tap_faster/matchmaking_queue/${game.uid}`).onDisconnect().remove();
+
+            db.ref(`tap_faster/rooms/${game.room}`).on('value', (snap) => {
+                const data = snap.val();
+                if(!data) return;
+
+                if(game.active && (!data.players || Object.keys(data.players).length < 2)) {
+                    alert("Opponent disconnected.");
+                    location.href = window.location.pathname;
+                }
+
+                if(data.status === 'live' && !game.active && game.time === 10.0) {
+                    setScreen('solo');
+                    startCountdown(runClock);
+                }
+
+                if(data.players) {
+                    Object.keys(data.players).forEach(p => {
+                        if(p !== game.uid) {
+                            game.oppScore = data.players[p].score;
+                            syncVisuals();
+                        }
+                    });
+                }
+
+                if(data.status === 'ended' && game.active) finish();
+
+                if(data.replayRequest && data.replayRequest !== game.uid) {
+                    document.getElementById('replay-msg').innerText = "Opponent wants a rematch!";
+                    document.getElementById('btn-replay').innerText = "Accept Rematch";
+                }
+
+                if(data.status === 'resetting') {
+                    game.score = 0; game.oppScore = 0; game.time = 10.0; game.active = false;
+                    document.getElementById('main-score').innerText = "0";
+                    document.getElementById('timer-txt').innerText = "10.0";
+                    document.getElementById('replay-msg').innerText = "";
+                    document.getElementById('btn-replay').innerText = "Request Rematch";
+                    db.ref(`tap_faster/rooms/${game.room}`).update({ status: 'live', replayRequest: null });
+                }
+            });
+        }
+
+        // --- GAME CORE ---
+        function startCountdown(onComplete) {
+            const overlay = document.getElementById('count-overlay');
+            overlay.style.display = 'flex';
+            let count = 3;
+            overlay.innerText = count;
+            const cd = setInterval(() => {
+                count--;
+                if(count > 0) overlay.innerText = count;
+                else if(count === 0) overlay.innerText = "GO!";
+                else { clearInterval(cd); overlay.style.display = 'none'; onComplete(); }
+            }, 800);
+        }
+
+        function runClock() {
+            game.active = true;
+            if(game.state === 'practice') runAI();
+            const timerInterval = setInterval(() => {
+                game.time -= 0.1;
+                document.getElementById('timer-txt').innerText = Math.max(0, game.time).toFixed(1);
+                if(game.time <= 0) { 
+                    clearInterval(timerInterval); 
+                    if(game.state === 'multi') db.ref(`tap_faster/rooms/${game.room}`).update({ status: 'ended' });
+                    else finish();
+                }
+            }, 100);
+        }
+
+        function runAI() {
+            if(!game.active || game.state !== 'practice') return;
+            let diff = game.score - game.oppScore;
+            let aiSpeed = 150;
+            if(diff > 5) aiSpeed = 80;
+            if(diff < -2) aiSpeed = 250;
+            game.oppScore++;
+            syncVisuals();
+            setTimeout(runAI, aiSpeed + (Math.random() * 50));
+        }
+
+        function syncVisuals() {
+            const bar = document.getElementById('rival-fill');
+            const status = document.getElementById('rival-status');
+            const total = game.score + game.oppScore;
+            const ratio = total === 0 ? 50 : (game.score / total) * 100;
+
+            if(bar) {
+                bar.style.width = ratio + '%';
+                if(ratio > 55) { bar.style.background = 'var(--snaplyn-winning)'; status.innerText = "DOMINATING!"; }
+                else if(ratio < 45) { bar.style.background = 'var(--snaplyn-losing)'; status.innerText = "LOSING GROUND!"; }
+                else { bar.style.background = 'var(--snaplyn-primary)'; status.innerText = "TIGHT RACE!"; }
+            }
+        }
+
+        function finish() {
+            game.active = false;
+            setScreen('results');
+            if(game.score > game.highScore) {
+                game.highScore = game.score;
+                localStorage.setItem('tapBest', game.score);
+                document.getElementById('highscore-txt').innerText = game.score;
+            }
+            const isWinner = game.score > game.oppScore;
+            const resTitle = document.getElementById('result-title');
+            resTitle.innerText = isWinner ? "🏆 ELITE VICTORY" : (game.score === game.oppScore ? "🤝 DRAW" : "💀 DEFEAT");
+            resTitle.style.color = isWinner ? "var(--snaplyn-winning)" : "var(--snaplyn-losing)";
+            document.getElementById('result-desc').innerHTML = `
+                <div style="font-size: 1.8rem; font-weight: 800;">${(game.score/10).toFixed(1)} <span style="font-size: 0.8rem">CPS</span></div>
+                <p style="color: var(--text-muted); font-weight: 700;">YOU: ${game.score} | RIVAL: ${game.oppScore}</p>
+            `;
+        }
+
+        function requestReplay() {
+            db.ref(`tap_faster/rooms/${game.room}`).once('value', (snap) => {
+                const data = snap.val();
+                if(data.replayRequest && data.replayRequest !== game.uid) {
+                    db.ref(`tap_faster/rooms/${game.room}`).update({ status: 'resetting' });
+                } else {
+                    db.ref(`tap_faster/rooms/${game.room}`).update({ replayRequest: game.uid });
+                    document.getElementById('btn-replay').innerText = "Waiting...";
+                }
+            });
+        }
+
+        function handleTap(e, element, isP1 = true) {
+            if(!game.active) return;
+            if(e) e.preventDefault();
+            if(isP1) {
+                game.score++;
+                document.getElementById('main-score').innerText = game.score;
+                document.getElementById('p1-score').innerText = game.score;
+                if(game.state === 'multi') db.ref(`tap_faster/rooms/${game.room}/players/${game.uid}`).update({ score: game.score });
+            } else {
+                game.oppScore++;
+                document.getElementById('p2-score').innerText = game.oppScore;
+            }
+            syncVisuals();
+            const target = isP1 ? document.getElementById('main-score') : document.getElementById('p2-score');
+            if(target) { target.classList.remove('punch'); void target.offsetWidth; target.classList.add('punch'); }
+        }
+
+        function initLocal() { game.state = 'local'; setScreen('local'); startCountdown(runClock); }
+        function initPractice() { game.state = 'practice'; setScreen('solo'); startCountdown(runClock); }
+        function copyInvite() {
+            const input = document.getElementById("share-link");
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            event.target.innerText = "COPIED!";
+        }
+
+        const trigger = document.getElementById('tap-trigger');
+        trigger.addEventListener('touchstart', (e) => handleTap(e, trigger, true), {passive: false});
+        document.getElementById('p1-area').addEventListener('touchstart', (e) => handleTap(e, document.getElementById('p1-area'), true), {passive: false});
+        document.getElementById('p2-area').addEventListener('touchstart', (e) => handleTap(e, document.getElementById('p2-area'), false), {passive: false});
+
+        window.onload = () => {
+            const p = new URLSearchParams(window.location.search);
+            if(p.has('join')) initMultiplayer();
+        };
+    </script>
+</body>
+</html>
