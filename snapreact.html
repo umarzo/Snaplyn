@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SnapReact - Test Your Speed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables - Snaplyn Theme */
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --success: #4cc9f0; /* Green/Blueish for Go */
+            --danger: #f72585; /* Red for Wait */
+            --warning: #f8961e;
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: var(--light);
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* UI Components */
+        .header {
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(67, 97, 238, 0.3); }
+        .btn-primary:active { transform: scale(0.95); }
+        
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); background: transparent; }
+        
+        .container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Screens */
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: all;
+            z-index: 5;
+        }
+
+        /* Menu */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .menu-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .menu-card:hover { transform: translateY(-3px); border-color: var(--primary-light); }
+        .menu-card i { font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .menu-card h3 { margin-bottom: 0.25rem; }
+        .menu-card p { font-size: 0.9rem; color: #666; }
+
+        /* Game Board */
+        .game-board {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #eee;
+        }
+
+        /* Common Trigger Element */
+        .trigger-zone {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.1s;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        /* States */
+        .trigger-zone.waiting { background-color: var(--danger); color: white; }
+        .trigger-zone.go { background-color: #2ec4b6; color: white; } /* Distinct Green */
+        .trigger-zone.finished { background-color: var(--dark); color: white; }
+        .trigger-zone.idle { background-color: var(--primary); color: white; }
+
+        .trigger-content {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .trigger-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Split Screen (Local PvP) */
+        .split-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        .p1-area, .p2-area {
+            flex: 1;
+            width: 100%;
+            position: relative;
+            border: 4px solid white;
+        }
+
+        .p1-area { transform: rotate(180deg); border-bottom: 2px solid white; }
+        .p2-area { border-top: 2px solid white; }
+
+        /* Result Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: all; }
+        
+        .modal {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .result-title { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem; }
+        .result-time { font-size: 3rem; font-weight: 700; color: var(--dark); margin: 1rem 0; font-family: monospace; }
+        .result-msg { color: #666; margin-bottom: 1.5rem; }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Lobby UI */
+        .lobby-info {
+            text-align: center;
+            padding: 2rem;
+        }
+        .room-code {
+            background: #eee;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        /* Shape Morph */
+        .morph-shape {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            transition: all 0.1s;
+        }
+        .trigger-zone.go .morph-shape {
+            border-radius: 5px;
+            transform: scale(1.2);
+            background: white;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-bolt"></i> SnapReact
+        </div>
+        <button class="btn btn-outline" id="homeBtn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+            <i class="fas fa-home"></i>
+        </button>
+    </header>
+
+    <div class="container">
+        <div id="screen-menu" class="screen active">
+            <div class="menu-grid">
+                <div class="menu-card" onclick="game.initPvP()">
+                    <i class="fas fa-user-friends"></i>
+                    <h3>Local PvP</h3>
+                    <p>Split screen. Same device.</p>
+                </div>
+                <div class="menu-card" onclick="game.initPvC()">
+                    <i class="fas fa-robot"></i>
+                    <h3>Vs Computer</h3>
+                    <p>Beat the AI.</p>
+                </div>
+                <div class="menu-card" onclick="game.initPvF()">
+                    <i class="fas fa-link"></i>
+                    <h3>Vs Friend</h3>
+                    <p>Create room & share link.</p>
+                </div>
+                <div class="menu-card" onclick="game.initRandom()">
+                    <i class="fas fa-random"></i>
+                    <h3>Random Duel</h3>
+                    <p>Find online opponent.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-game-single" class="screen">
+            <div class="trigger-zone idle" id="singleTrigger">
+                <div class="morph-shape"></div>
+                <div class="trigger-content">
+                    <i class="fas fa-hand-pointer trigger-icon"></i>
+                    <div id="singleText">Tap to Start</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-game-split" class="screen">
+            <div class="split-container">
+                <div class="p1-area trigger-zone idle" id="p1Trigger">
+                    <div class="trigger-content">Player 1</div>
+                </div>
+                <div class="p2-area trigger-zone idle" id="p2Trigger">
+                    <div class="trigger-content">Player 2</div>
+                </div>
+            </div>
+            <div id="splitOverlay" style="position:absolute; z-index:10; background:rgba(0,0,0,0.5); width:100%; height:100%; display:flex; justify-content:center; align-items:center;">
+                <button class="btn btn-primary" onclick="game.startLocalRound()">Start Round</button>
+            </div>
+        </div>
+
+        <div id="screen-lobby" class="screen">
+            <div class="lobby-info">
+                <h2>Waiting for Player...</h2>
+                <p>Share this link with your friend:</p>
+                <div class="room-code" id="roomUrlDisplay">Generating...</div>
+                <button class="btn btn-primary" onclick="copyLink()">
+                    <i class="fas fa-copy"></i> Copy Link
+                </button>
+                <div style="margin-top: 2rem;">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div id="screen-matchmaking" class="screen">
+             <div class="lobby-info">
+                <h2>Searching for Opponent...</h2>
+                <div style="margin: 2rem;">
+                    <i class="fas fa-circle-notch fa-spin fa-3x" style="color:var(--primary)"></i>
+                </div>
+                <p>Please wait while we find a match.</p>
+                <button class="btn btn-outline" style="margin-top:1rem" onclick="location.reload()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal">
+            <div class="result-title" id="resultTitle">Winner!</div>
+            <div class="result-msg" id="resultMsg">Player 1 was faster</div>
+            <div class="result-time" id="resultTime">245ms</div>
+            <button class="btn btn-primary" id="playAgainBtn">Play Again</button>
+            <button class="btn btn-outline" onclick="location.reload()" style="margin-top:0.5rem">Main Menu</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue, update, remove, push, child, get, onDisconnect, serverTimestamp } 
+        from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        // Firebase Configuration (Strictly as provided)
+        const firebaseConfig = {
+            apiKey: "AIzaSyADpppt8wUpiNrTa-axQD238ln-PI98PJc",
+            authDomain: "stonepaperscissors-6c5e7.firebaseapp.com",
+            databaseURL: "https://stonepaperscissors-6c5e7-default-rtdb.firebaseio.com",
+            projectId: "stonepaperscissors-6c5e7",
+            storageBucket: "stonepaperscissors-6c5e7.firebasestorage.app",
+            messagingSenderId: "514346330500",
+            appId: "1:514346330500:web:6e869a2dd9531d10c6d5d1",
+            measurementId: "G-2YRBVKQ5FG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        // --- Game Logic ---
+
+        const Screens = {
+            menu: document.getElementById('screen-menu'),
+            single: document.getElementById('screen-game-single'),
+            split: document.getElementById('screen-game-split'),
+            lobby: document.getElementById('screen-lobby'),
+            matchmaking: document.getElementById('screen-matchmaking')
+        };
+
+        const UI = {
+            singleTrigger: document.getElementById('singleTrigger'),
+            singleText: document.getElementById('singleText'),
+            p1Trigger: document.getElementById('p1Trigger'),
+            p2Trigger: document.getElementById('p2Trigger'),
+            splitOverlay: document.getElementById('splitOverlay'),
+            modal: document.getElementById('resultModal'),
+            resultTitle: document.getElementById('resultTitle'),
+            resultMsg: document.getElementById('resultMsg'),
+            resultTime: document.getElementById('resultTime'),
+            playAgainBtn: document.getElementById('playAgainBtn')
+        };
+
+        let state = {
+            mode: null, // 'pvp', 'pvc', 'pvf', 'random'
+            status: 'idle', // 'idle', 'waiting', 'go', 'finished'
+            changeTimestamp: 0,
+            roomId: null,
+            playerId: 'player_' + Math.random().toString(36).substr(2, 9),
+            isHost: false,
+            timeoutId: null,
+            opponentId: null
+        };
+
+        // --- Helper Functions ---
+
+        function showScreen(screenName) {
+            Object.values(Screens).forEach(s => s.classList.remove('active'));
+            Screens[screenName].classList.add('active');
+        }
+
+        function setTriggerState(element, stateName, text = '') {
+            element.classList.remove('idle', 'waiting', 'go', 'finished');
+            element.classList.add(stateName);
+            const textEl = element.querySelector('.trigger-content div') || element.querySelector('.trigger-content');
+            if(textEl) textEl.textContent = text;
+        }
+
+        function randomDelay(min = 2000, max = 5000) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        function showResult(title, msg, timeStr) {
+            UI.resultTitle.textContent = title;
+            UI.resultMsg.textContent = msg;
+            UI.resultTime.textContent = timeStr;
+            UI.modal.classList.add('show');
+        }
+
+        function resetGameUI() {
+            UI.modal.classList.remove('show');
+            state.status = 'idle';
+            if (state.mode === 'pvp') {
+                UI.splitOverlay.style.display = 'flex';
+                setTriggerState(UI.p1Trigger, 'idle', 'Player 1');
+                setTriggerState(UI.p2Trigger, 'idle', 'Player 2');
+            } else {
+                setTriggerState(UI.singleTrigger, 'idle', 'Tap to Start');
+                if(state.mode === 'pvc') UI.singleText.textContent = "Tap to Start";
+                if(state.mode === 'pvf' || state.mode === 'random') UI.singleText.textContent = "Waiting for Host...";
+            }
+        }
+
+        // --- Game Modes ---
+
+        const Game = {
+            
+            // 1. Local PvP
+            initPvP: () => {
+                state.mode = 'pvp';
+                showScreen('split');
+                resetGameUI();
+            },
+
+            startLocalRound: () => {
+                UI.splitOverlay.style.display = 'none';
+                state.status = 'waiting';
+                setTriggerState(UI.p1Trigger, 'waiting', 'Wait...');
+                setTriggerState(UI.p2Trigger, 'waiting', 'Wait...');
+                
+                state.timeoutId = setTimeout(() => {
+                    state.status = 'go';
+                    state.changeTimestamp = Date.now();
+                    setTriggerState(UI.p1Trigger, 'go', 'TAP!');
+                    setTriggerState(UI.p2Trigger, 'go', 'TAP!');
+                }, randomDelay());
+            },
+
+            handleLocalTap: (player) => {
+                if (state.status === 'finished') return;
+
+                if (state.status === 'waiting') {
+                    // Early tap
+                    state.status = 'finished';
+                    clearTimeout(state.timeoutId);
+                    showResult("FALSE START!", `${player} tapped too early!`, "--");
+                    return;
+                }
+
+                if (state.status === 'go') {
+                    const reactionTime = Date.now() - state.changeTimestamp;
+                    state.status = 'finished';
+                    showResult("WINNER!", `${player} won!`, `${reactionTime}ms`);
+                }
+            },
+
+            // 2. PvC (Computer)
+            initPvC: () => {
+                state.mode = 'pvc';
+                showScreen('single');
+                resetGameUI();
+                
+                UI.singleTrigger.onclick = () => {
+                    if (state.status === 'idle') {
+                        Game.startPvCRound();
+                    } else if (state.status === 'waiting') {
+                        Game.handleSingleTap(true); // true = early
+                    } else if (state.status === 'go') {
+                        Game.handleSingleTap(false);
+                    }
+                };
+            },
+
+            startPvCRound: () => {
+                state.status = 'waiting';
+                setTriggerState(UI.singleTrigger, 'waiting', 'Wait for Green...');
+                
+                state.timeoutId = setTimeout(() => {
+                    if(state.status !== 'waiting') return;
+                    state.status = 'go';
+                    state.changeTimestamp = Date.now();
+                    setTriggerState(UI.singleTrigger, 'go', 'TAP NOW!');
+                    
+                    // Computer reaction (300ms - 600ms)
+                    const cpuTime = randomDelay(300, 600);
+                    setTimeout(() => {
+                        if (state.status === 'go') {
+                            state.status = 'finished';
+                            showResult("You Lost!", "Computer was faster.", `${cpuTime}ms`);
+                        }
+                    }, cpuTime);
+
+                }, randomDelay());
+            },
+
+            handleSingleTap: (isEarly) => {
+                if (state.status === 'finished') return;
+                
+                if (isEarly) {
+                    state.status = 'finished';
+                    clearTimeout(state.timeoutId);
+                    showResult("Too Early!", "You tapped before green!", "Fail");
+                } else {
+                    const diff = Date.now() - state.changeTimestamp;
+                    state.status = 'finished';
+                    showResult("You Won!", "Beat the Computer!", `${diff}ms`);
+                }
+            },
+
+            // 3. PvF (Friend - Firebase)
+            initPvF: () => {
+                state.mode = 'pvf';
+                
+                // Check for room ID in URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const roomId = urlParams.get('room');
+
+                if (roomId) {
+                    state.roomId = roomId;
+                    state.isHost = false;
+                    Game.joinRoom(roomId);
+                } else {
+                    Game.createRoom();
+                }
+            },
+
+            createRoom: () => {
+                state.isHost = true;
+                const newRoomRef = push(ref(db, 'snapreact/rooms'));
+                state.roomId = newRoomRef.key;
+                
+                // Set initial room state
+                set(newRoomRef, {
+                    host: state.playerId,
+                    status: 'lobby',
+                    players: { [state.playerId]: { status: 'joined' } }
+                });
+
+                // Clean up on disconnect
+                onDisconnect(newRoomRef).remove();
+
+                showScreen('lobby');
+                document.getElementById('roomUrlDisplay').textContent = window.location.origin + window.location.pathname + '?room=' + state.roomId;
+                
+                // Listen for opponent
+                onValue(ref(db, `snapreact/rooms/${state.roomId}/players`), (snapshot) => {
+                    const players = snapshot.val();
+                    if (players && Object.keys(players).length >= 2) {
+                        Game.startOnlineGame();
+                    }
+                });
+            },
+
+            joinRoom: (roomId) => {
+                const roomRef = ref(db, `snapreact/rooms/${roomId}`);
+                get(roomRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        update(ref(db, `snapreact/rooms/${roomId}/players`), {
+                            [state.playerId]: { status: 'joined' }
+                        });
+                        onDisconnect(ref(db, `snapreact/rooms/${roomId}/players/${state.playerId}`)).remove();
+                        Game.startOnlineGame();
+                    } else {
+                        alert("Room not found or expired.");
+                        window.location.href = window.location.pathname;
+                    }
+                });
+            },
+
+            // 4. Random Duel (Matchmaking)
+            initRandom: () => {
+                state.mode = 'random';
+                showScreen('matchmaking');
+                
+                const queueRef = ref(db, 'snapreact/matchmaking_queue');
+                const myQueueRef = ref(db, `snapreact/matchmaking_queue/${state.playerId}`);
+
+                // Simple Matchmaking Logic
+                get(queueRef).then((snapshot) => {
+                    let matchFound = false;
+                    let existingMatch = null;
+
+                    if (snapshot.exists()) {
+                        snapshot.forEach((childSnapshot) => {
+                            const data = childSnapshot.val();
+                            if (data.status === 'searching' && childSnapshot.key !== state.playerId) {
+                                existingMatch = { key: childSnapshot.key, data: data };
+                                return true; // Break
+                            }
+                        });
+                    }
+
+                    if (existingMatch) {
+                        // We found a match! We become host.
+                        state.isHost = true;
+                        const newRoomRef = push(ref(db, 'snapreact/rooms'));
+                        state.roomId = newRoomRef.key;
+                        
+                        // Create room
+                        set(newRoomRef, {
+                            status: 'waiting',
+                            players: {
+                                [state.playerId]: { status: 'in' },
+                                [existingMatch.key]: { status: 'in' }
+                            }
+                        });
+
+                        // Tell the other player where to go
+                        update(ref(db, `snapreact/matchmaking_queue/${existingMatch.key}`), {
+                            status: 'found',
+                            roomId: state.roomId
+                        });
+                        
+                        // Remove both from queue (cleanup)
+                        remove(ref(db, `snapreact/matchmaking_queue/${existingMatch.key}`)); // We remove them after updating
+                        
+                        Game.startOnlineGame();
+
+                    } else {
+                        // No match found, put self in queue
+                        set(myQueueRef, { status: 'searching', timestamp: serverTimestamp() });
+                        onDisconnect(myQueueRef).remove();
+
+                        // Listen for being found
+                        onValue(myQueueRef, (snap) => {
+                            const val = snap.val();
+                            if (val && val.status === 'found' && val.roomId) {
+                                state.roomId = val.roomId;
+                                state.isHost = false;
+                                remove(myQueueRef); // Clean self
+                                Game.startOnlineGame();
+                            }
+                        });
+                    }
+                });
+            },
+
+            // Common Online Game Logic
+            startOnlineGame: () => {
+                showScreen('single');
+                resetGameUI();
+                UI.singleText.textContent = "Waiting for Round...";
+                
+                // Attach online listeners
+                const roomRef = ref(db, `snapreact/rooms/${state.roomId}`);
+                
+                // Listen to Game State Changes
+                onValue(roomRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (!data) return;
+
+                    if (data.status === 'waiting') {
+                        state.status = 'waiting';
+                        setTriggerState(UI.singleTrigger, 'waiting', 'Wait...');
+                    } 
+                    else if (data.status === 'go') {
+                        state.status = 'go';
+                        state.changeTimestamp = data.timestamp; // Use server synced-ish time
+                        setTriggerState(UI.singleTrigger, 'go', 'TAP!');
+                    }
+                    else if (data.status === 'finished') {
+                        state.status = 'finished';
+                        if (data.winner === 'draw') {
+                            showResult("Draw!", "Both false started or tied", "--");
+                        } else if (data.winner === state.playerId) {
+                            showResult("You Won!", "Fastest fingers!", `${data.winningTime}ms`);
+                        } else {
+                            showResult("You Lost!", "Opponent was faster.", `${data.winningTime}ms`);
+                        }
+                    }
+                });
+
+                // Input Handling
+                UI.singleTrigger.onclick = () => {
+                    if (state.status === 'waiting') {
+                        // False start online
+                        Game.reportOnlineTap(-1); // -1 signifies false start
+                        UI.singleText.textContent = "False Start!";
+                    } else if (state.status === 'go') {
+                        const time = Date.now() - state.changeTimestamp; // Approx local diff
+                        Game.reportOnlineTap(time);
+                    } else if (state.isHost && state.status === 'finished' || state.status === 'idle') {
+                        // Host starts next round
+                       // Handled by play again button
+                    }
+                };
+
+                // Host controls loop
+                if (state.isHost && (state.mode === 'random' || state.mode === 'pvf')) {
+                    setTimeout(() => {
+                        Game.runOnlineRound();
+                    }, 1000);
+                }
+            },
+
+            runOnlineRound: () => {
+                if (!state.isHost) return;
+                
+                // Reset Round Data in DB
+                update(ref(db, `snapreact/rooms/${state.roomId}`), {
+                    status: 'waiting',
+                    winner: null,
+                    taps: null
+                });
+
+                // Random delay then GO
+                setTimeout(() => {
+                    update(ref(db, `snapreact/rooms/${state.roomId}`), {
+                        status: 'go',
+                        timestamp: Date.now() // Simple timestamp sync
+                    });
+                }, randomDelay());
+            },
+
+            reportOnlineTap: (time) => {
+                // Push tap to DB
+                update(ref(db, `snapreact/rooms/${state.roomId}/taps/${state.playerId}`), {
+                    time: time
+                });
+            }
+        };
+
+        // --- Event Listeners ---
+
+        UI.p1Trigger.addEventListener('mousedown', (e) => { e.preventDefault(); Game.handleLocalTap('Player 1'); });
+        UI.p1Trigger.addEventListener('touchstart', (e) => { e.preventDefault(); Game.handleLocalTap('Player 1'); });
+        
+        UI.p2Trigger.addEventListener('mousedown', (e) => { e.preventDefault(); Game.handleLocalTap('Player 2'); });
+        UI.p2Trigger.addEventListener('touchstart', (e) => { e.preventDefault(); Game.handleLocalTap('Player 2'); });
+
+        UI.playAgainBtn.onclick = () => {
+            UI.modal.classList.remove('show');
+            if (state.mode === 'pvp') {
+                resetGameUI();
+            } else if (state.mode === 'pvc') {
+                resetGameUI();
+            } else if (state.mode === 'pvf' || state.mode === 'random') {
+                 if (state.isHost) {
+                     Game.runOnlineRound();
+                 } else {
+                     UI.singleText.textContent = "Waiting for Host...";
+                 }
+            }
+        };
+
+        document.getElementById('homeBtn').onclick = () => {
+             window.location.href = window.location.pathname; // Reload to clear state
+        };
+
+        window.copyLink = () => {
+            const url = document.getElementById('roomUrlDisplay').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert("Link copied!");
+            });
+        };
+
+        // --- Online Win Logic Monitor (Host Only) ---
+        // This watches taps and decides the winner to prevent client-side cheating disputes
+        // (Simplified for single-file constraint)
+        setInterval(() => {
+            if (!state.isHost || !state.roomId || state.status !== 'go') return;
+            
+            get(ref(db, `snapreact/rooms/${state.roomId}/taps`)).then((snap) => {
+                const taps = snap.val();
+                if (!taps) return;
+
+                const playerIds = Object.keys(taps);
+                // If false start detected
+                const falseStarter = playerIds.find(id => taps[id].time === -1);
+                
+                if (falseStarter) {
+                    // Other player wins
+                    const winner = playerIds.find(id => id !== falseStarter) || 'draw'; // Simplification
+                    update(ref(db, `snapreact/rooms/${state.roomId}`), {
+                        status: 'finished',
+                        winner: winner === 'draw' ? 'draw' : winner,
+                        winningTime: 'Opponent False Start'
+                    });
+                    return;
+                }
+
+                // If both tapped validly (or sufficient time passed)
+                if (playerIds.length >= 2) {
+                    let winnerId = null;
+                    let bestTime = Infinity;
+
+                    playerIds.forEach(id => {
+                        if (taps[id].time < bestTime) {
+                            bestTime = taps[id].time;
+                            winnerId = id;
+                        }
+                    });
+
+                    update(ref(db, `snapreact/rooms/${state.roomId}`), {
+                        status: 'finished',
+                        winner: winnerId,
+                        winningTime: bestTime
+                    });
+                }
+            });
+        }, 500);
+
+        // Expose game object for HTML onclicks
+        window.game = Game;
+
+    </script>
+</body>
+</html>
