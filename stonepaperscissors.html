@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snaplyn Battle: Remastered</title>
+    <style>
+        :root {
+            --bg-dark: #05070a;
+            --bg-light: #0f1623;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.6);
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --glass: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --danger: #ef4444;
+            --font-display: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            font-family: var(--font-display);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        @keyframes glow { 0%, 100% { filter: drop-shadow(0 0 15px var(--primary-glow)); } 50% { filter: drop-shadow(0 0 5px var(--primary-glow)); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+        #confetti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+
+        header { padding: 1.5rem; text-align: center; z-index: 10; }
+        .brand {
+            font-size: 1.8rem; font-weight: 900;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase; letter-spacing: 2px; animation: glow 3s infinite;
+        }
+
+        main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; position: relative; z-index: 5; }
+
+        .card {
+            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem;
+            width: 100%; max-width: 500px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: height 0.3s ease; position: relative; overflow: hidden;
+        }
+
+        .view { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .view.active { display: block; }
+
+        h1, h2, h3 { text-align: center; font-weight: 800; }
+        .subtitle { color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.9rem; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 1rem; }
+        .btn {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            color: var(--text-main); padding: 1rem; border-radius: 16px;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); border-color: var(--primary); }
+        .btn:active { transform: scale(0.98); }
+        .btn.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .btn.dark { background: #0f172a; border: none; }
+
+        .choice-container { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
+        .choice-btn {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: #1e293b; border: 2px solid var(--glass-border);
+            font-size: 2.5rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .choice-btn:hover { transform: scale(1.1) rotate(10deg); border-color: var(--primary); background: #334155; }
+
+        .split-screen { display: flex; flex-direction: column; gap: 1.5rem; }
+        .player-zone {
+            background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 16px;
+            border: 1px solid transparent; transition: 0.3s;
+        }
+        .player-zone.ready { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+        .player-zone.ready .choice-btn { opacity: 0.3; pointer-events: none; }
+        .mini-grid { display: flex; justify-content: center; gap: 1rem; margin-top: 0.5rem; }
+        .mini-grid .choice-btn { width: 60px; height: 60px; font-size: 1.8rem; }
+
+        .result-stage { text-align: center; padding: 1rem 0; }
+        .big-text { font-size: 3rem; font-weight: 900; line-height: 1; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .vs-display { display: flex; align-items: center; justify-content: center; gap: 2rem; margin: 2rem 0; }
+        .fighter { display: flex; flex-direction: column; align-items: center; }
+        .fighter-emoji { font-size: 4rem; animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .vs-badge { font-weight: 900; color: var(--glass-border); font-size: 2rem; }
+        
+        #toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--text-main); color: var(--bg-dark);
+            padding: 10px 20px; border-radius: 50px; font-weight: 600;
+            opacity: 0; transition: 0.4s; z-index: 200;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .score-pill {
+            position: absolute; top: 1rem; right: 1rem;
+            font-size: 0.75rem; background: rgba(0,0,0,0.4); padding: 5px 12px;
+            border-radius: 20px; color: var(--text-muted); font-weight: 700;
+            border: 1px solid var(--glass-border);
+        }
+
+        .link-box {
+            background: #000; color: var(--primary); font-family: monospace; padding: 1rem;
+            border-radius: 12px; border: 1px dashed var(--primary); word-break: break-all;
+            font-size: 0.85rem; cursor: pointer; margin: 1rem 0; position: relative;
+        }
+
+        .loader {
+            width: 40px; height: 40px; border: 4px solid var(--glass-border);
+            border-top-color: var(--primary); border-radius: 50%;
+            margin: 1rem auto; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<header>
+    <div class="brand">Snaplyn Battle</div>
+</header>
+
+<main>
+    <div class="card">
+        <div class="score-pill" id="scoreboard">W: 0 | L: 0</div>
+
+        <div id="view-menu" class="view active">
+            <h1>Select Arena</h1>
+            <p class="subtitle">Choose your combat style</p>
+            <div class="btn-group">
+                <button class="btn primary" onclick="Game.initRandomDuel()">
+                    <span>🎲</span> Random Duel (Stranger)
+                </button>
+                <button class="btn dark" onclick="Game.start('pvc')">
+                    <span>🤖</span> VS Computer
+                </button>
+                <button class="btn" onclick="Game.start('pvp')">
+                    <span>⚔️</span> Local PvP (Shared Screen)
+                </button>
+                <button class="btn" onclick="Game.start('pvf')">
+                    <span>👥</span> Invite a Friend
+                </button>
+            </div>
+        </div>
+
+        <div id="view-lobby" class="view">
+            <h2 id="lobby-title">Lobby</h2>
+            <p class="subtitle" id="lobby-status">Connecting...</p>
+            
+            <div id="lobby-loader" class="loader"></div>
+            <div id="mm-timer" style="text-align:center; margin-bottom: 10px; font-weight: 800; color: var(--primary);"></div>
+            
+            <div id="invite-area" style="display:none;">
+                <div class="link-box" id="invite-link" onclick="Game.copyLink()">...</div>
+                <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted);">Send this link to your friend</p>
+            </div>
+            
+            <button class="btn" style="width: 100%; margin-top: 2rem;" onclick="Game.cancelMatchmaking()">Cancel</button>
+        </div>
+
+        <div id="view-game" class="view">
+            <h2 id="game-title">Battle</h2>
+            <p class="subtitle" id="game-sub">Make your move</p>
+
+            <div id="layout-single" class="game-area" style="display:none;">
+                <div class="choice-container">
+                    <div class="choice-btn" onclick="Game.submitMove('stone')">🪨</div>
+                    <div class="choice-btn" onclick="Game.submitMove('paper')">📄</div>
+                    <div class="choice-btn" onclick="Game.submitMove('scissors')">✂️</div>
+                </div>
+            </div>
+
+            <div id="layout-local" class="split-screen" style="display:none;">
+                <div class="player-zone" id="zone-p1">
+                    <p style="text-align: center; font-size: 0.75rem; font-weight: 800; color: var(--primary);">PLAYER 1</p>
+                    <div class="mini-grid">
+                        <div class="choice-btn" onclick="Game.localMove(1, 'stone')">🪨</div>
+                        <div class="choice-btn" onclick="Game.localMove(1, 'paper')">📄</div>
+                        <div class="choice-btn" onclick="Game.localMove(1, 'scissors')">✂️</div>
+                    </div>
+                </div>
+                <div class="player-zone" id="zone-p2">
+                    <p style="text-align: center; font-size: 0.75rem; font-weight: 800; color: var(--accent);">PLAYER 2</p>
+                    <div class="mini-grid">
+                        <div class="choice-btn" onclick="Game.localMove(2, 'stone')">🪨</div>
+                        <div class="choice-btn" onclick="Game.localMove(2, 'paper')">📄</div>
+                        <div class="choice-btn" onclick="Game.localMove(2, 'scissors')">✂️</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-result" class="view">
+            <div class="result-stage">
+                <div class="big-text" id="win-msg">WINNER</div>
+                <div class="vs-display">
+                    <div class="fighter">
+                        <div class="fighter-emoji" id="res-p1-emoji">?</div>
+                        <div class="fighter-name" id="res-p1-name">You</div>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="fighter">
+                        <div class="fighter-emoji" id="res-p2-emoji">?</div>
+                        <div class="fighter-name" id="res-p2-name">Opponent</div>
+                    </div>
+                </div>
+                <button class="btn primary" style="width: 100%;" onclick="Game.resetRound()">Play Again</button>
+                <button class="btn" style="width: 100%; margin-top: 10px; background: transparent; border: none;" onclick="location.reload()">Exit</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="toast">Copied!</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, update, onDisconnect, remove, query, orderByChild, equalTo, limitToFirst, get } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyADpppt8wUpiNrTa-axQD238ln-PI98PJc",
+        authDomain: "stonepaperscissors-6c5e7.firebaseapp.com",
+        databaseURL: "https://stonepaperscissors-6c5e7-default-rtdb.firebaseio.com",
+        projectId: "stonepaperscissors-6c5e7",
+        storageBucket: "stonepaperscissors-6c5e7.firebasestorage.app",
+        appId: "1:514346330500:web:6e869a2dd9531d10c6d5d1"
+    };
+
+    class GameManager {
+        constructor() {
+            this.app = initializeApp(firebaseConfig);
+            this.db = getDatabase(this.app);
+            this.uid = 'U' + Math.floor(Math.random() * 1000000) + Date.now();
+            this.state = { 
+                mode: null, 
+                myId: null, 
+                roomId: null, 
+                p1Move: null, 
+                p2Move: null, 
+                scores: { w: 0, l: 0 },
+                mmInterval: null,
+                roomListener: null,
+                queueListener: null
+            };
+            this.ui = new UIManager();
+            this.logic = new GameLogic();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('r')) this.start('pvf', urlParams.get('r'));
+        }
+
+        start(mode, roomId = null) {
+            this.state.mode = mode;
+            if (mode === 'pvc') this.ui.showGame('single', "AI Battle");
+            else if (mode === 'pvp') this.ui.showGame('local', "Local Battle");
+            else if (mode === 'pvf') this.initOnline(roomId);
+        }
+
+        // --- RANDOM DUEL MATCHMAKING ---
+        async initRandomDuel() {
+            this.state.mode = 'pvf';
+            this.ui.navigate('view-lobby');
+            document.getElementById('lobby-title').innerText = "Matchmaking";
+            this.ui.setLobbyStatus("Searching for Opponent...");
+            
+            let seconds = 0;
+            const timerDiv = document.getElementById('mm-timer');
+            
+            // Clear any existing interval
+            if (this.state.mmInterval) clearInterval(this.state.mmInterval);
+            
+            this.state.mmInterval = setInterval(() => {
+                seconds++;
+                timerDiv.innerText = seconds + "s";
+                if(seconds > 30) { 
+                    this.cancelMatchmaking();
+                    this.ui.showToast("No players found. Try again!");
+                }
+            }, 1000);
+
+            // Clean up any previous listeners
+            if (this.state.queueListener) {
+                this.state.queueListener();
+                this.state.queueListener = null;
+            }
+
+            // Check if there's anyone waiting
+            const queueRef = ref(this.db, 'tap_faster/matchmaking_queue');
+            const waitingQuery = query(queueRef, orderByChild('status'), equalTo('waiting'), limitToFirst(1));
+
+            this.state.queueListener = onValue(waitingQuery, async (snap) => {
+                if (this.state.roomId) return; 
+                
+                if (snap.exists()) {
+                    const entries = snap.val();
+                    const hostUid = Object.keys(entries)[0];
+                    const roomData = entries[hostUid];
+                    
+                    // Don't match with ourselves
+                    if (hostUid === this.uid) return;
+                    
+                    this.state.roomId = roomData.roomId;
+                    this.state.myId = 'p2';
+                    
+                    clearInterval(this.state.mmInterval);
+                    this.ui.setLobbyStatus("Match found! Starting game...");
+                    
+                    // Remove from queue
+                    await remove(ref(this.db, `tap_faster/matchmaking_queue/${hostUid}`));
+                    
+                    // Set up room and update with player 2 info
+                    await update(ref(this.db, `tap_faster/rooms/${this.state.roomId}`), { 
+                        p2Status: 'connected',
+                        p2Uid: this.uid,
+                        status: 'playing'
+                    });
+                    
+                    // Listen to the room
+                    this.setupRandomDuelListeners();
+                } else {
+                    // No one waiting, create new room
+                    this.state.roomId = 'RND-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                    this.state.myId = 'p1';
+                    
+                    // Create room
+                    await set(ref(this.db, `tap_faster/rooms/${this.state.roomId}`), { 
+                        p1Status: 'connected', 
+                        p2Status: 'waiting', 
+                        type: 'random',
+                        p1Uid: this.uid,
+                        p1Move: null,
+                        p2Move: null,
+                        status: 'waiting',
+                        createdAt: Date.now()
+                    });
+                    
+                    // Add to matchmaking queue
+                    const myQueueRef = ref(this.db, `tap_faster/matchmaking_queue/${this.uid}`);
+                    await set(myQueueRef, { 
+                        roomId: this.state.roomId, 
+                        status: 'waiting', 
+                        timestamp: Date.now(),
+                        createdAt: Date.now()
+                    });
+                    
+                    // Clean up on disconnect
+                    onDisconnect(myQueueRef).remove();
+                    onDisconnect(ref(this.db, `tap_faster/rooms/${this.state.roomId}`)).remove();
+                    
+                    // Listen to the room immediately
+                    this.setupRandomDuelListeners();
+                }
+            });
+        }
+
+        setupRandomDuelListeners() {
+            // Clean up old listener
+            if (this.state.roomListener) {
+                this.state.roomListener();
+            }
+            
+            const roomRef = ref(this.db, `tap_faster/rooms/${this.state.roomId}`);
+            
+            this.state.roomListener = onValue(roomRef, (snap) => {
+                const data = snap.val();
+                if (!data) {
+                    // Room was deleted (opponent left or canceled)
+                    if (document.getElementById('view-lobby').classList.contains('active') || 
+                        document.getElementById('view-game').classList.contains('active')) {
+                        this.ui.showToast("Opponent disconnected");
+                        setTimeout(() => location.reload(), 2000);
+                    }
+                    return;
+                }
+
+                // Check if both players are connected
+                if (data.p1Status === 'connected' && data.p2Status === 'connected') {
+                    // If we're still in lobby, move to game
+                    if (document.getElementById('view-lobby').classList.contains('active')) {
+                        this.ui.showGame('single', "Random Duel");
+                    }
+                    
+                    // Check if both players moved
+                    if (data.p1Move && data.p2Move && !document.getElementById('view-result').classList.contains('active')) {
+                        const p1Name = this.state.myId === 'p1' ? 'You' : 'Opponent';
+                        const p2Name = this.state.myId === 'p2' ? 'You' : 'Opponent';
+                        this.resolveGame(data.p1Move, data.p2Move, p1Name, p2Name);
+                    }
+                }
+                
+                // Reset handling
+                if (data.status === 'resetting') {
+                    update(roomRef, { 
+                        status: 'playing',
+                        p1Move: null,
+                        p2Move: null 
+                    });
+                    this.ui.resetGameUI();
+                }
+            });
+        }
+
+        initOnline(existingRoomId) {
+            this.ui.navigate('view-lobby');
+            if (existingRoomId) {
+                // Friend mode - joining existing room
+                this.state.roomId = existingRoomId;
+                this.state.myId = 'p2';
+                this.state.mode = 'pvf';
+                update(ref(this.db, `rooms/${existingRoomId}`), { 
+                    p2Status: 'connected',
+                    p2Uid: this.uid
+                });
+                this.ui.setLobbyStatus("Joining friend's room...");
+                this.setupFriendListeners();
+            } else {
+                // Friend mode - creating new room
+                this.state.roomId = Math.random().toString(36).substring(2, 8);
+                this.state.myId = 'p1';
+                this.state.mode = 'pvf';
+                set(ref(this.db, `rooms/${this.state.roomId}`), { 
+                    p1Status: 'connected', 
+                    p2Status: 'waiting',
+                    p1Uid: this.uid,
+                    status: 'waiting'
+                });
+                this.ui.showInviteLink(window.location.origin + window.location.pathname + "?r=" + this.state.roomId);
+                this.ui.setLobbyStatus("Waiting for friend...");
+                this.setupFriendListeners();
+            }
+        }
+
+        setupFriendListeners() {
+            const roomRef = ref(this.db, `rooms/${this.state.roomId}`);
+            onDisconnect(roomRef).remove();
+            
+            onValue(roomRef, (snap) => {
+                const data = snap.val();
+                if (!data) return;
+
+                // Friend joined
+                if (data.p1Status === 'connected' && data.p2Status === 'connected' && 
+                    document.getElementById('view-lobby').classList.contains('active')) {
+                    this.ui.showGame('single', "Friend Battle");
+                }
+
+                // Both players moved
+                if (data.p1Move && data.p2Move && !document.getElementById('view-result').classList.contains('active')) {
+                    const p1Name = this.state.myId === 'p1' ? 'You' : 'Opponent';
+                    const p2Name = this.state.myId === 'p2' ? 'You' : 'Opponent';
+                    this.resolveGame(data.p1Move, data.p2Move, p1Name, p2Name);
+                }
+
+                // Reset handling
+                if (data.status === 'resetting') {
+                    update(roomRef, { 
+                        status: 'playing',
+                        p1Move: null,
+                        p2Move: null 
+                    });
+                    this.ui.resetGameUI();
+                }
+            });
+        }
+
+        submitMove(move) {
+            if (this.state.mode === 'pvc') {
+                this.resolveGame(move, this.logic.getRandomMove(), 'You', 'AI');
+            } else if (this.state.mode === 'pvf') {
+                this.ui.toggleLoading(true, "Waiting for Opponent...");
+                
+                // Determine which database path to use
+                let dbPath;
+                if (this.state.roomId && this.state.roomId.startsWith('RND-')) {
+                    dbPath = `tap_faster/rooms/${this.state.roomId}`;
+                } else {
+                    dbPath = `rooms/${this.state.roomId}`;
+                }
+                
+                update(ref(this.db, dbPath), { 
+                    [`${this.state.myId}Move`]: move 
+                });
+            }
+        }
+
+        localMove(player, move) {
+            if (player === 1) { 
+                this.state.p1Move = move; 
+                this.ui.lockLocalPlayer(1); 
+            } else { 
+                this.state.p2Move = move; 
+                this.ui.lockLocalPlayer(2); 
+            }
+
+            if (this.state.p1Move && this.state.p2Move) {
+                setTimeout(() => this.resolveGame(this.state.p1Move, this.state.p2Move, 'Player 1', 'Player 2'), 500);
+            }
+        }
+
+        resolveGame(m1, m2, n1, n2) {
+            const res = this.logic.getWinner(m1, m2);
+            
+            // Update scores for online modes
+            if (this.state.mode === 'pvf' && res !== 0) {
+                const win = (this.state.myId === 'p1') ? (res === 1) : (res === 2);
+                if (win) this.state.scores.w++; else this.state.scores.l++;
+                this.ui.updateScore(this.state.scores);
+            }
+
+            let txt = "DRAW";
+            if (res === 1) {
+                txt = (this.state.mode === 'pvp') ? "P1 WINS!" : 
+                      (this.state.myId === 'p1') ? "VICTORY!" : "DEFEAT";
+            }
+            if (res === 2) {
+                txt = (this.state.mode === 'pvp') ? "P2 WINS!" : 
+                      (this.state.myId === 'p2') ? "VICTORY!" : "DEFEAT";
+            }
+
+            this.ui.showResult(m1, m2, n1, n2, txt, res);
+        }
+
+        resetRound() {
+            if (this.state.mode === 'pvf') {
+                // Determine which database path to use
+                let dbPath;
+                if (this.state.roomId && this.state.roomId.startsWith('RND-')) {
+                    dbPath = `tap_faster/rooms/${this.state.roomId}`;
+                } else {
+                    dbPath = `rooms/${this.state.roomId}`;
+                }
+                    
+                update(ref(this.db, dbPath), { 
+                    status: 'resetting', 
+                    p1Move: null, 
+                    p2Move: null 
+                });
+            } else {
+                this.state.p1Move = null; 
+                this.state.p2Move = null;
+                this.ui.resetGameUI();
+            }
+        }
+
+        cancelMatchmaking() {
+            // Clear interval
+            if (this.state.mmInterval) {
+                clearInterval(this.state.mmInterval);
+                this.state.mmInterval = null;
+            }
+            
+            // Remove listeners
+            if (this.state.queueListener) {
+                this.state.queueListener();
+                this.state.queueListener = null;
+            }
+            
+            if (this.state.roomListener) {
+                this.state.roomListener();
+                this.state.roomListener = null;
+            }
+            
+            // Clean up Firebase data
+            if (this.state.mode === 'pvf' && this.state.roomId) {
+                if (this.state.roomId.startsWith('RND-')) {
+                    // Random duel cleanup
+                    remove(ref(this.db, `tap_faster/matchmaking_queue/${this.uid}`));
+                    if (this.state.myId === 'p1') {
+                        remove(ref(this.db, `tap_faster/rooms/${this.state.roomId}`));
+                    }
+                } else {
+                    // Friend mode cleanup
+                    remove(ref(this.db, `rooms/${this.state.roomId}`));
+                }
+            }
+            
+            // Return to menu
+            setTimeout(() => {
+                this.ui.navigate('view-menu');
+                this.state.roomId = null;
+                this.state.myId = null;
+                this.state.mode = null;
+            }, 100);
+        }
+
+        copyLink() {
+            navigator.clipboard.writeText(document.getElementById('invite-link').innerText);
+            this.ui.showToast("Copied!");
+        }
+    }
+
+    class UIManager {
+        constructor() { 
+            this.confettiCtx = document.getElementById('confetti-canvas').getContext('2d'); 
+            this.resize(); 
+            window.onresize = () => this.resize(); 
+        }
+        
+        resize() { 
+            this.confettiCtx.canvas.width = window.innerWidth; 
+            this.confettiCtx.canvas.height = window.innerHeight; 
+        }
+        
+        navigate(id) { 
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+        }
+        
+        showGame(layout, title) {
+            this.navigate('view-game');
+            document.getElementById('game-title').innerText = title;
+            document.getElementById('game-sub').innerText = "Make your move";
+            document.getElementById('layout-single').style.display = layout === 'single' ? 'flex' : 'none';
+            document.getElementById('layout-local').style.display = layout === 'local' ? 'flex' : 'none';
+            this.toggleLoading(false);
+        }
+        
+        lockLocalPlayer(n) { 
+            document.getElementById(`zone-p${n}`).classList.add('ready'); 
+        }
+        
+        showInviteLink(url) {
+            document.getElementById('invite-area').style.display = 'block';
+            document.getElementById('lobby-status').innerText = "Waiting for friend...";
+            document.getElementById('invite-link').innerText = url;
+            document.getElementById('mm-timer').innerText = "";
+        }
+        
+        setLobbyStatus(m) { 
+            document.getElementById('lobby-status').innerText = m; 
+        }
+        
+        toggleLoading(active, txt = "") {
+            const c = document.querySelector('.choice-container');
+            if (c) {
+                c.style.opacity = active ? '0.3' : '1';
+                c.style.pointerEvents = active ? 'none' : 'all';
+            }
+            document.getElementById('game-sub').innerText = active ? txt : "Make your move";
+        }
+        
+        showResult(m1, m2, n1, n2, txt, code) {
+            this.navigate('view-result');
+            const em = { stone: '🪨', paper: '📄', scissors: '✂️' };
+            document.getElementById('res-p1-emoji').innerText = em[m1];
+            document.getElementById('res-p2-emoji').innerText = em[m2];
+            document.getElementById('res-p1-name').innerText = n1;
+            document.getElementById('res-p2-name').innerText = n2;
+            const t = document.getElementById('win-msg');
+            t.innerText = txt;
+            t.style.color = txt.includes("VICTORY") ? "var(--success)" : 
+                           (txt.includes("DEFEAT") ? "var(--danger)" : "var(--text-muted)");
+            if (txt.includes("VICTORY")) this.fire();
+        }
+        
+        resetGameUI() { 
+            document.querySelectorAll('.player-zone').forEach(z => z.classList.remove('ready')); 
+            this.navigate('view-game'); 
+            this.toggleLoading(false); 
+        }
+        
+        updateScore(s) { 
+            document.getElementById('scoreboard').innerText = `W: ${s.w} | L: ${s.l}`; 
+        }
+        
+        showToast(m) { 
+            const t = document.getElementById('toast'); 
+            t.innerText = m; 
+            t.classList.add('show'); 
+            setTimeout(() => t.classList.remove('show'), 2000); 
+        }
+        
+        fire() {
+            let p = [];
+            for(let i=0; i<80; i++) p.push({ 
+                x: innerWidth/2, 
+                y: innerHeight/2, 
+                vx: (Math.random()-0.5)*10, 
+                vy: (Math.random()-0.5)*10, 
+                c: ['#3b82f6','#ec4899','#10b981'][i%3], 
+                l: 100 
+            });
+            const anim = () => {
+                this.confettiCtx.clearRect(0,0,innerWidth,innerHeight);
+                p.forEach((v,i) => { 
+                    v.x+=v.vx; 
+                    v.y+=v.vy; 
+                    v.l--; 
+                    this.confettiCtx.fillStyle=v.c; 
+                    this.confettiCtx.fillRect(v.x,v.y,5,5); 
+                    if(v.l<=0) p.splice(i,1); 
+                });
+                if(p.length>0) requestAnimationFrame(anim);
+            };
+            anim();
+        }
+    }
+
+    class GameLogic {
+        getRandomMove() { 
+            return ['stone', 'paper', 'scissors'][Math.floor(Math.random()*3)]; 
+        }
+        
+        getWinner(p1, p2) { 
+            if (p1 === p2) return 0; 
+            const r = { stone: 'scissors', paper: 'stone', scissors: 'paper' }; 
+            return r[p1] === p2 ? 1 : 2; 
+        }
+    }
+
+    window.Game = new GameManager();
+</script>
+</body>
+</html>
