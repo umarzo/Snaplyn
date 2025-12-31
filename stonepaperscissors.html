@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snaplyn Battle: Remastered</title>
+    <style>
+        :root {
+            --bg-dark: #05070a;
+            --bg-light: #0f1623;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.6);
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --glass: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --font-display: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            font-family: var(--font-display);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* --- Animations --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes glow { 0%, 100% { filter: drop-shadow(0 0 15px var(--primary-glow)); } 50% { filter: drop-shadow(0 0 5px var(--primary-glow)); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* --- Confetti Canvas --- */
+        #confetti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+
+        /* --- Header --- */
+        header {
+            padding: 1.5rem;
+            text-align: center;
+            z-index: 10;
+        }
+        .brand {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: glow 3s infinite;
+        }
+
+        /* --- Main Layout --- */
+        main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; position: relative; z-index: 5; }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: height 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- Views System --- */
+        .view { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .view.active { display: block; }
+
+        /* --- Typography --- */
+        h1, h2, h3 { text-align: center; font-weight: 800; }
+        .subtitle { color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.9rem; }
+
+        /* --- Buttons --- */
+        .btn-group { display: flex; flex-direction: column; gap: 1rem; }
+        .btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 1rem;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); border-color: var(--primary); }
+        .btn:active { transform: scale(0.98); }
+        .btn.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .btn.warning { background: linear-gradient(135deg, var(--warning), #f97316); border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+
+        /* --- Game Grid --- */
+        .game-area { margin-top: 1rem; }
+        
+        /* Single Player / Online Layout */
+        .choice-container { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
+        .choice-btn {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid var(--glass-border);
+            font-size: 2.5rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .choice-btn:hover { transform: scale(1.1) rotate(10deg); border-color: var(--primary); background: #334155; }
+        .choice-btn:active { transform: scale(0.9); }
+        
+        /* Local PvP Layout */
+        .split-screen { display: flex; flex-direction: column; gap: 1.5rem; }
+        .player-zone {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 16px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .player-zone.ready { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+        .player-zone.ready .choice-btn { opacity: 0.3; pointer-events: none; }
+        .mini-grid { display: flex; justify-content: center; gap: 1rem; margin-top: 0.5rem; }
+        .mini-grid .choice-btn { width: 60px; height: 60px; font-size: 1.8rem; }
+
+        /* --- Results --- */
+        .result-stage { text-align: center; padding: 1rem 0; }
+        .big-text { font-size: 3rem; font-weight: 900; line-height: 1; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .vs-display { display: flex; align-items: center; justify-content: center; gap: 2rem; margin: 2rem 0; }
+        .fighter { display: flex; flex-direction: column; align-items: center; }
+        .fighter-emoji { font-size: 4rem; animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .fighter-name { margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 700; }
+        .vs-badge { font-weight: 900; color: var(--glass-border); font-size: 2rem; }
+        
+        /* --- Toast Notification --- */
+        #toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--text-main); color: var(--bg-dark);
+            padding: 10px 20px; border-radius: 50px; font-weight: 600;
+            opacity: 0; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 200;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* --- Scoreboard --- */
+        .score-pill {
+            position: absolute; top: 1rem; right: 1rem;
+            font-size: 0.75rem; background: rgba(0,0,0,0.4); padding: 5px 12px;
+            border-radius: 20px; color: var(--text-muted); font-weight: 700;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* --- Online Specific --- */
+        .link-box {
+            background: #000; color: var(--primary);
+            font-family: monospace; padding: 1rem;
+            border-radius: 12px; border: 1px dashed var(--primary);
+            word-break: break-all; font-size: 0.85rem; cursor: pointer;
+            margin: 1rem 0; position: relative;
+        }
+        .link-box::after { content: 'CLICK TO COPY'; position: absolute; bottom: 5px; right: 5px; font-size: 0.6rem; color: var(--text-muted); }
+        .loader {
+            width: 40px; height: 40px; border: 4px solid var(--glass-border);
+            border-top-color: var(--primary); border-radius: 50%;
+            margin: 1rem auto; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- Random Duel Specific --- */
+        .matchmaking-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        
+        .player-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--glass);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid var(--glass-border);
+            margin: 0 5px;
+        }
+        .player-badge.you { background: var(--primary); color: white; }
+        .player-badge.opponent { background: var(--accent); color: white; }
+        
+        .searching-dots {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 1rem 0;
+        }
+        .searching-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        .searching-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .searching-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        /* --- Mobile Responsive --- */
+        @media (max-width: 480px) {
+            .card { padding: 1.5rem; margin: 0 1rem; }
+            .choice-btn { width: 70px; height: 70px; font-size: 2rem; }
+            .mini-grid .choice-btn { width: 50px; height: 50px; font-size: 1.5rem; }
+            .big-text { font-size: 2.5rem; }
+            .fighter-emoji { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<header>
+    <div class="brand">Snaplyn Battle</div>
+</header>
+
+<main>
+    <div class="card">
+        <div class="score-pill" id="scoreboard">W: 0 | L: 0</div>
+
+        <div id="view-menu" class="view active">
+            <h1>Select Arena</h1>
+            <p class="subtitle">Choose your combat style</p>
+            <div class="btn-group">
+                <button class="btn primary" onclick="Game.start('pvc')">
+                    <span>🤖</span> VS Computer
+                </button>
+                <button class="btn" onclick="Game.start('pvp')">
+                    <span>⚔️</span> Local PvP (Shared Screen)
+                </button>
+                <button class="btn warning" onclick="Game.startRandomDuel()">
+                    <span>🎲</span> Random Duel (PVP)
+                </button>
+                <button class="btn" onclick="Game.start('pvf')">
+                    <span>🌐</span> Friend Multiplayer
+                </button>
+            </div>
+        </div>
+
+        <div id="view-random-lobby" class="view">
+            <h2>Random Duel</h2>
+            <p class="subtitle" id="random-status">Searching for opponent...</p>
+            
+            <div class="matchmaking-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="search-time">0</div>
+                    <div class="stat-label">Seconds</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="players-online">1</div>
+                    <div class="stat-label">Players</div>
+                </div>
+            </div>
+            
+            <div class="searching-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <div id="random-loader" class="loader"></div>
+            
+            <div id="found-opponent" style="display:none;">
+                <div style="text-align: center; margin: 2rem 0;">
+                    <h3 style="margin-bottom: 1rem;">Opponent Found!</h3>
+                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        <span class="player-badge you">You</span> 
+                        vs 
+                        <span class="player-badge opponent" id="opponent-name">Opponent</span>
+                    </div>
+                    <p id="countdown-timer" style="font-size: 1.5rem; font-weight: 900; color: var(--primary);">Starting in 3...</p>
+                </div>
+            </div>
+            
+            <button class="btn" style="width: 100%; margin-top: 2rem;" onclick="Game.cancelRandomDuel()">Cancel Search</button>
+        </div>
+
+        <div id="view-lobby" class="view">
+            <h2>Friend Lobby</h2>
+            <p class="subtitle" id="lobby-status">Connecting to server...</p>
+            
+            <div id="lobby-loader" class="loader"></div>
+            
+            <div id="invite-area" style="display:none;">
+                <div class="link-box" id="invite-link" onclick="Game.copyLink()">...</div>
+                <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted);">Send this link to your friend</p>
+            </div>
+            
+            <button class="btn" style="width: 100%; margin-top: 2rem;" onclick="location.reload()">Cancel</button>
+        </div>
+
+        <div id="view-game" class="view">
+            <h2 id="game-title">Battle</h2>
+            <p class="subtitle" id="game-sub">Make your move</p>
+
+            <div id="layout-single" class="game-area" style="display:none;">
+                <div class="choice-container">
+                    <div class="choice-btn" onclick="Game.submitMove('stone')" aria-label="Stone">🪨</div>
+                    <div class="choice-btn" onclick="Game.submitMove('paper')" aria-label="Paper">📄</div>
+                    <div class="choice-btn" onclick="Game.submitMove('scissors')" aria-label="Scissors">✂️</div>
+                </div>
+            </div>
+
+            <div id="layout-local" class="split-screen" style="display:none;">
+                <div class="player-zone" id="zone-p1">
+                    <p style="text-align: center; font-size: 0.75rem; font-weight: 800; margin-bottom: 5px; color: var(--primary);">PLAYER 1</p>
+                    <div class="mini-grid">
+                        <div class="choice-btn" onclick="Game.localMove(1, 'stone')">🪨</div>
+                        <div class="choice-btn" onclick="Game.localMove(1, 'paper')">📄</div>
+                        <div class="choice-btn" onclick="Game.localMove(1, 'scissors')">✂️</div>
+                    </div>
+                </div>
+                <div class="player-zone" id="zone-p2">
+                    <p style="text-align: center; font-size: 0.75rem; font-weight: 800; margin-bottom: 5px; color: var(--accent);">PLAYER 2</p>
+                    <div class="mini-grid">
+                        <div class="choice-btn" onclick="Game.localMove(2, 'stone')">🪨</div>
+                        <div class="choice-btn" onclick="Game.localMove(2, 'paper')">📄</div>
+                        <div class="choice-btn" onclick="Game.localMove(2, 'scissors')">✂️</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-result" class="view">
+            <div class="result-stage">
+                <div class="big-text" id="win-msg">WINNER</div>
+                
+                <div class="vs-display">
+                    <div class="fighter">
+                        <div class="fighter-emoji" id="res-p1-emoji">?</div>
+                        <div class="fighter-name" id="res-p1-name">You</div>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="fighter">
+                        <div class="fighter-emoji" id="res-p2-emoji">?</div>
+                        <div class="fighter-name" id="res-p2-name">Opponent</div>
+                    </div>
+                </div>
+                
+                <div id="rematch-options" style="display:none; margin: 1.5rem 0;">
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;" id="rematch-status">Waiting for opponent...</p>
+                    <button class="btn primary" style="width: 100%;" onclick="Game.requestRematch()">Request Rematch</button>
+                </div>
+                
+                <div id="game-end-options" style="display:block;">
+                    <button class="btn primary" style="width: 100%;" onclick="Game.resetRound()">Play Again</button>
+                    <button class="btn" style="width: 100%; margin-top: 10px; background: transparent; border: none;" onclick="location.reload()">Exit to Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="toast">Copied to clipboard!</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, update, onDisconnect, remove, get } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+    // --- CONFIGURATION ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyADpppt8wUpiNrTa-axQD238ln-PI98PJc",
+        authDomain: "stonepaperscissors-6c5e7.firebaseapp.com",
+        databaseURL: "https://stonepaperscissors-6c5e7-default-rtdb.firebaseio.com",
+        projectId: "stonepaperscissors-6c5e7",
+        storageBucket: "stonepaperscissors-6c5e7.firebasestorage.app",
+        messagingSenderId: "514346330500",
+        appId: "1:514346330500:web:6e869a2dd9531d10c6d5d1"
+    };
+
+    // --- GAME ENGINE ---
+    class GameManager {
+        constructor() {
+            this.app = initializeApp(firebaseConfig);
+            this.db = getDatabase(this.app);
+            
+            this.state = {
+                mode: null,           // 'pvc', 'pvp', 'pvf', 'random'
+                myId: null,           // Player ID
+                roomId: null,
+                p1Move: null,
+                p2Move: null,
+                scores: { w: 0, l: 0 },
+                playerName: 'Player ' + Math.floor(Math.random() * 1000),
+                playerUid: 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+            };
+
+            this.ui = new UIManager();
+            this.logic = new GameLogic();
+            
+            // Variables for random duel
+            this.randomSearchTime = 0;
+            this.searchTimer = null;
+            this.queueListener = null;
+            this.randomRoomListener = null;
+            this.rematchRequested = false;
+            
+            // Auto-detect friend multiplayer from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('r')) {
+                this.start('pvf', urlParams.get('r'));
+            }
+            
+            // Clean up old data on startup
+            this.cleanupOldData();
+        }
+
+        start(mode, roomId = null) {
+            this.state.mode = mode;
+            this.state.p1Move = null;
+            this.state.p2Move = null;
+            
+            if (mode === 'pvc') {
+                this.ui.showGame('single', "Beat the AI");
+            } else if (mode === 'pvp') {
+                this.ui.showGame('local', "Pass the device");
+            } else if (mode === 'pvf') {
+                this.initFriendMultiplayer(roomId);
+            }
+        }
+
+        // --- RANDOM DUEL FUNCTIONS ---
+        async startRandomDuel() {
+            this.state.mode = 'random';
+            this.ui.navigate('view-random-lobby');
+            
+            // Generate player name if not set
+            const nameInput = prompt("Enter your display name (max 15 chars):", this.state.playerName);
+            if (nameInput && nameInput.trim()) {
+                this.state.playerName = nameInput.trim().substring(0, 15);
+            }
+            
+            // Start search timer
+            this.randomSearchTime = 0;
+            this.searchTimer = setInterval(() => {
+                this.randomSearchTime++;
+                document.getElementById('search-time').textContent = this.randomSearchTime;
+            }, 1000);
+            
+            // Update online players count
+            this.updateOnlinePlayers();
+            
+            // Add to queue
+            await this.joinRandomQueue();
+            
+            // Start checking for matches
+            this.findRandomMatch();
+        }
+        
+        async joinRandomQueue() {
+            const queueData = {
+                playerName: this.state.playerName,
+                playerUid: this.state.playerUid,
+                timestamp: Date.now(),
+                status: 'searching',
+                gameType: 'rps'
+            };
+            
+            await set(ref(this.db, `rps_random_queue/${this.state.playerUid}`), queueData);
+            
+            // Remove on disconnect
+            onDisconnect(ref(this.db, `rps_random_queue/${this.state.playerUid}`)).remove();
+        }
+        
+        async findRandomMatch() {
+            // Listen for matches
+            this.queueListener = onValue(ref(this.db, `rps_random_queue/${this.state.playerUid}`), async (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+                
+                if (data.status === 'matched' && data.matchId) {
+                    // Match found!
+                    clearInterval(this.searchTimer);
+                    await this.joinRandomMatch(data.matchId);
+                }
+            });
+            
+            // Also proactively search for opponents
+            this.searchForOpponent();
+        }
+        
+        async searchForOpponent() {
+            // Look for other players in queue
+            get(ref(this.db, 'rps_random_queue')).then((snapshot) => {
+                const queue = snapshot.val();
+                if (!queue) return;
+                
+                const players = [];
+                let myData = null;
+                
+                // Find all searching players
+                Object.keys(queue).forEach(playerId => {
+                    const player = queue[playerId];
+                    if (player.status === 'searching' && player.gameType === 'rps') {
+                        if (playerId === this.state.playerUid) {
+                            myData = player;
+                        } else {
+                            players.push({ id: playerId, ...player });
+                        }
+                    }
+                });
+                
+                // Match with the oldest waiting player
+                if (players.length > 0 && myData) {
+                    const opponent = players[0]; // Simple matching - first available
+                    this.createRandomMatch(opponent);
+                } else {
+                    // No opponents yet, check again in 3 seconds
+                    if (this.state.mode === 'random') {
+                        setTimeout(() => this.searchForOpponent(), 3000);
+                    }
+                }
+            });
+        }
+        
+        async createRandomMatch(opponent) {
+            const matchId = 'rps_match_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+            
+            // Determine who is player1 and player2
+            const isPlayer1 = Math.random() < 0.5;
+            const player1Uid = isPlayer1 ? this.state.playerUid : opponent.id;
+            const player2Uid = isPlayer1 ? opponent.id : this.state.playerUid;
+            const player1Name = isPlayer1 ? this.state.playerName : opponent.playerName;
+            const player2Name = isPlayer1 ? opponent.playerName : this.state.playerName;
+            
+            // Create match data
+            const matchData = {
+                player1: {
+                    uid: player1Uid,
+                    name: player1Name,
+                    move: null,
+                    ready: false
+                },
+                player2: {
+                    uid: player2Uid,
+                    name: player2Name,
+                    move: null,
+                    ready: false
+                },
+                status: 'waiting',
+                round: 1,
+                createdAt: Date.now(),
+                lastActivity: Date.now(),
+                isRandomMatch: true,
+                rematchRequested: null
+            };
+            
+            // Use atomic updates
+            const updates = {};
+            updates[`rps_matches/${matchId}`] = matchData;
+            updates[`rps_random_queue/${this.state.playerUid}`] = {
+                ...this.getQueueEntry(),
+                status: 'matched',
+                matchId: matchId,
+                playerRole: isPlayer1 ? 'player1' : 'player2'
+            };
+            updates[`rps_random_queue/${opponent.id}`] = {
+                ...opponent,
+                status: 'matched',
+                matchId: matchId,
+                playerRole: isPlayer1 ? 'player2' : 'player1'
+            };
+            
+            await update(ref(this.db), updates);
+        }
+        
+        async joinRandomMatch(matchId) {
+            // Stop queue listener
+            if (this.queueListener) {
+                this.queueListener(); // Unsubscribe
+            }
+            
+            // Get match data to determine our role
+            const matchRef = ref(this.db, `rps_matches/${matchId}`);
+            const snapshot = await get(matchRef);
+            const matchData = snapshot.val();
+            
+            if (!matchData) {
+                this.ui.showToast("Match no longer available");
+                this.cancelRandomDuel();
+                return;
+            }
+            
+            this.state.roomId = matchId;
+            this.state.myId = matchData.player1.uid === this.state.playerUid ? 'player1' : 'player2';
+            this.state.mode = 'random';
+            
+            // Update UI to show opponent found
+            document.getElementById('random-loader').style.display = 'none';
+            document.getElementById('found-opponent').style.display = 'block';
+            const opponentName = this.state.myId === 'player1' ? matchData.player2.name : matchData.player1.name;
+            document.getElementById('opponent-name').textContent = opponentName;
+            
+            // Start countdown
+            let countdown = 3;
+            const countdownElement = document.getElementById('countdown-timer');
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    countdownElement.textContent = `Starting in ${countdown}...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.textContent = "GO!";
+                    
+                    // Transition to game after a brief pause
+                    setTimeout(() => {
+                        this.startRandomGame(matchId);
+                    }, 1000);
+                }
+            }, 1000);
+            
+            // Set up match listener
+            this.setupRandomMatchListener(matchId);
+        }
+        
+        startRandomGame(matchId) {
+            this.state.roomId = matchId;
+            this.ui.showGame('single', "Random Duel");
+            document.title = `Snaplyn Battle vs ${this.getOpponentName()}`;
+        }
+        
+        setupRandomMatchListener(matchId) {
+            const matchRef = ref(this.db, `rps_matches/${matchId}`);
+            
+            this.randomRoomListener = onValue(matchRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) {
+                    // Match was deleted
+                    this.ui.showToast("Opponent disconnected");
+                    this.leaveRandomMatch();
+                    return;
+                }
+                
+                // Check for moves
+                if (data.player1.move && data.player2.move) {
+                    // Both players have moved
+                    this.resolveRandomGame(data.player1.move, data.player2.move);
+                }
+                
+                // Check for rematch requests
+                if (data.rematchRequested && data.rematchRequested !== this.state.playerUid && !this.rematchRequested) {
+                    document.getElementById('rematch-status').textContent = "Opponent wants a rematch!";
+                    document.getElementById('rematch-options').style.display = 'block';
+                    document.getElementById('game-end-options').style.display = 'none';
+                }
+                
+                // Check for reset
+                if (data.status === 'resetting') {
+                    this.resetRandomRound();
+                }
+            });
+            
+            // Set up disconnect cleanup
+            onDisconnect(matchRef.child(this.state.myId).child('ready')).set(false);
+        }
+        
+        async submitRandomMove(move) {
+            if (!this.state.roomId) return;
+            
+            const movePath = `rps_matches/${this.state.roomId}/${this.state.myId}/move`;
+            await set(ref(this.db, movePath), move);
+            
+            // Update activity timestamp
+            await update(ref(this.db, `rps_matches/${this.state.roomId}`), {
+                lastActivity: Date.now()
+            });
+            
+            this.ui.toggleLoading(true, "Waiting for opponent...");
+        }
+        
+        resolveRandomGame(p1Move, p2Move) {
+            const p1Name = this.state.myId === 'player1' ? 'You' : 'Opponent';
+            const p2Name = this.state.myId === 'player2' ? 'You' : 'Opponent';
+            const result = this.logic.getWinner(p1Move, p2Move);
+            
+            // Update scores
+            if (result !== 0) {
+                const didIWin = (this.state.myId === 'player1' && result === 1) || 
+                               (this.state.myId === 'player2' && result === 2);
+                if (didIWin) this.state.scores.w++; else this.state.scores.l++;
+                this.ui.updateScore(this.state.scores);
+            }
+            
+            let winText = "DRAW";
+            if (result === 1) winText = `${p1Name} WINS!`;
+            if (result === 2) winText = `${p2Name} WINS!`;
+            
+            // Adjust text for "You" context
+            if (result === 0) {
+                winText = "DRAW";
+            } else {
+                const isPlayer1 = this.state.myId === 'player1';
+                const iWon = (isPlayer1 && result === 1) || (!isPlayer1 && result === 2);
+                winText = iWon ? "VICTORY!" : "DEFEAT";
+            }
+            
+            this.ui.showResult(p1Move, p2Move, p1Name, p2Name, winText, result);
+            
+            // Show rematch options for random duels
+            if (this.state.mode === 'random') {
+                document.getElementById('rematch-options').style.display = 'block';
+                document.getElementById('game-end-options').style.display = 'none';
+            }
+        }
+        
+        async requestRematch() {
+            if (!this.state.roomId) return;
+            
+            this.rematchRequested = true;
+            await update(ref(this.db, `rps_matches/${this.state.roomId}`), {
+                rematchRequested: this.state.playerUid
+            });
+            
+            document.getElementById('rematch-status').textContent = "Rematch requested. Waiting for opponent...";
+        }
+        
+        async resetRandomRound() {
+            if (!this.state.roomId) return;
+            
+            // Reset local state
+            this.state.p1Move = null;
+            this.state.p2Move = null;
+            this.rematchRequested = false;
+            
+            // Reset in database
+            await update(ref(this.db, `rps_matches/${this.state.roomId}`), {
+                player1: { ...this.getPlayerData('player1'), move: null },
+                player2: { ...this.getPlayerData('player2'), move: null },
+                status: 'playing',
+                rematchRequested: null,
+                lastActivity: Date.now()
+            });
+            
+            this.ui.resetGameUI('single');
+            document.getElementById('rematch-options').style.display = 'none';
+            document.getElementById('game-end-options').style.display = 'block';
+        }
+        
+        cancelRandomDuel() {
+            clearInterval(this.searchTimer);
+            
+            if (this.queueListener) {
+                this.queueListener(); // Unsubscribe
+            }
+            
+            // Remove from queue
+            remove(ref(this.db, `rps_random_queue/${this.state.playerUid}`));
+            
+            // Reset state
+            this.state.mode = null;
+            this.state.roomId = null;
+            
+            this.ui.navigate('view-menu');
+        }
+        
+        leaveRandomMatch() {
+            if (this.randomRoomListener) {
+                this.randomRoomListener(); // Unsubscribe
+            }
+            
+            // Clean up match if we're leaving
+            if (this.state.roomId) {
+                remove(ref(this.db, `rps_matches/${this.state.roomId}`));
+            }
+            
+            location.reload();
+        }
+        
+        getQueueEntry() {
+            return {
+                playerName: this.state.playerName,
+                playerUid: this.state.playerUid,
+                timestamp: Date.now(),
+                status: 'searching',
+                gameType: 'rps'
+            };
+        }
+        
+        getPlayerData(playerRole) {
+            // Get current player data from match
+            const matchRef = ref(this.db, `rps_matches/${this.state.roomId}/${playerRole}`);
+            // This would need to be implemented with a get() call
+            return { uid: '', name: '', move: null, ready: false };
+        }
+        
+        getOpponentName() {
+            // This would need to be implemented with actual match data
+            return "Opponent";
+        }
+        
+        async updateOnlinePlayers() {
+            get(ref(this.db, 'rps_random_queue')).then((snapshot) => {
+                const queue = snapshot.val();
+                let count = 0;
+                
+                if (queue) {
+                    Object.keys(queue).forEach(playerId => {
+                        if (queue[playerId].status === 'searching' && 
+                            queue[playerId].gameType === 'rps') {
+                            count++;
+                        }
+                    });
+                }
+                
+                document.getElementById('players-online').textContent = count;
+            });
+        }
+        
+        async cleanupOldData() {
+            const now = Date.now();
+            const fiveMinutesAgo = now - (5 * 60 * 1000);
+            const thirtySecondsAgo = now - 30000;
+            
+            // Clean old queue entries
+            get(ref(this.db, 'rps_random_queue')).then((snapshot) => {
+                const queue = snapshot.val();
+                if (!queue) return;
+                
+                const updates = {};
+                Object.keys(queue).forEach(playerId => {
+                    const player = queue[playerId];
+                    if (player.timestamp < thirtySecondsAgo && player.status === 'searching') {
+                        updates[`rps_random_queue/${playerId}`] = null;
+                    }
+                });
+                
+                if (Object.keys(updates).length > 0) {
+                    update(ref(this.db), updates);
+                }
+            });
+            
+            // Clean old matches
+            get(ref(this.db, 'rps_matches')).then((snapshot) => {
+                const matches = snapshot.val();
+                if (!matches) return;
+                
+                const updates = {};
+                Object.keys(matches).forEach(matchId => {
+                    const match = matches[matchId];
+                    if (match.createdAt < fiveMinutesAgo) {
+                        updates[`rps_matches/${matchId}`] = null;
+                    }
+                });
+                
+                if (Object.keys(updates).length > 0) {
+                    update(ref(this.db), updates);
+                }
+            });
+        }
+
+        // --- LOCAL LOGIC ---
+        submitMove(move) {
+            if (this.state.mode === 'pvc') {
+                const cpuMove = this.logic.getRandomMove();
+                this.resolveGame(move, cpuMove, 'You', 'AI');
+            } else if (this.state.mode === 'pvf') {
+                this.sendFriendMove(move);
+            } else if (this.state.mode === 'random') {
+                this.submitRandomMove(move);
+            }
+        }
+
+        localMove(player, move) {
+            if (player === 1) {
+                this.state.p1Move = move;
+                this.ui.lockLocalPlayer(1);
+            } else {
+                this.state.p2Move = move;
+                this.ui.lockLocalPlayer(2);
+            }
+
+            if (this.state.p1Move && this.state.p2Move) {
+                setTimeout(() => {
+                    this.resolveGame(this.state.p1Move, this.state.p2Move, 'Player 1', 'Player 2');
+                }, 500);
+            }
+        }
+
+        resolveGame(m1, m2, n1, n2) {
+            const result = this.logic.getWinner(m1, m2); // 0=draw, 1=p1, 2=p2
+            
+            // Update Stats (skip for local PvP)
+            if (this.state.mode !== 'pvp' && this.state.mode !== 'random') {
+                const didIWin = (this.state.myId === 'p2') ? (result === 2) : (result === 1);
+                if (result !== 0) {
+                    if (didIWin) this.state.scores.w++; else this.state.scores.l++;
+                    this.ui.updateScore(this.state.scores);
+                }
+            }
+            
+            // For random mode, scoring is handled separately
+            if (this.state.mode === 'random') {
+                this.resolveRandomGame(m1, m2);
+                return;
+            }
+
+            let winText = "DRAW";
+            if (result === 1) winText = `${n1} WINS!`;
+            if (result === 2) winText = `${n2} WINS!`;
+
+            // Adjust text for context
+            if (this.state.mode === 'pvf') {
+                if (result === 0) winText = "DRAW";
+                else winText = (result === 1 && this.state.myId === 'p1') || (result === 2 && this.state.myId === 'p2') ? "VICTORY!" : "DEFEAT";
+            } else if (this.state.mode === 'pvc') {
+                if (result === 1) winText = "VICTORY!";
+                if (result === 2) winText = "DEFEAT";
+            }
+
+            this.ui.showResult(m1, m2, n1, n2, winText, result);
+        }
+
+        resetRound() {
+            this.state.p1Move = null;
+            this.state.p2Move = null;
+            
+            if (this.state.mode === 'pvf') {
+                update(ref(this.db, `rooms/${this.state.roomId}`), { 
+                    status: 'resetting',
+                    p1Move: null, 
+                    p2Move: null 
+                });
+            } else if (this.state.mode === 'random') {
+                this.resetRandomRound();
+            } else {
+                this.ui.resetGameUI(this.state.mode);
+            }
+        }
+
+        // --- FRIEND MULTIPLAYER FUNCTIONS ---
+        initFriendMultiplayer(existingRoomId) {
+            this.ui.navigate('view-lobby');
+            
+            if (existingRoomId) {
+                // Joining
+                this.state.roomId = existingRoomId;
+                this.state.myId = 'p2';
+                const roomRef = ref(this.db, `rooms/${existingRoomId}`);
+                update(roomRef, { p2Status: 'connected' });
+                this.ui.setLobbyStatus("Joining Arena...");
+            } else {
+                // Hosting
+                this.state.roomId = Math.random().toString(36).substring(2, 8);
+                this.state.myId = 'p1';
+                const roomRef = ref(this.db, `rooms/${this.state.roomId}`);
+                set(roomRef, { p1Status: 'connected', p2Status: 'waiting' });
+                onDisconnect(roomRef).remove();
+                
+                this.ui.showInviteLink(window.location.origin + window.location.pathname + "?r=" + this.state.roomId);
+            }
+
+            // Listen to changes
+            onValue(ref(this.db, `rooms/${this.state.roomId}`), (snap) => {
+                const data = snap.val();
+                if (!data) return;
+
+                // Connection Handshake
+                if (data.p1Status === 'connected' && data.p2Status === 'connected' && document.getElementById('view-lobby').classList.contains('active')) {
+                    this.ui.showGame('single', "Friend Connected");
+                }
+
+                // Gameplay Sync
+                if (data.p1Move && data.p2Move && !document.getElementById('view-result').classList.contains('active')) {
+                     this.resolveGame(data.p1Move, data.p2Move, 
+                        this.state.myId === 'p1' ? 'You' : 'Opponent', 
+                        this.state.myId === 'p2' ? 'You' : 'Opponent'
+                    );
+                }
+
+                // Reset Sync
+                if (data.status === 'resetting') {
+                    update(ref(this.db, `rooms/${this.state.roomId}`), { status: 'playing' });
+                    this.ui.resetGameUI('single');
+                }
+            });
+        }
+
+        sendFriendMove(move) {
+            this.ui.toggleLoading(true, "Waiting for friend...");
+            const updateData = {};
+            updateData[`${this.state.myId}Move`] = move;
+            update(ref(this.db, `rooms/${this.state.roomId}`), updateData);
+        }
+
+        copyLink() {
+            const text = document.getElementById('invite-link').innerText;
+            navigator.clipboard.writeText(text);
+            this.ui.showToast("Link Copied!");
+        }
+    }
+
+    // --- UI MANAGER ---
+    class UIManager {
+        constructor() {
+            this.confettiCtx = document.getElementById('confetti-canvas').getContext('2d');
+            this.resizeCanvas();
+            window.addEventListener('resize', () => this.resizeCanvas());
+        }
+
+        resizeCanvas() {
+            this.confettiCtx.canvas.width = window.innerWidth;
+            this.confettiCtx.canvas.height = window.innerHeight;
+        }
+
+        navigate(viewId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        showGame(layout, title) {
+            this.navigate('view-game');
+            document.getElementById('game-title').innerText = title;
+            document.getElementById('layout-single').style.display = (layout === 'single') ? 'flex' : 'none';
+            document.getElementById('layout-local').style.display = (layout === 'local') ? 'flex' : 'none';
+            this.toggleLoading(false);
+        }
+
+        lockLocalPlayer(pNum) {
+            document.getElementById(`zone-p${pNum}`).classList.add('ready');
+        }
+
+        showInviteLink(url) {
+            document.getElementById('invite-area').style.display = 'block';
+            document.getElementById('lobby-loader').style.display = 'block';
+            document.getElementById('lobby-status').innerText = "Waiting for player to join...";
+            document.getElementById('invite-link').innerText = url;
+        }
+
+        setLobbyStatus(msg) {
+            document.getElementById('lobby-status').innerText = msg;
+        }
+
+        toggleLoading(isActive, text = "") {
+            const container = document.querySelector('.choice-container');
+            if (isActive) {
+                container.style.opacity = '0.3';
+                container.style.pointerEvents = 'none';
+                document.getElementById('game-sub').innerText = text;
+            } else {
+                container.style.opacity = '1';
+                container.style.pointerEvents = 'all';
+                document.getElementById('game-sub').innerText = "Make your move";
+            }
+        }
+
+        showResult(m1, m2, n1, n2, resultText, code) {
+            this.navigate('view-result');
+            const emojis = { stone: '🪨', paper: '📄', scissors: '✂️' };
+            
+            document.getElementById('res-p1-emoji').innerText = emojis[m1];
+            document.getElementById('res-p2-emoji').innerText = emojis[m2];
+            document.getElementById('res-p1-name').innerText = n1;
+            document.getElementById('res-p2-name').innerText = n2;
+            
+            const title = document.getElementById('win-msg');
+            title.innerText = resultText;
+            
+            if (resultText.includes("VICTORY") || resultText.includes("WIN")) {
+                title.style.color = "var(--success)";
+                this.fireConfetti();
+            } else if (resultText.includes("DEFEAT")) {
+                title.style.color = "var(--danger)";
+            } else {
+                title.style.color = "var(--text-muted)";
+            }
+            
+            // Hide rematch options for non-random modes
+            if (Game.state.mode !== 'random') {
+                document.getElementById('rematch-options').style.display = 'none';
+                document.getElementById('game-end-options').style.display = 'block';
+            }
+        }
+
+        resetGameUI(mode) {
+            document.querySelectorAll('.player-zone').forEach(el => el.classList.remove('ready'));
+            this.navigate('view-game');
+            this.toggleLoading(false);
+        }
+
+        updateScore(scores) {
+            document.getElementById('scoreboard').innerText = `W: ${scores.w} | L: ${scores.l}`;
+        }
+
+        showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        // Simple Confetti Implementation
+        fireConfetti() {
+            let particles = [];
+            const colors = ['#3b82f6', '#ec4899', '#10b981', '#f59e0b'];
+            for(let i=0; i<100; i++) {
+                particles.push({
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight / 2,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 100
+                });
+            }
+            
+            const animate = () => {
+                const ctx = this.confettiCtx;
+                ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
+                particles.forEach((p, i) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life--;
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, 6, 6);
+                    if(p.life <= 0) particles.splice(i, 1);
+                });
+                if(particles.length > 0) requestAnimationFrame(animate);
+            };
+            animate();
+        }
+    }
+
+    // --- PURE LOGIC ---
+    class GameLogic {
+        getRandomMove() {
+            const moves = ['stone', 'paper', 'scissors'];
+            return moves[Math.floor(Math.random() * 3)];
+        }
+
+        getWinner(p1, p2) {
+            if (p1 === p2) return 0; // Draw
+            const rules = { stone: 'scissors', paper: 'stone', scissors: 'paper' };
+            return (rules[p1] === p2) ? 1 : 2; // 1 if P1 wins, 2 if P2 wins
+        }
+    }
+
+    // --- INITIALIZATION ---
+    window.Game = new GameManager();
+
+</script>
+</body>
+</html>
