@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Forest Run 3D - Ultimate Multiplayer</title>
+    <title>Forest Run 3D - Fixed Multiplayer</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
 
@@ -124,7 +124,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getDatabase, ref, set, onValue, update, remove, push, onDisconnect, get, query, orderByChild, equalTo, limitToFirst, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, remove, push, onDisconnect, get, query, orderByChild, equalTo, limitToFirst, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
         // CONFIG
         const firebaseConfig = {
@@ -148,11 +148,12 @@
 
         let gameState = { isPlaying: false, speed: CONFIG.startSpeed, lane: 0, distance: 0, vehicle: 'car', isMultiplayer: false };
         let mpState = { roomId: null, playerId: null, opponentId: null, opponentLane: 0, opponentStatus: 'alive', rematchRequested: false, amIHost: false };
-        
+        let roomSubscription = null;
+
         let scene, camera, renderer, composer, clock, envMap;
         let playerCar, opponentCar, obstacles = [], scenery = [], roadLines = [];
         let touchStartX = 0, targetLaneX = 0;
-        let generatedMap = []; // The shared traffic map
+        let generatedMap = []; 
 
         // UI Refs
         const scoreEl = document.getElementById('score-display');
@@ -162,49 +163,44 @@
         const gameOverScreen = document.getElementById('game-over-screen');
         const customScreen = document.getElementById('custom-screen');
 
-        // --- AUTH & FRIEND LINK LOGIC ---
-        // 1. Check for link immediately to set UI
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomCode = urlParams.get('room');
+        // --- AUTH & URL HANDLING (FIXED RACE CONDITION) ---
         
-        if(roomCode) {
-            // Bypass everything, go to connecting screen immediately
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoJoinRoomId = urlParams.get('room');
+
+        // If URL has room, immediately show loading to prevent flashing start screen
+        if(autoJoinRoomId) {
             startScreen.classList.add('hidden');
             lobbyScreen.classList.remove('hidden');
             document.getElementById('invite-area').classList.add('hidden');
-            document.getElementById('lobby-status').innerText = "CONNECTING TO SERVER...";
+            document.getElementById('lobby-status').innerText = "AUTHENTICATING...";
         }
 
-        signInAnonymously(auth).then(() => console.log("Auth Success")).catch(e => console.error(e));
+        signInAnonymously(auth).catch(e => { console.error(e); alert("Network Error"); });
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 mpState.playerId = user.uid;
                 
-                // Cleanup old queue
+                // Cleanup potentially stuck queues from previous sessions
                 remove(ref(db, `carr_matchmaking/${user.uid}`));
 
-                // 2. NOW we execute the friend join logic, once we have a User ID
-                if(roomCode) {
-                    // Try to join immediately without waiting for timeouts
-                    joinFriendRoom(roomCode);
+                // Only NOW do we attempt to join the room
+                if(autoJoinRoomId) {
+                    joinFriendRoom(autoJoinRoomId);
                 }
             }
         });
 
-        // --- DETERMINISTIC MAP GENERATOR (FAIRNESS) ---
+        // --- DETERMINISTIC MAP ---
         function generateTrafficMap(seedVal) {
             generatedMap = [];
             let localSeed = seedVal % 2147483647;
             if (localSeed <= 0) localSeed += 2147483646;
-
-            // Simple LCG Random
             const random = () => {
                 localSeed = (localSeed * 16807) % 2147483647;
                 return (localSeed - 1) / 2147483646;
             };
-
-            // Pre-calculate 150 obstacles (Enough for a very long run)
             for(let i = 0; i < 150; i++) {
                 const zPos = -60 - (i * 35);
                 const lane = Math.floor(random() * 3) - 1; 
@@ -213,7 +209,7 @@
             }
         }
 
-        // --- INIT & 3D SETUP ---
+        // --- INIT 3D ---
         function init() {
             scene = new THREE.Scene();
             scene.background = new THREE.Color(CONFIG.colors.sky);
@@ -240,7 +236,6 @@
             createWorld();
             updatePlayerModel();
             
-            // Opponent Car
             opponentCar = createCar(CONFIG.colors.opponent, true, 'car');
             opponentCar.visible = false;
             opponentCar.children.forEach(c => { if(c.material && c.material.emissive) c.material.emissive.setHex(CONFIG.colors.opponent); });
@@ -259,7 +254,6 @@
                 if (Math.abs(e.changedTouches[0].clientX - touchStartX) > 40) switchLane(e.changedTouches[0].clientX - touchStartX > 0 ? 1 : -1);
             });
 
-            // MENU BINDINGS
             document.getElementById('start-btn').onclick = () => startGame(false);
             document.getElementById('restart-btn').onclick = () => { if(gameState.isMultiplayer) requestRematch(); else startGame(false); };
             document.getElementById('custom-btn').onclick = () => { startScreen.classList.add('hidden'); customScreen.classList.remove('hidden'); };
@@ -275,43 +269,41 @@
             loop();
         }
 
-        // --- NETWORKING: RANDOM DUEL & FRIEND ---
+        // --- ROBUST NETWORKING ---
 
         function startRandomMatchmaking() {
             mpMenu.classList.add('hidden');
             lobbyScreen.classList.remove('hidden');
             document.getElementById('invite-area').classList.add('hidden');
-            document.getElementById('lobby-status').innerText = "SEARCHING...";
+            document.getElementById('lobby-status').innerText = "SEARCHING DUEL...";
 
             const queueRef = ref(db, 'carr_matchmaking');
-            // Look for waiting players
             const waitingQuery = query(queueRef, orderByChild('status'), equalTo('waiting'), limitToFirst(1));
 
             get(waitingQuery).then((snapshot) => {
                 if (snapshot.exists()) {
-                    // JOIN EXISTING
+                    // FOUND HOST
                     const hostId = Object.keys(snapshot.val())[0];
                     const hostData = snapshot.val()[hostId];
                     if (hostId !== mpState.playerId) {
                         mpState.roomId = hostData.roomId;
                         mpState.amIHost = false;
-                        remove(ref(db, `carr_matchmaking/${hostId}`)); // Close ticket
+                        remove(ref(db, `carr_matchmaking/${hostId}`));
                         joinRoomInternal(mpState.roomId);
-                        // Trigger Game Start
-                        update(ref(db, `carr_rooms/${mpState.roomId}`), { status: 'starting' });
                     }
                 } else {
-                    // CREATE NEW
+                    // BECOME HOST
                     const newRoomRef = push(ref(db, 'carr_rooms'));
                     mpState.roomId = newRoomRef.key;
                     mpState.amIHost = true;
-                    // Generate Seed
+                    
                     const seed = Math.floor(Math.random() * 100000);
+                    const roomData = { status: 'waiting', seed: seed, host: mpState.playerId, players: {} };
+                    roomData.players[mpState.playerId] = { lane: 0, status: 'alive', rematch: false };
+
+                    set(ref(db, `carr_rooms/${mpState.roomId}`), roomData);
                     
-                    set(ref(db, `carr_rooms/${mpState.roomId}`), { status: 'waiting', seed: seed });
-                    set(ref(db, `carr_rooms/${mpState.roomId}/players/${mpState.playerId}`), { lane: 0, status: 'alive', rematch: false });
-                    
-                    // Create waiting ticket
+                    // Publicize in Matchmaking
                     set(ref(db, `carr_matchmaking/${mpState.playerId}`), { roomId: mpState.roomId, status: 'waiting', timestamp: serverTimestamp() });
                     
                     onDisconnect(ref(db, `carr_matchmaking/${mpState.playerId}`)).remove();
@@ -331,122 +323,159 @@
             const newRoomRef = push(ref(db, 'carr_rooms'));
             mpState.roomId = newRoomRef.key;
             mpState.amIHost = true;
+            
             const seed = Math.floor(Math.random() * 100000);
-
             const link = window.location.origin + window.location.pathname + "?room=" + mpState.roomId;
             document.getElementById('invite-link').value = link;
 
-            set(ref(db, `carr_rooms/${mpState.roomId}`), { status: 'waiting', seed: seed });
-            set(ref(db, `carr_rooms/${mpState.roomId}/players/${mpState.playerId}`), { lane: 0, status: 'alive', rematch: false });
+            const roomData = { status: 'waiting', seed: seed, host: mpState.playerId, players: {} };
+            roomData.players[mpState.playerId] = { lane: 0, status: 'alive', rematch: false };
+
+            set(ref(db, `carr_rooms/${mpState.roomId}`), roomData);
             
+            // Host Disconnect destroys the room
             onDisconnect(ref(db, `carr_rooms/${mpState.roomId}`)).remove();
+            
             listenToRoom(mpState.roomId);
         }
 
         function joinFriendRoom(roomId) {
             mpState.roomId = roomId;
             mpState.amIHost = false;
-            
-            document.getElementById('lobby-status').innerText = "JOINING ROOM...";
+            document.getElementById('lobby-status').innerText = "CONNECTING...";
 
-            get(ref(db, `carr_rooms/${roomId}`)).then((snap) => {
-                if(snap.exists()) {
-                    // Check if room is full
-                    if(snap.val().players && Object.keys(snap.val().players).length >= 2) {
-                        alert("Room is full!");
+            // Safety timeout
+            const connectionTimeout = setTimeout(() => {
+                if(!gameState.isMultiplayer) {
+                    alert("Connection Timed Out. Room may be closed.");
+                    backToMain();
+                }
+            }, 8000);
+
+            const roomRef = ref(db, `carr_rooms/${roomId}`);
+            get(roomRef).then((snap) => {
+                clearTimeout(connectionTimeout);
+                
+                if(!snap.exists()) {
+                    alert("Room does not exist.");
+                    backToMain();
+                    return;
+                }
+                const data = snap.val();
+                if(data.status !== 'waiting' && data.status !== 'starting') {
+                    alert("Game already in progress.");
+                    backToMain();
+                    return;
+                }
+                if(data.players && Object.keys(data.players).length >= 2) {
+                    // Check if I am already in there (refresh case)
+                    if(!data.players[mpState.playerId]) {
+                        alert("Room is full.");
                         backToMain();
                         return;
                     }
-                    joinRoomInternal(roomId);
-                    // Crucial: Tell Host we are ready
-                    update(ref(db, `carr_rooms/${roomId}`), { status: 'starting' });
-                } else {
-                    alert("Room expired or invalid.");
-                    backToMain();
                 }
+
+                joinRoomInternal(roomId);
+
             }).catch(e => {
-                 console.error(e);
-                 alert("Connection failed.");
-                 backToMain();
+                console.error(e);
+                alert("Connection failed.");
+                backToMain();
             });
         }
 
         function joinRoomInternal(roomId) {
+            // Add myself to players
             const myRef = ref(db, `carr_rooms/${roomId}/players/${mpState.playerId}`);
             set(myRef, { lane: 0, status: 'alive', rematch: false });
+            
+            // Guest disconnect only removes guest
             onDisconnect(myRef).remove();
+            
             listenToRoom(roomId);
         }
 
-        // --- ROOM LISTENER & STATE MACHINE ---
+        // --- CENTRAL STATE MACHINE ---
         function listenToRoom(roomId) {
             gameState.isMultiplayer = true;
-            
-            onValue(ref(db, `carr_rooms/${roomId}`), (snapshot) => {
+            const roomRef = ref(db, `carr_rooms/${roomId}`);
+
+            roomSubscription = onValue(roomRef, (snapshot) => {
                 const data = snapshot.val();
+                
+                // 1. Room Deleted check
                 if(!data) {
-                    if(gameState.isPlaying || !lobbyScreen.classList.contains('hidden')) {
-                        alert("Room closed.");
+                    if(gameState.isMultiplayer) {
+                        alert("Connection lost or Host left.");
                         backToMain();
                     }
                     return;
                 }
 
-                // --- 1. GAME START SEQUENCE ---
+                // 2. Player Counting & Handshake
+                const players = data.players || {};
+                const uids = Object.keys(players);
+                const oppId = uids.find(id => id !== mpState.playerId);
+                
+                // HOST LOGIC: Detect Friend and Start
+                if(mpState.amIHost && data.status === 'waiting' && uids.length === 2) {
+                    document.getElementById('lobby-status').innerText = "PLAYER FOUND! STARTING...";
+                    // ATOMIC STATE CHANGE: Only Host does this
+                    update(roomRef, { status: 'starting' });
+                }
+
+                // UI UPDATE: Guest Waiting
+                if(!mpState.amIHost && data.status === 'waiting') {
+                     document.getElementById('lobby-status').innerText = "WAITING FOR HOST...";
+                }
+
+                // 3. GAME START (Both Clients)
                 if(data.status === 'starting') {
-                    // Generate map from seed
+                    // Generate Map
                     generateTrafficMap(data.seed || 12345);
                     
-                    // Trigger Countdown
                     if(!gameState.isPlaying && document.getElementById('countdown-overlay').style.display !== 'block') {
                         startCountdown();
-                        // Host locks state to playing
+                        // Host locks state to playing after delay
                         if(mpState.amIHost) {
                             setTimeout(() => {
-                                update(ref(db, `carr_rooms/${roomId}`), { status: 'playing' });
+                                update(roomRef, { status: 'playing' });
                             }, 500);
                         }
                     }
                 }
 
-                // --- 2. PLAYER SYNC ---
-                if(data.players) {
-                    const uids = Object.keys(data.players);
-                    const oppId = uids.find(id => id !== mpState.playerId);
+                // 4. OPPONENT SYNC
+                if(oppId && players[oppId]) {
+                    mpState.opponentId = oppId;
+                    mpState.opponentLane = players[oppId].lane;
+                    mpState.opponentStatus = players[oppId].status;
 
-                    if(oppId) {
-                        mpState.opponentId = oppId;
-                        mpState.opponentLane = data.players[oppId].lane;
-                        mpState.opponentStatus = data.players[oppId].status;
-
-                        // Win/Loss
-                        if(gameState.isPlaying && mpState.opponentStatus === 'dead' && gameState.status !== 'dead') {
-                            gameOver(true); 
-                        }
-
-                        // Rematch Sync
-                        const myData = data.players[mpState.playerId];
-                        const oppData = data.players[oppId];
-
-                        if(!gameState.isPlaying) {
-                            if(oppData.rematch && !mpState.rematchRequested) {
-                                document.getElementById('rematch-btn').innerText = "Accept Rematch";
-                            }
-                            // REMATCH TRIGGER
-                            if(mpState.amIHost && myData.rematch && oppData.rematch) {
-                                update(ref(db, `carr_rooms/${roomId}/players/${mpState.playerId}`), { rematch: false, status: 'alive', lane: 0 });
-                                update(ref(db, `carr_rooms/${roomId}/players/${oppId}`), { rematch: false, status: 'alive', lane: 0 });
-                                update(ref(db, `carr_rooms/${roomId}`), { status: 'starting' });
-                            }
-                        }
-                    } else if (gameState.isPlaying && uids.length < 2) {
-                        gameOver(true); // Opponent Disconnected
+                    if(gameState.isPlaying && mpState.opponentStatus === 'dead' && gameState.status !== 'dead') {
+                        gameOver(true); 
                     }
+
+                    // Rematch Logic
+                    if(!gameState.isPlaying && data.status !== 'starting') {
+                        if(players[oppId].rematch && !mpState.rematchRequested) {
+                            document.getElementById('rematch-btn').innerText = "Accept Rematch";
+                        }
+                        if(mpState.amIHost && players[mpState.playerId].rematch && players[oppId].rematch) {
+                            // Reset State
+                            update(ref(db, `carr_rooms/${roomId}/players/${mpState.playerId}`), { rematch: false, status: 'alive', lane: 0 });
+                            update(ref(db, `carr_rooms/${roomId}/players/${oppId}`), { rematch: false, status: 'alive', lane: 0 });
+                            update(roomRef, { status: 'starting' });
+                        }
+                    }
+                } else if (gameState.isPlaying && uids.length < 2) {
+                    // Opponent Left mid-game
+                    gameOver(true); 
                 }
             });
         }
 
-        // --- GAMEPLAY LOGIC ---
+        // --- GAMEPLAY ---
 
         function requestRematch() {
             mpState.rematchRequested = true;
@@ -464,10 +493,8 @@
             targetLaneX = 0;
             playerCar.position.x = 0;
             
-            // Clear old obstacles
             obstacles.forEach(o => scene.remove(o)); obstacles = [];
             
-            // Spawn initial set from Generated Map
             if(gameState.isMultiplayer && generatedMap.length > 0) {
                 generatedMap.forEach(d => {
                     const ob = createCar(getObstacleColor(d.colorIdx), false, 'car');
@@ -509,7 +536,7 @@
             if(isMP) {
                 document.getElementById('label-remote').classList.remove('hidden');
                 opponentCar.visible = true;
-                opponentCar.position.z = 0; // Reset opponent Z
+                opponentCar.position.z = 0; 
                 document.getElementById('rematch-btn').classList.remove('hidden');
                 document.getElementById('rematch-btn').innerText = "Request Rematch";
             } else {
@@ -526,7 +553,6 @@
             if (next >= -1 && next <= 1) { 
                 gameState.lane = next; 
                 targetLaneX = next * CONFIG.laneWidth; 
-                
                 if(gameState.isMultiplayer && mpState.roomId) {
                     update(ref(db, `carr_rooms/${mpState.roomId}/players/${mpState.playerId}`), { lane: gameState.lane });
                 }
@@ -561,7 +587,6 @@
             composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
         }
 
-        // --- LOOP ---
         function loop() {
             requestAnimationFrame(loop);
             const delta = clock.getDelta();
@@ -571,25 +596,17 @@
                 gameState.distance += gameState.speed * delta;
                 scoreEl.innerText = Math.floor(gameState.distance).toString().padStart(4, '0') + "m";
 
-                // Local Player Physics
                 playerCar.position.x = THREE.MathUtils.lerp(playerCar.position.x, targetLaneX, delta * 12);
                 playerCar.rotation.z = (playerCar.position.x - targetLaneX) * -0.12;
 
-                // Opponent Physics (AGGRESSIVE SNAP & HIGH LERP)
                 if(gameState.isMultiplayer && opponentCar) {
                     const tx = mpState.opponentLane * CONFIG.laneWidth;
-                    
-                    // Anti-Lag: If opponent is reasonably close, snap them. If far, lerp fast.
                     const dist = Math.abs(opponentCar.position.x - tx);
-                    if(dist < 0.2) {
-                        opponentCar.position.x = tx; // Instant Snap
-                    } else {
-                        opponentCar.position.x = THREE.MathUtils.lerp(opponentCar.position.x, tx, delta * 25); // High speed lerp (25)
-                    }
+                    if(dist < 0.2) opponentCar.position.x = tx; 
+                    else opponentCar.position.x = THREE.MathUtils.lerp(opponentCar.position.x, tx, delta * 25);
                     
                     opponentCar.rotation.z = (opponentCar.position.x - tx) * -0.12;
                     
-                    // Ghosting
                     const isSame = Math.abs(playerCar.position.x - opponentCar.position.x) < 2;
                     opponentCar.children.forEach(c => { if(c.material) { c.material.transparent = true; c.material.opacity = isSame ? 0.3 : 1.0; } });
 
@@ -597,27 +614,19 @@
                     updateLabel(opponentCar, document.getElementById('label-remote'), "OPPONENT");
                 }
 
-                // Camera
                 const time = clock.getElapsedTime();
                 const intensity = (gameState.speed / CONFIG.maxSpeed) * 0.04;
                 camera.position.x = (Math.sin(time * 60) * intensity) + (playerCar.position.x * 0.15);
                 camera.position.y = 5 + (Math.cos(time * 45) * intensity);
 
-                // World Scroll
                 const move = gameState.speed * delta;
                 roadLines.forEach(l => { l.position.z += move; if(l.position.z > 20) l.position.z -= 250; });
                 scenery.forEach(s => { s.position.z += move; if(s.position.z > 20) s.position.z = -200 - Math.random()*100; });
                 
-                // Obstacles & Collision
                 for(let i=obstacles.length-1; i>=0; i--) {
                     const ob = obstacles[i];
                     ob.position.z += move + (delta * 10); 
-                    
-                    // Loop obstacles for endless effect if map runs out
-                    if(ob.position.z > 20) {
-                         ob.position.z -= (obstacles.length * 35);
-                    }
-
+                    if(ob.position.z > 20) ob.position.z -= (obstacles.length * 35);
                     if(Math.abs(playerCar.position.x - ob.position.x) < 1.4 && Math.abs(playerCar.position.z - ob.position.z) < 3.2) {
                         gameOver(false);
                     }
@@ -625,11 +634,9 @@
             } else {
                 camera.position.x = Math.sin(clock.getElapsedTime()*0.5) * 3;
             }
-
             composer.render();
         }
 
-        // --- UTILS ---
         function updateLabel(obj, el, txt) {
             if(!obj.visible || !gameState.isPlaying) { el.style.opacity = 0; return; }
             const v = obj.position.clone(); v.y += 2; v.project(camera);
@@ -702,7 +709,6 @@
             scene.add(t); scenery.push(t);
         }
 
-        // SOLO Fallback
         function spawnObstacle(z) {
             const colors = [0x2980b9, 0xf39c12, 0x8e44ad, 0xffffff];
             const ob = createCar(colors[Math.floor(Math.random()*colors.length)], false, 'car');
@@ -724,12 +730,13 @@
             gameOverScreen.classList.remove('hidden');
         }
 
-        // GLOBALS
         window.backToMain = function() {
             if(mpState.roomId) {
-                remove(ref(db, `carr_matchmaking/${mpState.playerId}`));
-                remove(ref(db, `carr_rooms/${mpState.roomId}/players/${mpState.playerId}`));
+                if(mpState.amIHost) remove(ref(db, `carr_rooms/${mpState.roomId}`));
+                else remove(ref(db, `carr_rooms/${mpState.roomId}/players/${mpState.playerId}`));
             }
+            if(roomSubscription) roomSubscription();
+            
             mpState.roomId = null; gameState.isMultiplayer = false;
             window.history.pushState({}, document.title, window.location.pathname.split('?')[0]); 
             startScreen.classList.remove('hidden'); mpMenu.classList.add('hidden'); lobbyScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden');
