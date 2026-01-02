@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Forest Run 3D - Multiplayer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #020205;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hud-top {
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            text-shadow: 0 0 15px rgba(255,255,255,0.4);
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        #score-display {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 20px;
+            border-radius: 4px;
+            border-left: 4px solid #ffcc00;
+            backdrop-filter: blur(5px);
+        }
+
+        /* MASTERPIECE HOME SCREEN */
+        #start-screen, #game-over-screen, #custom-screen, #multiplayer-menu, #lobby-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            backdrop-filter: blur(15px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .hidden { opacity: 0; pointer-events: none !important; transform: scale(1.1); display: none !important; }
+
+        h1 {
+            color: white;
+            font-size: clamp(3rem, 10vw, 6rem);
+            margin: 0;
+            text-transform: uppercase;
+            font-style: italic;
+            font-weight: 900;
+            letter-spacing: -4px;
+            line-height: 0.85;
+            text-align: center;
+        }
+
+        .sub-tag {
+            color: #ffcc00;
+            font-size: 0.9rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            font-weight: 700;
+        }
+
+        .menu-v-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 300px;
+        }
+
+        button {
+            background: #fff;
+            border: none;
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #000;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+        }
+
+        button:hover {
+            background: #ffcc00;
+            transform: translateX(10px) skewX(-5deg);
+        }
+
+        button.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        button.danger {
+            background: rgba(255, 50, 50, 0.8);
+            color: white;
+        }
+
+        /* CUSTOMIZATION GRID */
+        .garage-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .vehicle-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            padding: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .vehicle-card.active {
+            border-color: #ffcc00;
+            background: rgba(255, 204, 0, 0.1);
+        }
+
+        .vehicle-card img { width: 80px; height: auto; margin-bottom: 10px; filter: invert(1); opacity: 0.8; }
+        .vehicle-card span { display: block; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 40px;
+            font-size: 0.7rem;
+            opacity: 0.4;
+            color: white;
+            letter-spacing: 2px;
+        }
+
+        /* MULTIPLAYER LABELS */
+        .player-label {
+            position: absolute;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+            transform: translate(-50%, -100%);
+            white-space: nowrap;
+            border: 1px solid #ffcc00;
+            transition: opacity 0.2s;
+        }
+
+        .mp-status {
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        #countdown-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            color: #ffcc00;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+            pointer-events: none;
+            display: none;
+            z-index: 100;
+        }
+    </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SMAAShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SMAAPass.js"></script>
+</head>
+<body>
+
+    <div id="game-container"></div>
+    <div id="ui-layer">
+        <div class="hud-top"><div id="score-display">0000m</div></div>
+        <div id="countdown-overlay">3</div>
+        <div id="label-local" class="player-label hidden">YOU</div>
+        <div id="label-remote" class="player-label hidden">OPPONENT</div>
+    </div>
+
+    <div id="start-screen">
+        <h1>FOREST<br>RUN</h1>
+        <div class="sub-tag">ULTIMATE EDITION</div>
+        
+        <div class="menu-v-stack">
+            <button id="start-btn">Launch Engine</button>
+            <button id="mp-menu-btn" style="background: linear-gradient(45deg, #ffcc00, #ff9900); border:none;">Multiplayer</button>
+            <button id="custom-btn" class="secondary">Garage / Custom</button>
+            <button id="settings-btn" class="secondary">Settings</button>
+        </div>
+        
+        <div class="controls-hint">USE ARROWS OR SWIPE TO DRIVE</div>
+    </div>
+
+    <div id="multiplayer-menu" class="hidden">
+        <h1>ONLINE</h1>
+        <div class="sub-tag">SELECT MODE</div>
+        <div class="menu-v-stack">
+            <button id="mp-random-btn">Random Duel</button>
+            <button id="mp-friend-btn">Play with Friend</button>
+            <button onclick="backToMain()" class="secondary">Back</button>
+        </div>
+    </div>
+
+    <div id="lobby-screen" class="hidden">
+        <h1 style="font-size: 3rem;">WAITING</h1>
+        <div class="sub-tag" id="lobby-status">SEARCHING FOR OPPONENT...</div>
+        <div id="invite-area" class="hidden" style="display:flex; flex-direction:column; gap:10px; align-items:center; margin-bottom:20px;">
+            <input type="text" id="invite-link" readonly style="padding:10px; width:250px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid #555; color:white;">
+            <button id="copy-btn" class="secondary" style="padding:10px; font-size:0.8rem;">Copy Link</button>
+        </div>
+        <button onclick="cancelMatchmaking()" class="secondary">Cancel</button>
+    </div>
+
+    <div id="custom-screen" class="hidden">
+        <h1>GARAGE</h1>
+        <div class="sub-tag">SELECT YOUR MACHINE</div>
+        
+        <div class="garage-grid">
+            <div class="vehicle-card active" onclick="selectVehicle('car')">
+                <span>CLASSIC RIG</span>
+            </div>
+            <div class="vehicle-card" onclick="selectVehicle('bike')">
+                <span>VOLT BIKE</span>
+            </div>
+            <div class="vehicle-card" onclick="selectVehicle('hyper')">
+                <span>HYPER BOLT</span>
+            </div>
+        </div>
+
+        <button onclick="closeCustom()">Back to Menu</button>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+        <h1 id="go-title">WASTED</h1>
+        <p class="sub-tag" id="go-subtitle">DISTANCE: <span id="final-score">0</span>M</p>
+        
+        <div class="menu-v-stack">
+            <button id="restart-btn">Try Again</button>
+            <button id="rematch-btn" class="hidden" style="background: #ffcc00;">Rematch</button>
+            <button onclick="backToMain()" class="secondary">Main Menu</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getDatabase, ref, set, onValue, update, remove, push, onDisconnect, get, child, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyALsegXQGNrzOGpM7uO6EE1dAB0TDvY9Qo",
+            authDomain: "carr-7a756.firebaseapp.com",
+            databaseURL: "https://carr-7a756-default-rtdb.firebaseio.com",
+            projectId: "carr-7a756",
+            storageBucket: "carr-7a756.firebasestorage.app",
+            messagingSenderId: "1052404189266",
+            appId: "1:1052404189266:web:e35db0e5e62e079ed6378b",
+            measurementId: "G-H713EXVQVH"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // --- GAME CONFIG & GLOBALS ---
+        const CONFIG = {
+            laneWidth: 3.5,
+            startSpeed: 40,
+            speedIncrement: 0.8,
+            maxSpeed: 110,
+            roadWidth: 12,
+            fogDensity: 0.01,
+            colors: {
+                sky: 0x020205,
+                grass: 0x081208,
+                road: 0x111111,
+                player: 0xff0000, 
+                opponent: 0x0088ff
+            }
+        };
+
+        let gameState = { isPlaying: false, speed: CONFIG.startSpeed, lane: 0, distance: 0, vehicle: 'car', isMultiplayer: false };
+        let mpState = { 
+            roomId: null, 
+            playerId: null, 
+            opponentId: null, 
+            isHost: false, 
+            status: 'idle', 
+            opponentLane: 0,
+            opponentStatus: 'alive',
+            rematchRequested: false
+        };
+
+        let scene, camera, renderer, composer, clock, envMap;
+        let playerCar, opponentCar, obstacles = [], scenery = [], roadLines = [];
+        let touchStartX = 0, targetLaneX = 0;
+        let seed = 12345; // Default seed
+
+        // DOM Elements
+        const scoreEl = document.getElementById('score-display'), finalScoreEl = document.getElementById('final-score');
+        const startScreen = document.getElementById('start-screen'), 
+              gameOverScreen = document.getElementById('game-over-screen'),
+              customScreen = document.getElementById('custom-screen'),
+              mpMenu = document.getElementById('multiplayer-menu'),
+              lobbyScreen = document.getElementById('lobby-screen'),
+              countdownEl = document.getElementById('countdown-overlay');
+
+        const labelLocal = document.getElementById('label-local');
+        const labelRemote = document.getElementById('label-remote');
+
+        // --- AUTH ---
+        signInAnonymously(auth).then(() => {
+            console.log("Signed in anonymously");
+            // Check URL for invite code
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomCode = urlParams.get('room');
+            if(roomCode) {
+                joinRoom(roomCode);
+            }
+        }).catch((error) => console.error(error));
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) mpState.playerId = user.uid;
+        });
+
+        // --- SEEDED RANDOM (LCG) ---
+        function setSeed(s) { seed = s % 2147483647; if(seed <= 0) seed += 2147483646; }
+        function M_rand() {
+            if (!gameState.isMultiplayer) return Math.random();
+            seed = (seed * 16807) % 2147483647;
+            return (seed - 1) / 2147483646;
+        }
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(CONFIG.colors.sky);
+            scene.fog = new THREE.FogExp2(CONFIG.colors.sky, CONFIG.fogDensity);
+
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 400);
+            camera.position.set(0, 5, 9);
+            camera.lookAt(0, 2, -10);
+
+            renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.physicallyCorrectLights = true;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.4;
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('game-container').appendChild(renderer.domElement);
+
+            clock = new THREE.Clock();
+
+            setupLighting();
+            setupPostProcessing();
+            createWorld();
+
+            updatePlayerModel();
+            
+            // Create Opponent Car (Hidden initially)
+            opponentCar = createCar(CONFIG.colors.opponent, true, 'car'); // Re-use player create function but different color
+            opponentCar.visible = false;
+            // Adjust opponent emissive slightly differently to distinguish
+            opponentCar.children.forEach(c => {
+                 if(c.material && c.material.emissive) c.material.emissive.setHex(CONFIG.colors.opponent);
+            });
+            scene.add(opponentCar);
+
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+            document.addEventListener('touchend', e => {
+                const diff = e.changedTouches[0].clientX - touchStartX;
+                if (Math.abs(diff) > 40) switchLane(diff > 0 ? 1 : -1);
+            });
+
+            // Button Bindings
+            document.getElementById('start-btn').onclick = () => startGame(false);
+            document.getElementById('restart-btn').onclick = () => {
+                if(gameState.isMultiplayer) requestRematch();
+                else startGame(false);
+            };
+            document.getElementById('custom-btn').onclick = () => {
+                startScreen.classList.add('hidden');
+                customScreen.classList.remove('hidden');
+            };
+            
+            // Multiplayer Buttons
+            document.getElementById('mp-menu-btn').onclick = () => {
+                startScreen.classList.add('hidden');
+                mpMenu.classList.remove('hidden');
+            };
+            document.getElementById('mp-random-btn').onclick = findMatch;
+            document.getElementById('mp-friend-btn').onclick = createFriendRoom;
+            document.getElementById('copy-btn').onclick = () => {
+                const copyText = document.getElementById("invite-link");
+                copyText.select();
+                document.execCommand("copy");
+                document.getElementById('copy-btn').innerText = "COPIED!";
+            };
+            document.getElementById('rematch-btn').onclick = requestRematch;
+
+            loop();
+        }
+
+        // --- EXPOSED FUNCTIONS FOR HTML BUTTONS ---
+        window.backToMain = function() {
+            if(mpState.roomId) {
+                // Leave room
+                remove(ref(db, `rooms/${mpState.roomId}/players/${mpState.playerId}`));
+            }
+            mpState.roomId = null;
+            gameState.isMultiplayer = false;
+            
+            startScreen.classList.remove('hidden');
+            mpMenu.classList.add('hidden');
+            lobbyScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+        };
+
+        window.cancelMatchmaking = function() {
+            // Remove from waiting queue if there
+            if(mpState.status === 'searching') {
+                remove(ref(db, 'matchmaking/waiting_room'));
+            }
+            backToMain();
+        };
+
+        window.closeCustom = function() {
+            customScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        };
+        
+        window.selectVehicle = function(type) {
+            gameState.vehicle = type;
+            document.querySelectorAll('.vehicle-card').forEach(card => card.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            updatePlayerModel();
+        };
+
+        // --- MULTIPLAYER LOGIC ---
+
+        function createFriendRoom() {
+            mpMenu.classList.add('hidden');
+            lobbyScreen.classList.remove('hidden');
+            document.getElementById('invite-area').classList.remove('hidden');
+            document.getElementById('lobby-status').innerText = "WAITING FOR FRIEND...";
+            
+            const newRoomRef = push(ref(db, 'rooms'));
+            mpState.roomId = newRoomRef.key;
+            mpState.isHost = true;
+
+            const roomLink = window.location.protocol + "//" + window.location.host + window.location.pathname + "?room=" + mpState.roomId;
+            document.getElementById('invite-link').value = roomLink;
+
+            initializeRoom(mpState.roomId);
+        }
+
+        function joinRoom(roomId) {
+            if(!auth.currentUser) {
+                setTimeout(() => joinRoom(roomId), 500); // Retry if auth not ready
+                return;
+            }
+            mpState.roomId = roomId;
+            mpState.isHost = false;
+            
+            startScreen.classList.add('hidden');
+            mpMenu.classList.add('hidden');
+            lobbyScreen.classList.remove('hidden');
+            document.getElementById('invite-area').classList.add('hidden');
+            document.getElementById('lobby-status').innerText = "JOINING ROOM...";
+            
+            // Wait a moment to ensure logic doesn't race
+            setTimeout(() => initializeRoom(roomId), 500);
+        }
+
+        function findMatch() {
+            mpMenu.classList.add('hidden');
+            lobbyScreen.classList.remove('hidden');
+            document.getElementById('invite-area').classList.add('hidden');
+            document.getElementById('lobby-status').innerText = "SEARCHING FOR OPPONENT...";
+            mpState.status = 'searching';
+
+            const waitingRef = ref(db, 'matchmaking/waiting_room');
+            
+            runTransaction(waitingRef, (currentData) => {
+                if (currentData === null) {
+                    // Create new waiting entry
+                    return { createdBy: mpState.playerId, timestamp: Date.now() };
+                } else {
+                    // Someone is waiting, return currentData to abort transaction effectively, 
+                    // but we will handle the join outside
+                    return; 
+                }
+            }, (error, committed, snapshot) => {
+                if (error) console.error("Matchmaking error", error);
+                
+                if (committed) {
+                    // We created the room
+                    const newRoomRef = push(ref(db, 'rooms'));
+                    mpState.roomId = newRoomRef.key;
+                    mpState.isHost = true;
+                    // Update the waiting room with the actual room ID
+                    update(waitingRef, { roomId: mpState.roomId });
+                    initializeRoom(mpState.roomId);
+                } else {
+                    // We found a room
+                    const data = snapshot.val();
+                    if(data && data.roomId) {
+                        mpState.roomId = data.roomId;
+                        mpState.isHost = false;
+                        // Clean up waiting room so others don't join
+                        remove(waitingRef); 
+                        initializeRoom(mpState.roomId);
+                    } else {
+                        // Retry if collision
+                         setTimeout(findMatch, 500);
+                    }
+                }
+            });
+        }
+
+        function initializeRoom(roomId) {
+            gameState.isMultiplayer = true;
+            const playerRef = ref(db, `rooms/${roomId}/players/${mpState.playerId}`);
+            
+            // Set initial state
+            set(playerRef, {
+                lane: 0,
+                status: 'alive',
+                rematch: false
+            });
+            onDisconnect(playerRef).remove(); // If disconnect, remove player
+
+            // Setup listeners
+            const roomRef = ref(db, `rooms/${roomId}`);
+            onValue(roomRef, (snapshot) => {
+                const data = snapshot.val();
+                if(!data) return; // Room deleted
+
+                // 1. Handle Players
+                if(data.players) {
+                    const uids = Object.keys(data.players);
+                    if(uids.length === 2) {
+                         // Find opponent
+                         const oppId = uids.find(id => id !== mpState.playerId);
+                         if(oppId) {
+                             mpState.opponentId = oppId;
+                             mpState.opponentLane = data.players[oppId].lane;
+                             mpState.opponentStatus = data.players[oppId].status;
+                             
+                             // Rematch Logic
+                             if (gameState.isPlaying === false && mpState.rematchRequested) {
+                                 if (data.players[oppId].rematch === true && data.players[mpState.playerId].rematch === true) {
+                                     // Both accepted
+                                     mpState.rematchRequested = false;
+                                     update(ref(db, `rooms/${roomId}/players/${mpState.playerId}`), { rematch: false, status: 'alive', lane: 0 });
+                                     startCountdown();
+                                 }
+                             }
+
+                             // Handle Opponent Death (Win condition)
+                             if (gameState.isPlaying && mpState.opponentStatus === 'dead' && gameState.status !== 'dead') {
+                                 gameOver(true); // Win
+                             }
+                         }
+                         
+                         // If waiting in lobby, start countdown
+                         if (!document.getElementById('lobby-screen').classList.contains('hidden') && !gameState.isPlaying) {
+                             // Seed random based on Room ID
+                             let hash = 0;
+                             for (let i = 0; i < roomId.length; i++) hash = roomId.charCodeAt(i) + ((hash << 5) - hash);
+                             setSeed(Math.abs(hash));
+                             
+                             startCountdown();
+                         }
+                    } else if (uids.length < 2 && gameState.isPlaying) {
+                        // Opponent disconnected during game
+                        gameOver(true); // Automatic win
+                    }
+                }
+            });
+        }
+
+        function startCountdown() {
+            lobbyScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            
+            // Reset Game Objects
+            gameState.distance = 0;
+            gameState.speed = CONFIG.startSpeed;
+            gameState.lane = 0;
+            targetLaneX = 0;
+            playerCar.position.x = 0;
+            
+            obstacles.forEach(o => scene.remove(o)); 
+            obstacles = [];
+            
+            // Generate deterministic obstacles
+            for(let i=0; i<6; i++) spawnObstacle(-60 - (i * 35));
+
+            // Show Countdown
+            countdownEl.style.display = 'block';
+            let count = 3;
+            countdownEl.innerText = count;
+            
+            const timer = setInterval(() => {
+                count--;
+                if(count > 0) {
+                    countdownEl.innerText = count;
+                } else {
+                    clearInterval(timer);
+                    countdownEl.style.display = 'none';
+                    startGame(true);
+                }
+            }, 1000);
+        }
+        
+        function requestRematch() {
+            document.getElementById('rematch-btn').innerText = "WAITING...";
+            mpState.rematchRequested = true;
+            update(ref(db, `rooms/${mpState.roomId}/players/${mpState.playerId}`), {
+                rematch: true
+            });
+        }
+
+        // --- STANDARD GAME FUNCTIONS (Modified for MP) ---
+
+        function setupLighting() {
+            const amb = new THREE.AmbientLight(0xffffff, 0.1);
+            scene.add(amb);
+            const sun = new THREE.DirectionalLight(0xffffff, 5);
+            sun.position.set(30, 60, 30);
+            sun.castShadow = true;
+            sun.shadow.mapSize.set(2048, 2048);
+            scene.add(sun);
+            const pmrem = new THREE.PMREMGenerator(renderer);
+            envMap = pmrem.fromScene(new THREE.Scene()).texture;
+            scene.environment = envMap;
+        }
+
+        function setupPostProcessing() {
+            composer = new THREE.EffectComposer(renderer);
+            composer.addPass(new THREE.RenderPass(scene, camera));
+            const bloom = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.5, 0.4, 0.85);
+            composer.addPass(bloom);
+            composer.addPass(new THREE.SMAAPass(window.innerWidth, window.innerHeight));
+            composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
+        }
+
+        function createCar(color, isPlayer, type = 'car') {
+            const group = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.1, metalness: 0.7 });
+            const lightMat = new THREE.MeshStandardMaterial({ 
+                color: isPlayer ? 0xff0000 : 0xffffaa, 
+                emissive: isPlayer ? 0xff0000 : 0xffffaa, 
+                emissiveIntensity: 12 
+            });
+
+            if (type === 'car') {
+                const chassis = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.6, 3.8), bodyMat);
+                chassis.position.y = 0.5; chassis.castShadow = true; group.add(chassis);
+                const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.5, 2), new THREE.MeshPhysicalMaterial({ color: 0x050505, roughness: 0, metalness: 1, transparent: true, opacity: 0.8 }));
+                cabin.position.set(0, 1.05, -0.2); group.add(cabin);
+                const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.4, 24); wheelGeo.rotateZ(Math.PI/2);
+                [{x:-0.95, z:1.2}, {x:0.95, z:1.2}, {x:-0.95, z:-1.2}, {x:0.95, z:-1.2}].forEach(p => {
+                    const w = new THREE.Mesh(wheelGeo, new THREE.MeshStandardMaterial({color:0x080808}));
+                    w.position.set(p.x, 0.35, p.z); group.add(w);
+                });
+            } else if (type === 'bike') {
+                const frame = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 2.5), bodyMat);
+                frame.position.y = 0.8; group.add(frame);
+                const wheelGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.4, 24); wheelGeo.rotateZ(Math.PI/2);
+                const w1 = new THREE.Mesh(wheelGeo, new THREE.MeshStandardMaterial({color:0x080808}));
+                w1.position.set(0, 0.45, 1); group.add(w1);
+                const w2 = w1.clone(); w2.position.z = -1; group.add(w2);
+            } else if (type === 'hyper') {
+                const base = new THREE.Mesh(new THREE.BoxGeometry(2, 0.4, 4.5), bodyMat);
+                base.position.y = 0.3; group.add(base);
+                const top = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, 2.5), bodyMat);
+                top.position.set(0, 0.7, -0.5); group.add(top);
+                const wing = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.1, 0.6), new THREE.MeshStandardMaterial({color:0x000000}));
+                wing.position.set(0, 0.8, 1.8); group.add(wing);
+            }
+
+            // Generic Lights
+            const lg = new THREE.BoxGeometry(0.45, 0.2, 0.1);
+            const l1 = new THREE.Mesh(lg, lightMat); l1.position.set(-0.6, 0.6, 1.91); group.add(l1);
+            const l2 = l1.clone(); l2.position.x = 0.6; group.add(l2);
+
+            return group;
+        }
+
+        function updatePlayerModel() {
+            if (playerCar) scene.remove(playerCar);
+            playerCar = createCar(CONFIG.colors.player, true, gameState.vehicle);
+            scene.add(playerCar);
+        }
+
+        function createWorld() {
+            const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: CONFIG.colors.grass, roughness: 1 }));
+            ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+            scene.add(ground);
+            const roadPlane = new THREE.Mesh(new THREE.PlaneGeometry(CONFIG.roadWidth, 400), new THREE.MeshStandardMaterial({ color: CONFIG.colors.road, roughness: 0.8 }));
+            roadPlane.rotation.x = -Math.PI / 2; roadPlane.position.y = 0.08; roadPlane.receiveShadow = true;
+            scene.add(roadPlane);
+
+            const lineMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 2 });
+            for (let i = 0; i < 25; i++) {
+                const lineL = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 3.5), lineMat);
+                lineL.rotation.x = -Math.PI / 2; lineL.position.set(-CONFIG.laneWidth/2, 0.1, -i * 12);
+                scene.add(lineL); roadLines.push(lineL);
+                const lineR = lineL.clone(); lineR.position.x = CONFIG.laneWidth / 2;
+                scene.add(lineR); roadLines.push(lineR);
+            }
+            for (let i = 0; i < 50; i++) spawnTree(-Math.random() * 150);
+        }
+
+        function spawnTree(z) {
+            const tree = new THREE.Group();
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 1.5), new THREE.MeshStandardMaterial({color: 0x1a0d00}));
+            trunk.position.y = 0.75; tree.add(trunk);
+            const leaves = new THREE.Mesh(new THREE.ConeGeometry(1.4, 4.5, 7), new THREE.MeshStandardMaterial({color: 0x051105, roughness: 1}));
+            leaves.position.y = 3; leaves.castShadow = true; tree.add(leaves);
+            
+            // Use seeded random if MP, else standard
+            const rng = gameState.isMultiplayer ? M_rand() : Math.random();
+            tree.position.set((rng > 0.5 ? 1 : -1) * (10 + rng*25), 0, z);
+            
+            scene.add(tree); scenery.push(tree);
+        }
+
+        function spawnObstacle(z) {
+            const colors = [0x2980b9, 0xf39c12, 0x8e44ad, 0xffffff];
+            const rng = gameState.isMultiplayer ? M_rand() : Math.random();
+            const color = colors[Math.floor(rng * colors.length)];
+            
+            const ob = createCar(color, false, 'car');
+            
+            // Deterministic lane choice
+            const laneRng = gameState.isMultiplayer ? M_rand() : Math.random();
+            ob.position.set((Math.floor(laneRng * 3)-1) * CONFIG.laneWidth, 0, z);
+            
+            scene.add(ob); obstacles.push(ob);
+        }
+
+        function startGame(isMP) {
+            gameState.isPlaying = true; gameState.distance = 0; gameState.speed = CONFIG.startSpeed;
+            gameState.lane = 0; targetLaneX = 0;
+            gameState.isMultiplayer = isMP;
+
+            startScreen.classList.add('hidden'); 
+            gameOverScreen.classList.add('hidden'); 
+            customScreen.classList.add('hidden');
+            
+            labelLocal.classList.remove('hidden');
+            if(isMP) {
+                labelRemote.classList.remove('hidden');
+                opponentCar.visible = true;
+                opponentCar.position.z = 0;
+                document.getElementById('rematch-btn').classList.remove('hidden');
+                document.getElementById('rematch-btn').innerText = "Rematch";
+            } else {
+                labelRemote.classList.add('hidden');
+                opponentCar.visible = false;
+                obstacles.forEach(o => scene.remove(o)); obstacles = [];
+                for(let i=0; i<6; i++) spawnObstacle(-60 - (i * 35));
+                document.getElementById('rematch-btn').classList.add('hidden');
+            }
+        }
+
+        function switchLane(dir) {
+            if (!gameState.isPlaying) return;
+            const next = gameState.lane + dir;
+            if (next >= -1 && next <= 1) { 
+                gameState.lane = next; 
+                targetLaneX = next * CONFIG.laneWidth; 
+                
+                // Sync to Firebase
+                if(gameState.isMultiplayer && mpState.roomId) {
+                    update(ref(db, `rooms/${mpState.roomId}/players/${mpState.playerId}`), {
+                        lane: gameState.lane
+                    });
+                }
+            }
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'ArrowLeft') switchLane(-1);
+            if (e.key === 'ArrowRight') switchLane(1);
+            if (e.code === 'Space' && !gameState.isPlaying && !gameState.isMultiplayer) startGame(false);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function gameOver(isWin) {
+            gameState.isPlaying = false;
+            finalScoreEl.innerText = Math.floor(gameState.distance);
+            
+            if(gameState.isMultiplayer) {
+                document.getElementById('go-title').innerText = isWin ? "VICTORY" : "WASTED";
+                document.getElementById('go-title').style.color = isWin ? "#ffcc00" : "white";
+                
+                // If I died, tell Firebase
+                if(!isWin) {
+                    update(ref(db, `rooms/${mpState.roomId}/players/${mpState.playerId}`), {
+                        status: 'dead'
+                    });
+                }
+            } else {
+                document.getElementById('go-title').innerText = "WASTED";
+                document.getElementById('go-title').style.color = "white";
+            }
+            
+            gameOverScreen.classList.remove('hidden');
+            labelLocal.classList.add('hidden');
+            labelRemote.classList.add('hidden');
+        }
+
+        function updateLabelPosition(obj, el, text) {
+            if (!obj.visible) { el.style.opacity = 0; return; }
+            const v = obj.position.clone();
+            v.y += 1.5; // Offset above car
+            v.project(camera);
+            
+            if (v.z > 1) { // Behind camera
+                el.style.opacity = 0;
+            } else {
+                const x = (v.x * .5 + .5) * window.innerWidth;
+                const y = (-(v.y * .5) + .5) * window.innerHeight;
+                el.style.left = `${x}px`;
+                el.style.top = `${y}px`;
+                el.style.opacity = 1;
+                el.innerText = text;
+            }
+        }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            if (gameState.isPlaying) {
+                gameState.speed = Math.min(CONFIG.maxSpeed, gameState.speed + delta * CONFIG.speedIncrement);
+                gameState.distance += gameState.speed * delta;
+                scoreEl.innerText = Math.floor(gameState.distance).toString().padStart(4, '0') + "m";
+
+                // Player Movement
+                playerCar.position.x = THREE.MathUtils.lerp(playerCar.position.x, targetLaneX, delta * 12);
+                playerCar.rotation.z = (playerCar.position.x - targetLaneX) * -0.12;
+                playerCar.rotation.y = (playerCar.position.x - targetLaneX) * 0.05;
+
+                // Opponent Logic (Multiplayer)
+                if (gameState.isMultiplayer && opponentCar) {
+                    const oppTargetX = mpState.opponentLane * CONFIG.laneWidth;
+                    opponentCar.position.x = THREE.MathUtils.lerp(opponentCar.position.x, oppTargetX, delta * 12);
+                    opponentCar.rotation.z = (opponentCar.position.x - oppTargetX) * -0.12;
+                    opponentCar.rotation.y = (opponentCar.position.x - oppTargetX) * 0.05;
+
+                    // Opacity / Ghosting Logic
+                    if (gameState.lane === mpState.opponentLane) {
+                        // Same lane: Local solid, Opponent transparent
+                        opponentCar.traverse(c => { 
+                            if(c.material) { c.material.transparent = true; c.material.opacity = 0.4; } 
+                        });
+                        // Visual fix: ensure player is solid
+                        playerCar.traverse(c => { if(c.material) c.material.opacity = 1.0; });
+                    } else {
+                        // Different lanes: Both solid
+                        opponentCar.traverse(c => { 
+                            if(c.material) { c.material.opacity = 1.0; } 
+                        });
+                    }
+
+                    // Update Labels
+                    updateLabelPosition(playerCar, labelLocal, "YOU");
+                    updateLabelPosition(opponentCar, labelRemote, "OPPONENT");
+                }
+
+                camera.fov = 65 + (gameState.speed / CONFIG.maxSpeed) * 15;
+                camera.updateProjectionMatrix();
+
+                const intensity = (gameState.speed / CONFIG.maxSpeed) * 0.04;
+                camera.position.x = (Math.sin(time * 60) * intensity) + (playerCar.position.x * 0.15);
+                camera.position.y = 5 + (Math.cos(time * 45) * intensity);
+
+                const moveDist = gameState.speed * delta;
+                roadLines.forEach(l => {
+                    l.position.z += moveDist;
+                    if(l.position.z > 20) l.position.z -= 250;
+                });
+
+                for(let i=obstacles.length-1; i>=0; i--) {
+                    const ob = obstacles[i];
+                    ob.position.z += moveDist + (delta * 12);
+                    if(ob.position.z > 20) {
+                        scene.remove(ob); obstacles.splice(i, 1);
+                        // If MP, this needs to stay deterministic based on distance/count, 
+                        // but simple seeded random works if both clients run at approx same speed.
+                        // For a robust implementation, we just spawn based on event, but here we spawn blindly.
+                        // To keep it simple: spawn new obstacle with seeded random
+                        spawnObstacle(-180 - (gameState.isMultiplayer ? M_rand() : Math.random())*60);
+                    }
+                    if(Math.abs(playerCar.position.x - ob.position.x) < 1.4 && Math.abs(playerCar.position.z - ob.position.z) < 3.0) {
+                        gameOver(false); // Lost
+                    }
+                }
+
+                scenery.forEach(s => {
+                    s.position.z += moveDist;
+                    if(s.position.z > 30) s.position.z = -200 - Math.random()*100;
+                });
+            } else {
+                // Main Menu "Idle" Camera
+                camera.position.x = Math.sin(time * 0.5) * 2;
+            }
+
+            composer.render();
+        }
+
+        init();
+    </script>
+</body>
+</html>
