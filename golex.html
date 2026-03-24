@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golex - Realtime Messaging</title>
+    
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --bg-glass: rgba(255, 255, 255, 0.1);
+            --text-light: #ffffff;
+            --text-dark: #333333;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Flexbox makes sure everything is perfectly centered vertically and horizontally */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100dvh; /* dvh handles mobile browsers perfectly */
+            width: 100vw;
+            overflow: hidden;
+            background-color: #0f172a;
+            color: var(--text-light);
+        }
+
+        /* Three.js Background Canvas */
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; 
+        }
+
+        /* Main App Container */
+        #app-container {
+            position: relative;
+            width: 95%; /* Gives a nice tiny gap on mobile edges */
+            max-width: 450px;
+            height: 90dvh; 
+            max-height: 800px; /* Stops it from stretching too tall on big screens */
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px;
+            /* Center content inside screens by default */
+            justify-content: center; 
+        }
+        /* User list and Chat need to align to the top, not center */
+        #user-list-screen, #chat-screen {
+            justify-content: flex-start;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+
+        /* Typography & Buttons */
+        h1, h2, h3 { text-align: center; margin-bottom: 20px; }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+            width: 100%; /* Make buttons full width for easier tapping */
+        }
+        button:hover { background-color: #4338ca; }
+        
+        input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box; /* Ensures padding doesn't break width */
+        }
+
+        /* User List */
+        .user-item {
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .user-item:hover { background: rgba(255,255,255,0.1); }
+        #users-list { overflow-y: auto; flex-grow: 1; margin-bottom: 10px;}
+
+        /* Chat Screen */
+        #chat-header {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 15px;
+        }
+        #back-btn { margin-top: 0; margin-right: 15px; padding: 8px 15px; width: auto; }
+        
+        #messages-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 5px;
+        }
+        
+        .message {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        .message.sent {
+            background-color: var(--primary);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .message.received {
+            background-color: rgba(255,255,255,0.1);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        #message-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        #message-input { flex-grow: 1; margin-bottom: 0; width: auto; }
+        #send-btn { margin-top: 0; width: auto; }
+
+        /* Custom Scrollbar for sleekness */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="app-container">
+        
+        <div id="loading-screen" class="screen active">
+            <h2>Loading Golex...</h2>
+            <p style="text-align: center; color: #cbd5e1;">Connecting to servers</p>
+        </div>
+
+        <div id="login-screen" class="screen">
+            <h1>Welcome to Golex</h1>
+            <p style="text-align: center; color: #cbd5e1;">A real-time communication platform.</p>
+            <button id="google-login-btn" style="margin-top: 30px;">Sign in with Google</button>
+        </div>
+
+        <div id="username-screen" class="screen">
+            <h2>Pick a Username</h2>
+            <p style="font-size: 14px; color: #cbd5e1; text-align: center;">This is how others will see you.</p>
+            <input type="text" id="username-input" placeholder="e.g. web_ninja">
+            <p id="username-error" style="color: #ef4444; font-size: 12px; display: none; text-align: center;">Username is taken!</p>
+            <button id="save-username-btn">Continue</button>
+            <button id="cancel-username-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); margin-top: 20px;">Log out & Try Another Account</button>
+        </div>
+
+        <div id="user-list-screen" class="screen">
+            <h2>Golex Directory</h2>
+            <div id="users-list">
+                </div>
+            <button id="logout-btn" style="background: #ef4444;">Log Out</button>
+        </div>
+
+        <div id="chat-screen" class="screen">
+            <div id="chat-header">
+                <button id="back-btn">⬅ Back</button>
+                <h3 id="chat-partner-name" style="margin: 0;">Loading...</h3>
+            </div>
+            <div id="messages-container">
+                </div>
+            <form id="message-form">
+                <input type="text" id="message-input" placeholder="Type a message..." required autocomplete="off">
+                <button type="submit" id="send-btn">Send</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        for ( let i = 0; i < 2000; i ++ ) {
+            vertices.push( THREE.MathUtils.randFloatSpread( 2000 ) );
+            vertices.push( THREE.MathUtils.randFloatSpread( 2000 ) );
+            vertices.push( THREE.MathUtils.randFloatSpread( 2000 ) );
+        }
+        geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+        const material = new THREE.PointsMaterial({ color: 0x4F46E5, size: 2.5, transparent: true, opacity: 0.6 });
+        const particles = new THREE.Points( geometry, material );
+        scene.add( particles );
+
+        camera.position.z = 500;
+
+        function animate() {
+            requestAnimationFrame( animate );
+            particles.rotation.x += 0.0005;
+            particles.rotation.y += 0.0005;
+            renderer.render( scene, camera );
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, get, set, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAqrHPZxtvIlMrF6O3AIeWPRWdG-mkKKI",
+            authDomain: "golex-51625.firebaseapp.com",
+            databaseURL: "https://golex-51625-default-rtdb.firebaseio.com", 
+            projectId: "golex-51625",
+            storageBucket: "golex-51625.firebasestorage.app",
+            messagingSenderId: "526349915922",
+            appId: "1:526349915922:web:0e8968d99f9dd423b345cb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let currentChatId = null;
+        let currentChatPartnerId = null;
+
+        const screens = document.querySelectorAll('.screen');
+        const loginBtn = document.getElementById('google-login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const cancelUsernameBtn = document.getElementById('cancel-username-btn'); // New
+        const saveUsernameBtn = document.getElementById('save-username-btn');
+        const usernameInput = document.getElementById('username-input');
+        const usernameError = document.getElementById('username-error');
+        const usersListDiv = document.getElementById('users-list');
+        const backBtn = document.getElementById('back-btn');
+        const chatPartnerNameEl = document.getElementById('chat-partner-name');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const messagesContainer = document.getElementById('messages-container');
+
+        function showScreen(screenId) {
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // 1. Authentication Listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                
+                // Read database to see if they completed the username step
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists() && snapshot.val().username) {
+                    loadUsersList();
+                    showScreen('user-list-screen');
+                } else {
+                    showScreen('username-screen');
+                }
+            } else {
+                currentUser = null;
+                showScreen('login-screen'); // Route back to login if no memory found
+            }
+        });
+
+        // 2. Login Logic
+        loginBtn.addEventListener('click', () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider).catch(error => alert("Login failed: " + error.message));
+        });
+
+        // Logout Logic (from Lobby)
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // Cancel/Logout Logic (from Username screen)
+        cancelUsernameBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // 3. Username Selection Logic
+        saveUsernameBtn.addEventListener('click', async () => {
+            const desiredName = usernameInput.value.trim().toLowerCase();
+            if (desiredName.length < 3) return alert("Username too short!");
+
+            const usernameRef = ref(db, 'usernames/' + desiredName);
+            const snapshot = await get(usernameRef);
+
+            if (snapshot.exists()) {
+                usernameError.style.display = 'block'; 
+            } else {
+                usernameError.style.display = 'none';
+                
+                await set(usernameRef, currentUser.uid);
+                await set(ref(db, 'users/' + currentUser.uid), {
+                    username: desiredName,
+                    email: currentUser.email
+                });
+
+                loadUsersList();
+                showScreen('user-list-screen');
+            }
+        });
+
+        // 4. Load All Users
+        function loadUsersList() {
+            const usersRef = ref(db, 'users');
+            onValue(usersRef, (snapshot) => {
+                usersListDiv.innerHTML = ''; 
+                const data = snapshot.val();
+                
+                if (data) {
+                    for (const [uid, userData] of Object.entries(data)) {
+                        if (uid !== currentUser.uid) {
+                            const userDiv = document.createElement('div');
+                            userDiv.className = 'user-item';
+                            userDiv.innerHTML = `<strong>@${userData.username}</strong>`;
+                            
+                            userDiv.addEventListener('click', () => {
+                                openChat(uid, userData.username);
+                            });
+                            
+                            usersListDiv.appendChild(userDiv);
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Open Chat
+        function openChat(partnerUid, partnerUsername) {
+            currentChatPartnerId = partnerUid;
+            chatPartnerNameEl.innerText = "@" + partnerUsername;
+            
+            if (currentUser.uid < partnerUid) {
+                currentChatId = currentUser.uid + '_' + partnerUid;
+            } else {
+                currentChatId = partnerUid + '_' + currentUser.uid;
+            }
+
+            messagesContainer.innerHTML = ''; 
+            showScreen('chat-screen');
+
+            const messagesRef = ref(db, `chats/${currentChatId}/messages`);
+            onValue(messagesRef, (snapshot) => {
+                messagesContainer.innerHTML = '';
+                const messages = snapshot.val();
+                if (messages) {
+                    for (const [msgId, msgData] of Object.entries(messages)) {
+                        const msgDiv = document.createElement('div');
+                        const isMe = msgData.sender === currentUser.uid;
+                        
+                        msgDiv.className = `message ${isMe ? 'sent' : 'received'}`;
+                        msgDiv.innerText = msgData.text;
+                        messagesContainer.appendChild(msgDiv);
+                    }
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            });
+        }
+
+        // Back Button
+        backBtn.addEventListener('click', () => {
+            currentChatId = null;
+            showScreen('user-list-screen');
+        });
+
+        // 6. Send Message
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = messageInput.value.trim();
+            if (text === '' || !currentChatId) return;
+
+            const messagesRef = ref(db, `chats/${currentChatId}/messages`);
+            
+            await push(messagesRef, {
+                sender: currentUser.uid,
+                text: text,
+                timestamp: serverTimestamp()
+            });
+
+            messageInput.value = ''; 
+        });
+
+    </script>
+</body>
+</html>
