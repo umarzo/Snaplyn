@@ -59,9 +59,7 @@
             padding: 20px;
             justify-content: center; 
         }
-        #user-list-screen, #chat-screen {
-            justify-content: flex-start;
-        }
+        #user-list-screen, #chat-screen { justify-content: flex-start; }
         .screen.active { display: flex; }
 
         h1, h2, h3 { text-align: center; margin-bottom: 20px; }
@@ -93,14 +91,91 @@
             box-sizing: border-box; 
         }
 
-        /* NEW: Search Input specifically */
+        /* --- NEW: Loading Bar Styles --- */
+        .loading-bar-wrapper {
+            width: 80%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 15px auto 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .loading-bar {
+            width: 50%;
+            height: 100%;
+            background: var(--primary);
+            position: absolute;
+            left: -50%;
+            border-radius: 4px;
+            animation: slide 1.5s infinite ease-in-out;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        @keyframes slide {
+            0% { left: -50%; }
+            100% { left: 100%; }
+        }
+
+        /* --- NEW: Directory Header & Profile Icon --- */
+        .directory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .directory-header h2 { margin: 0; }
+        #profile-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.1);
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            object-fit: cover;
+            transition: 0.2s;
+        }
+        #profile-icon-btn:hover { transform: scale(1.05); }
+
+        /* --- NEW: Profile Modal --- */
+        #profile-modal {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+        }
+        #profile-modal.open {
+            display: flex;
+            transform: translateY(0);
+        }
+        #modal-close-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: auto;
+            align-self: flex-end;
+            padding: 8px 12px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .modal-avatar {
+            width: 80px; height: 80px;
+            border-radius: 50%; margin: 0 auto 15px;
+            object-fit: cover; border: 2px solid var(--primary);
+        }
+        .modal-email { text-align: center; color: #94a3b8; font-size: 14px; margin-bottom: 25px; margin-top: -10px;}
+
         #search-users-input {
             margin-bottom: 15px;
             background: rgba(0,0,0,0.2);
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* UPDATED: User List Styling */
         .user-item {
             padding: 12px 15px;
             background: rgba(255,255,255,0.05);
@@ -114,98 +189,37 @@
         .user-item:hover { background: rgba(255,255,255,0.1); }
         
         .user-info-container {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            overflow: hidden;
+            display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;
         }
-        
-        .user-name-wrapper {
-            display: flex;
-            align-items: center;
-            font-weight: bold;
-            font-size: 15px;
-        }
-
-        /* NEW: Status Dot */
+        .user-name-wrapper { display: flex; align-items: center; font-weight: bold; font-size: 15px; }
         .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 10px;
-            background-color: #64748b; /* offline gray */
-            transition: 0.3s;
-            flex-shrink: 0;
+            width: 10px; height: 10px; border-radius: 50%; margin-right: 10px;
+            background-color: #64748b; transition: 0.3s; flex-shrink: 0;
         }
-        .status-dot.online {
-            background-color: #10b981; /* emerald green */
-            box-shadow: 0 0 5px #10b981;
-        }
-
-        /* NEW: Last Message Preview */
+        .status-dot.online { background-color: #10b981; box-shadow: 0 0 5px #10b981; }
         .last-message-preview {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 13px; color: #94a3b8; margin-top: 4px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         #users-list { overflow-y: auto; flex-grow: 1; margin-bottom: 10px;}
 
-        /* Chat Screen */
         #chat-header {
-            display: flex;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 10px;
+            display: flex; align-items: center; padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;
         }
         #back-btn { margin-top: 0; margin-right: 15px; padding: 8px 15px; width: auto; }
         
         #messages-container {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-right: 5px;
+            flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column;
+            gap: 10px; padding-right: 5px;
         }
-        
-        .message {
-            max-width: 75%;
-            padding: 10px 15px;
-            border-radius: 15px;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-        .message.sent {
-            background-color: var(--primary);
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-        .message.received {
-            background-color: rgba(255,255,255,0.1);
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
-        }
+        .message { max-width: 75%; padding: 10px 15px; border-radius: 15px; font-size: 14px; word-wrap: break-word; }
+        .message.sent { background-color: var(--primary); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .message.received { background-color: rgba(255,255,255,0.1); align-self: flex-start; border-bottom-left-radius: 2px; }
 
-        /* NEW: Typing Indicator */
-        #typing-indicator {
-            font-size: 12px;
-            color: #94a3b8;
-            font-style: italic;
-            height: 15px;
-            margin-top: 5px;
-            display: none; /* hidden by default */
-        }
-
-        #message-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
+        #typing-indicator { font-size: 12px; color: #94a3b8; font-style: italic; height: 15px; margin-top: 5px; display: none; }
+        #message-form { display: flex; gap: 10px; margin-top: 10px; }
         #message-input { flex-grow: 1; margin-bottom: 0; width: auto; }
         #send-btn { margin-top: 0; width: auto; }
 
@@ -222,7 +236,10 @@
         
         <div id="loading-screen" class="screen active">
             <h2>Loading Golex...</h2>
-            <p style="text-align: center; color: #cbd5e1;">Connecting to servers</p>
+            <p style="text-align: center; color: #cbd5e1; margin-bottom: 0;">Connecting to servers</p>
+            <div class="loading-bar-wrapper">
+                <div class="loading-bar"></div>
+            </div>
         </div>
 
         <div id="login-screen" class="screen">
@@ -241,11 +258,13 @@
         </div>
 
         <div id="user-list-screen" class="screen">
-            <h2>Golex Directory</h2>
+            <div class="directory-header">
+                <h2>Golex Directory</h2>
+                <img id="profile-icon-btn" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Profile">
+            </div>
+            
             <input type="text" id="search-users-input" placeholder="Search users...">
-            <div id="users-list">
-                </div>
-            <button id="logout-btn" style="background: #ef4444;">Log Out</button>
+            <div id="users-list"></div>
         </div>
 
         <div id="chat-screen" class="screen">
@@ -254,14 +273,26 @@
                 <div class="status-dot" id="chat-header-status"></div>
                 <h3 id="chat-partner-name" style="margin: 0;">Loading...</h3>
             </div>
-            <div id="messages-container">
-                </div>
+            <div id="messages-container"></div>
             <div id="typing-indicator">User is typing...</div>
-            
             <form id="message-form">
                 <input type="text" id="message-input" placeholder="Type a message..." required autocomplete="off">
                 <button type="submit" id="send-btn">Send</button>
             </form>
+        </div>
+
+        <div id="profile-modal">
+            <button id="modal-close-btn">✕ Close</button>
+            <h2>Your Profile</h2>
+            <img id="modal-avatar" class="modal-avatar" src="" alt="Avatar">
+            <div id="modal-email" class="modal-email">user@email.com</div>
+            
+            <label style="font-size: 14px; color: #cbd5e1; margin-bottom: 5px;">Change Username</label>
+            <input type="text" id="modal-username-input" placeholder="New username">
+            <p id="modal-username-error" style="color: #ef4444; font-size: 12px; display: none; text-align: center; margin-top: -10px;">Username is taken!</p>
+            <button id="modal-save-username-btn">Save Changes</button>
+            
+            <button id="logout-btn" style="background: #ef4444; margin-top: 30px;">Log Out</button>
         </div>
 
     </div>
@@ -285,7 +316,6 @@
         const material = new THREE.PointsMaterial({ color: 0x4F46E5, size: 2.5, transparent: true, opacity: 0.6 });
         const particles = new THREE.Points( geometry, material );
         scene.add( particles );
-
         camera.position.z = 500;
 
         function animate() {
@@ -304,10 +334,9 @@
     </script>
 
     <script type="module">
-        // NEW: Imported onDisconnect
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getDatabase, ref, get, set, onValue, push, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getDatabase, ref, get, set, remove, onValue, push, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCAqrHPZxtvIlMrF6O3AIeWPRWdG-mkKKI",
@@ -325,10 +354,10 @@
 
         // State Variables
         let currentUser = null;
+        let currentUsername = ""; // Track for profile updates
         let currentChatId = null;
         let currentChatPartnerId = null;
         
-        // Safety: Store unsubscribe functions so we don't leak memory
         let unsubMessages = null;
         let unsubTyping = null;
         let unsubPartnerStatus = null;
@@ -344,38 +373,45 @@
         const usernameError = document.getElementById('username-error');
         
         const usersListDiv = document.getElementById('users-list');
-        const searchUsersInput = document.getElementById('search-users-input'); // NEW
+        const searchUsersInput = document.getElementById('search-users-input'); 
         
+        // Profile UI Elements
+        const profileIconBtn = document.getElementById('profile-icon-btn');
+        const profileModal = document.getElementById('profile-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalAvatar = document.getElementById('modal-avatar');
+        const modalEmail = document.getElementById('modal-email');
+        const modalUsernameInput = document.getElementById('modal-username-input');
+        const modalUsernameError = document.getElementById('modal-username-error');
+        const modalSaveBtn = document.getElementById('modal-save-username-btn');
+
         const backBtn = document.getElementById('back-btn');
-        const chatHeaderStatus = document.getElementById('chat-header-status'); // NEW
+        const chatHeaderStatus = document.getElementById('chat-header-status'); 
         const chatPartnerNameEl = document.getElementById('chat-partner-name');
         const messagesContainer = document.getElementById('messages-container');
         const messageForm = document.getElementById('message-form');
         const messageInput = document.getElementById('message-input');
-        const typingIndicator = document.getElementById('typing-indicator'); // NEW
+        const typingIndicator = document.getElementById('typing-indicator'); 
 
         function showScreen(screenId) {
             screens.forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        // --- FEATURE A: Manage Online/Offline Presence ---
+        // --- Presence ---
         function managePresence(uid) {
             const myStatusRef = ref(db, `users/${uid}/status`);
             const connectedRef = ref(db, '.info/connected');
-            
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
-                    // If we disconnect, set status to offline
                     onDisconnect(myStatusRef).set('offline').then(() => {
-                        // Once disconnected logic is queued, set ourselves to online
                         set(myStatusRef, 'online');
                     });
                 }
             });
         }
 
-        // 1. Authentication Listener
+        // 1. Auth Listener
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
@@ -384,7 +420,14 @@
                 const snapshot = await get(userRef);
                 
                 if (snapshot.exists() && snapshot.val().username) {
-                    managePresence(user.uid); // Track presence
+                    currentUsername = snapshot.val().username;
+                    // Setup profile icon image
+                    const photo = user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.uid;
+                    profileIconBtn.src = photo;
+                    modalAvatar.src = photo;
+                    modalEmail.innerText = user.email;
+
+                    managePresence(user.uid);
                     loadUsersList();
                     showScreen('user-list-screen');
                 } else {
@@ -396,7 +439,7 @@
             }
         });
 
-        // 2. Login & Logout Logic
+        // 2. Login & Logout
         loginBtn.addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider).catch(error => alert("Login failed: " + error.message));
@@ -404,16 +447,15 @@
 
         async function performLogout() {
             if (currentUser) {
-                // Manually set offline before logging out
                 await set(ref(db, `users/${currentUser.uid}/status`), 'offline');
             }
             signOut(auth);
+            profileModal.classList.remove('open');
         }
-
         logoutBtn.addEventListener('click', performLogout);
         cancelUsernameBtn.addEventListener('click', performLogout);
 
-        // 3. Username Selection
+        // 3. Initial Username Selection
         saveUsernameBtn.addEventListener('click', async () => {
             const desiredName = usernameInput.value.trim().toLowerCase();
             if (desiredName.length < 3) return alert("Username too short!");
@@ -425,7 +467,6 @@
                 usernameError.style.display = 'block'; 
             } else {
                 usernameError.style.display = 'none';
-                
                 await set(usernameRef, currentUser.uid);
                 await set(ref(db, 'users/' + currentUser.uid), {
                     username: desiredName,
@@ -433,17 +474,76 @@
                     status: 'online'
                 });
 
+                currentUsername = desiredName;
                 managePresence(currentUser.uid);
                 loadUsersList();
                 showScreen('user-list-screen');
             }
         });
 
-        // --- FEATURE D: Search Users Logic ---
+        // --- NEW: Profile Modal Logic ---
+        profileIconBtn.addEventListener('click', () => {
+            modalUsernameInput.value = currentUsername;
+            modalUsernameError.style.display = 'none';
+            profileModal.classList.add('open');
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            profileModal.classList.remove('open');
+        });
+
+        modalSaveBtn.addEventListener('click', async () => {
+            const newName = modalUsernameInput.value.trim().toLowerCase();
+            if (newName.length < 3) return alert("Username too short!");
+            if (newName === currentUsername) {
+                profileModal.classList.remove('open'); // No change made
+                return;
+            }
+
+            modalSaveBtn.innerText = "Checking...";
+            const usernameRef = ref(db, 'usernames/' + newName);
+            const snapshot = await get(usernameRef);
+
+            if (snapshot.exists()) {
+                modalUsernameError.style.display = 'block';
+                modalSaveBtn.innerText = "Save Changes";
+            } else {
+                modalUsernameError.style.display = 'none';
+                // 1. Delete old username lock
+                await remove(ref(db, 'usernames/' + currentUsername));
+                // 2. Claim new username
+                await set(usernameRef, currentUser.uid);
+                // 3. Update User profile
+                await set(ref(db, 'users/' + currentUser.uid + '/username'), newName);
+                
+                currentUsername = newName;
+                modalSaveBtn.innerText = "Saved!";
+                setTimeout(() => {
+                    profileModal.classList.remove('open');
+                    modalSaveBtn.innerText = "Save Changes";
+                }, 1000);
+            }
+        });
+
+        // --- FEATURE B: Sorting Logic ---
+        function sortUserList() {
+            const list = document.getElementById('users-list');
+            const items = Array.from(list.children);
+            
+            items.sort((a, b) => {
+                const timeA = parseInt(a.getAttribute('data-timestamp')) || 0;
+                const timeB = parseInt(b.getAttribute('data-timestamp')) || 0;
+                return timeB - timeA; // Descending (newest first)
+            });
+            
+            // Append moves them to the new order without destroying DOM
+            items.forEach(item => list.appendChild(item));
+        }
+
+        // Search Users
         searchUsersInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             const allItems = document.querySelectorAll('.user-item');
-            
             allItems.forEach(item => {
                 const username = item.getAttribute('data-username');
                 if (username.includes(searchTerm)) {
@@ -454,7 +554,7 @@
             });
         });
 
-        // 4. Load Users List (Safely updating without flickering)
+        // 4. Load Users List
         function loadUsersList() {
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
@@ -462,21 +562,20 @@
                 
                 if (data) {
                     for (const [uid, userData] of Object.entries(data)) {
-                        if (uid === currentUser.uid) continue; // Skip self
+                        if (uid === currentUser.uid) continue;
 
                         let userDiv = document.getElementById(`user-${uid}`);
                         
-                        // If element doesn't exist, create it cleanly
                         if (!userDiv) {
                             userDiv = document.createElement('div');
                             userDiv.className = 'user-item';
                             userDiv.id = `user-${uid}`;
-                            userDiv.setAttribute('data-username', userData.username);
+                            userDiv.setAttribute('data-timestamp', 0); // Default for sorting
                             
                             userDiv.innerHTML = `
                                 <div class="status-dot"></div>
                                 <div class="user-info-container">
-                                    <div class="user-name-wrapper">@${userData.username}</div>
+                                    <div class="user-name-wrapper">@<span class="uname-text">${userData.username}</span></div>
                                     <div class="last-message-preview" id="preview-${uid}">No messages yet</div>
                                 </div>
                             `;
@@ -487,30 +586,42 @@
                             
                             usersListDiv.appendChild(userDiv);
 
-                            // --- FEATURE B: Last Message Listener ---
-                            // Create the chat ID just to read the last message
+                            // Last Message & Timestamp Listener
                             const previewChatId = currentUser.uid < uid ? `${currentUser.uid}_${uid}` : `${uid}_${currentUser.uid}`;
                             const lastMsgRef = ref(db, `chats/${previewChatId}/lastMessage`);
                             
                             onValue(lastMsgRef, (msgSnap) => {
                                 const previewEl = document.getElementById(`preview-${uid}`);
-                                if (previewEl) {
-                                    previewEl.innerText = msgSnap.val() || 'No messages yet';
+                                const msgData = msgSnap.val();
+                                
+                                if (msgData) {
+                                    // Handle both old string format and new object format safely
+                                    if (typeof msgData === 'string') {
+                                        if(previewEl) previewEl.innerText = msgData;
+                                    } else {
+                                        if(previewEl) previewEl.innerText = msgData.text;
+                                        // Update timestamp attribute for sorting
+                                        if(msgData.timestamp) {
+                                            userDiv.setAttribute('data-timestamp', msgData.timestamp);
+                                        }
+                                    }
                                 }
+                                sortUserList(); // Reorder instantly
                             });
                         }
 
-                        // Update the online/offline dot safely
+                        // Update username dynamically if they changed it
+                        userDiv.setAttribute('data-username', userData.username);
+                        userDiv.querySelector('.uname-text').innerText = userData.username;
+
+                        // Update Status
                         const statusDot = userDiv.querySelector('.status-dot');
                         if (userData.status === 'online') {
-                            statusDot.classList.add('online');
-                            statusDot.classList.remove('offline');
+                            statusDot.classList.add('online'); statusDot.classList.remove('offline');
                         } else {
-                            statusDot.classList.add('offline');
-                            statusDot.classList.remove('online');
+                            statusDot.classList.add('offline'); statusDot.classList.remove('online');
                         }
                         
-                        // Keep search filter applied if user is typing a search
                         const searchTerm = searchUsersInput.value.toLowerCase();
                         if (searchTerm && !userData.username.includes(searchTerm)) {
                             userDiv.style.display = 'none';
@@ -532,22 +643,18 @@
             }
 
             messagesContainer.innerHTML = ''; 
-            typingIndicator.style.display = 'none'; // reset
+            typingIndicator.style.display = 'none'; 
             showScreen('chat-screen');
 
-            // Listen for Partner's Status in Header
             const partnerStatusRef = ref(db, `users/${partnerUid}/status`);
             unsubPartnerStatus = onValue(partnerStatusRef, (snap) => {
                 if(snap.val() === 'online') {
-                    chatHeaderStatus.classList.add('online');
-                    chatHeaderStatus.classList.remove('offline');
+                    chatHeaderStatus.classList.add('online'); chatHeaderStatus.classList.remove('offline');
                 } else {
-                    chatHeaderStatus.classList.add('offline');
-                    chatHeaderStatus.classList.remove('online');
+                    chatHeaderStatus.classList.add('offline'); chatHeaderStatus.classList.remove('online');
                 }
             });
 
-            // Listen for Messages
             const messagesRef = ref(db, `chats/${currentChatId}/messages`);
             unsubMessages = onValue(messagesRef, (snapshot) => {
                 messagesContainer.innerHTML = '';
@@ -565,48 +672,36 @@
                 }
             });
 
-            // --- FEATURE C: Listen for Partner Typing ---
             const partnerTypingRef = ref(db, `chats/${currentChatId}/typing/${partnerUid}`);
             unsubTyping = onValue(partnerTypingRef, (snap) => {
                 if (snap.val() === true) {
                     typingIndicator.style.display = 'block';
                     typingIndicator.innerText = `@${partnerUsername} is typing...`;
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight; // push scroll down
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight; 
                 } else {
                     typingIndicator.style.display = 'none';
                 }
             });
         }
 
-        // Back Button Logic with Cleanup
         backBtn.addEventListener('click', () => {
-            // Clean up realtime listeners so we don't leak memory
             if (unsubMessages) unsubMessages();
             if (unsubTyping) unsubTyping();
             if (unsubPartnerStatus) unsubPartnerStatus();
             
-            // Set our own typing status to false when leaving
             if (currentChatId) {
                 set(ref(db, `chats/${currentChatId}/typing/${currentUser.uid}`), false);
             }
-
-            currentChatId = null;
-            currentChatPartnerId = null;
+            currentChatId = null; currentChatPartnerId = null;
             showScreen('user-list-screen');
         });
 
-        // --- FEATURE C: Send typing status when input changes ---
         messageInput.addEventListener('input', () => {
             if (!currentChatId) return;
-            
             const myTypingRef = ref(db, `chats/${currentChatId}/typing/${currentUser.uid}`);
-            set(myTypingRef, true); // I am typing!
-
-            // Auto-clear after 1.5 seconds of no keys pressed
+            set(myTypingRef, true); 
             clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                set(myTypingRef, false);
-            }, 1500);
+            typingTimeout = setTimeout(() => { set(myTypingRef, false); }, 1500);
         });
 
         // 6. Send Message
@@ -615,21 +710,22 @@
             const text = messageInput.value.trim();
             if (text === '' || !currentChatId) return;
 
-            // Clear typing indicator immediately on send
             clearTimeout(typingTimeout);
             await set(ref(db, `chats/${currentChatId}/typing/${currentUser.uid}`), false);
 
             const messagesRef = ref(db, `chats/${currentChatId}/messages`);
             
-            // Send the message
             await push(messagesRef, {
                 sender: currentUser.uid,
                 text: text,
                 timestamp: serverTimestamp()
             });
 
-            // --- FEATURE B: Update Last Message Preview ---
-            await set(ref(db, `chats/${currentChatId}/lastMessage`), text);
+            // UPDATED: Save as object with timestamp so we can sort by it
+            await set(ref(db, `chats/${currentChatId}/lastMessage`), {
+                text: text,
+                timestamp: serverTimestamp()
+            });
 
             messageInput.value = ''; 
         });
