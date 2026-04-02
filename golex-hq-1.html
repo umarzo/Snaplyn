@@ -1,0 +1,2499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Golex HQ · Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════
+   GOLEX DESIGN SYSTEM — EXACT MATCH FROM MAIN APP
+   ═══════════════════════════════════════════════ */
+:root {
+  --bg: #050810;
+  --surface: #0b0f1e;
+  --panel: rgba(10, 14, 28, 0.97);
+  --panel-solid: #0a0e1c;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(139, 92, 246, 0.45);
+  --accent: #8b5cf6;
+  --accent-dark: #6d28d9;
+  --accent-light: #a78bfa;
+  --accent2: #06b6d4;
+  --accent2-light: #67e8f9;
+  --accent3: #f59e0b;
+  --danger: #ef4444;
+  --danger-light: #fca5a5;
+  --success: #10b981;
+  --success-light: #6ee7b7;
+  --warning: #f59e0b;
+  --warning-light: #fcd34d;
+  --glow-accent: rgba(139, 92, 246, 0.25);
+  --glow-accent-soft: rgba(139, 92, 246, 0.08);
+  --text: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --muted: #64748b;
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+  --radius-xl: 20px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+  --radius-pill: 9999px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --sidebar-w: 240px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100dvh; overflow: hidden;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  /* FIX: prevent horizontal overflow on mobile */
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND ── */
+#hq-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(139, 92, 246, 0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 110%, rgba(6, 182, 212, 0.05), transparent),
+    radial-gradient(ellipse 100% 100% at 50% 50%, rgba(5, 8, 22, 1), transparent);
+}
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH GATE
+   ═══════════════════════════════════════════════ */
+#auth-gate {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+}
+#auth-gate.hidden { display: none; }
+
+.auth-card {
+  width: 100%; max-width: 400px; margin: 20px;
+  background: rgba(11, 15, 30, 0.95);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius-xl);
+  padding: 44px 40px 40px;
+  box-shadow: 0 0 80px rgba(139, 92, 246, 0.12), 0 40px 80px rgba(0,0,0,0.5);
+  animation: authIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes authIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.auth-emblem {
+  width: 72px; height: 72px; margin: 0 auto 24px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(6, 182, 212, 0.15));
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.2);
+}
+.auth-label {
+  font-family: var(--font-mono); font-size: 9px;
+  color: rgba(139, 92, 246, 0.6); letter-spacing: 3px;
+  text-transform: uppercase; text-align: center; margin-bottom: 8px;
+}
+.auth-title {
+  font-size: 26px; font-weight: 800; text-align: center;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #fff, var(--accent-light));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+.auth-sub {
+  font-size: 13px; color: var(--muted); text-align: center;
+  line-height: 1.6; margin-bottom: 32px;
+}
+.auth-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-md);
+  padding: 11px 14px; font-size: 12px;
+  color: var(--danger-light); margin-bottom: 16px;
+  display: none; font-family: var(--font-mono);
+}
+.auth-error.show { display: block; animation: fadeIn 0.2s ease; }
+
+.auth-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.auth-field label {
+  font-size: 10px; font-family: var(--font-mono);
+  color: var(--muted); letter-spacing: 1.2px; text-transform: uppercase;
+}
+.auth-input {
+  padding: 12px 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03); color: var(--text);
+  font-size: 14px; font-family: var(--font-display); outline: none;
+  transition: border-color 150ms, box-shadow 150ms; width: 100%;
+}
+.auth-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 3px var(--glow-accent-soft);
+}
+.auth-btn {
+  width: 100%; padding: 13px; border-radius: var(--radius-md);
+  border: none; cursor: pointer; font-family: var(--font-display);
+  font-size: 14px; font-weight: 700; letter-spacing: 0.3px;
+  transition: all 150ms var(--ease); margin-top: 8px;
+}
+.auth-btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: white;
+  box-shadow: 0 4px 24px rgba(139, 92, 246, 0.35);
+}
+.auth-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.5);
+}
+.auth-btn-primary:disabled { opacity: 0.5; pointer-events: none; }
+.auth-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 16px 0; color: var(--muted); font-size: 11px;
+}
+.auth-divider::before, .auth-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.auth-btn-google {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border); color: var(--text);
+}
+.auth-btn-google:hover {
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+}
+
+/* ═══════════════════════════════════════════════
+   HQ SHELL
+   ═══════════════════════════════════════════════ */
+#hq-shell {
+  position: fixed; inset: 0; z-index: 10;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: 1fr;
+}
+#hq-shell.hidden { display: none; }
+
+/* ── SIDEBAR ── */
+#hq-sidebar {
+  background: rgba(6, 8, 18, 0.98);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden; position: relative;
+}
+
+.sidebar-header {
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 15px; font-weight: 800; letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+.sidebar-logo-hex {
+  font-size: 13px; color: var(--accent);
+  filter: drop-shadow(0 0 6px rgba(139,92,246,0.5));
+}
+.sidebar-logo-text {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sidebar-badge {
+  font-family: var(--font-mono); font-size: 8px;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: rgba(139, 92, 246, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  background: rgba(139, 92, 246, 0.04); display: inline-block;
+}
+.sidebar-admin-info {
+  padding: 14px 16px; margin: 0 10px 6px;
+  border-radius: var(--radius-md);
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.sidebar-admin-avatar {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: white; flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+.sidebar-admin-name {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sidebar-admin-role {
+  font-size: 10px; color: var(--accent-light);
+  font-family: var(--font-mono); letter-spacing: 0.5px;
+}
+
+.sidebar-nav {
+  flex: 1; overflow-y: auto; padding: 8px 10px;
+  scrollbar-width: none;
+}
+.sidebar-nav::-webkit-scrollbar { display: none; }
+
+.nav-section-label {
+  font-family: var(--font-mono); font-size: 8px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); padding: 12px 10px 5px;
+  opacity: 0.7;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-md);
+  cursor: pointer; transition: all 150ms var(--ease);
+  color: var(--text-secondary); font-size: 13px; font-weight: 600;
+  border: 1px solid transparent; user-select: none; position: relative;
+  text-decoration: none; width: 100%; background: none;
+  font-family: var(--font-display);
+}
+.nav-item:hover {
+  background: rgba(139, 92, 246, 0.07);
+  color: var(--text); border-color: rgba(139, 92, 246, 0.12);
+}
+.nav-item.active {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--accent-light); border-color: rgba(139, 92, 246, 0.25);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.08);
+}
+.nav-item .nav-icon { font-size: 15px; flex-shrink: 0; opacity: 0.85; }
+.nav-badge {
+  margin-left: auto; min-width: 18px; height: 18px;
+  background: var(--danger); border-radius: var(--radius-pill);
+  font-size: 10px; font-weight: 700; color: white;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 5px; font-family: var(--font-mono);
+}
+
+.sidebar-footer {
+  padding: 12px 10px; border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-status {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: var(--radius-md);
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  margin-bottom: 8px;
+}
+.status-dot-live {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--success); flex-shrink: 0;
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+  50%       { box-shadow: 0 0 0 4px rgba(16,185,129,0); }
+}
+.status-live-text {
+  font-family: var(--font-mono); font-size: 9px;
+  color: var(--success-light); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.logout-btn {
+  width: 100%; padding: 9px; border-radius: var(--radius-md);
+  background: transparent; border: 1px solid rgba(239,68,68,0.15);
+  color: rgba(239,68,68,0.6); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 150ms var(--ease);
+  font-family: var(--font-display);
+}
+.logout-btn:hover {
+  background: rgba(239,68,68,0.08); color: var(--danger-light);
+  border-color: rgba(239,68,68,0.3);
+}
+
+/* ── MAIN PANEL ── */
+#hq-main {
+  display: flex; flex-direction: column;
+  overflow: hidden; background: transparent;
+}
+
+.main-topbar {
+  padding: 0 28px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5, 8, 16, 0.6);
+  backdrop-filter: blur(16px);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; height: 58px; gap: 16px;
+}
+.topbar-title {
+  display: flex; align-items: center; gap: 10px;
+}
+.topbar-title h1 {
+  font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.3px;
+}
+.topbar-title .topbar-icon { font-size: 18px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-time {
+  font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+  letter-spacing: 1px;
+}
+.topbar-tag {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(139,92,246,0.5);
+  border: 1px solid rgba(139,92,246,0.12); padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.main-content {
+  flex: 1; overflow-y: auto; padding: 28px;
+  scrollbar-width: thin; scrollbar-color: rgba(139,92,246,0.2) transparent;
+}
+.main-content::-webkit-scrollbar { width: 5px; }
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(139,92,246,0.2); border-radius: 3px;
+}
+
+/* ── PANELS (views) ── */
+.hq-panel { display: none; animation: panelIn 0.3s var(--ease) both; }
+.hq-panel.active { display: block; }
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════
+   STATS GRID
+   ═══════════════════════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px; margin-bottom: 24px;
+}
+.stat-card {
+  background: rgba(11, 15, 30, 0.7);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  transition: border-color 200ms, box-shadow 200ms;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(139,92,246,0.04), transparent);
+  pointer-events: none;
+}
+.stat-card:hover {
+  border-color: rgba(139,92,246,0.25);
+  box-shadow: 0 0 24px rgba(139,92,246,0.06);
+}
+.stat-icon {
+  font-size: 22px; margin-bottom: 12px; display: block;
+}
+.stat-val {
+  font-size: 28px; font-weight: 800; color: var(--text);
+  letter-spacing: -1px; line-height: 1; margin-bottom: 4px;
+  font-family: var(--font-mono);
+}
+.stat-label {
+  font-size: 11px; color: var(--muted); letter-spacing: 0.3px;
+}
+.stat-delta {
+  font-size: 10px; font-family: var(--font-mono);
+  color: var(--success-light); margin-top: 6px;
+  display: flex; align-items: center; gap: 3px;
+}
+.stat-card.accent-accent .stat-val { color: var(--accent-light); }
+.stat-card.accent-cyan .stat-val   { color: var(--accent2-light); }
+.stat-card.accent-amber .stat-val  { color: var(--warning-light); }
+.stat-card.accent-red .stat-val    { color: var(--danger-light); }
+.stat-card.accent-green .stat-val  { color: var(--success-light); }
+
+/* ═══════════════════════════════════════════════
+   SECTION HEADERS
+   ═══════════════════════════════════════════════ */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
+}
+.section-title {
+  font-size: 14px; font-weight: 800; color: var(--text); letter-spacing: -0.2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title .s-icon { font-size: 16px; }
+.section-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ═══════════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════════ */
+.hq-table-wrap {
+  background: rgba(11, 15, 30, 0.7);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden; margin-bottom: 24px;
+}
+.hq-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.hq-table thead th {
+  padding: 12px 16px; text-align: left;
+  font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+  background: rgba(5,8,16,0.5); white-space: nowrap;
+}
+.hq-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  transition: background 120ms;
+}
+.hq-table tbody tr:last-child { border-bottom: none; }
+.hq-table tbody tr:hover { background: rgba(139,92,246,0.04); }
+.hq-table td {
+  padding: 12px 16px; vertical-align: middle; color: var(--text-secondary);
+}
+.hq-table td.primary { color: var(--text); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════ */
+.hq-btn {
+  padding: 8px 14px; border-radius: var(--radius-md);
+  border: none; cursor: pointer; font-family: var(--font-display);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.2px;
+  transition: all 120ms var(--ease); display: inline-flex;
+  align-items: center; gap: 5px; white-space: nowrap;
+}
+.hq-btn:disabled { opacity: 0.4; pointer-events: none; }
+.hq-btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: white; box-shadow: 0 2px 12px rgba(139,92,246,0.3);
+}
+.hq-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,92,246,0.5); }
+.hq-btn-danger {
+  background: rgba(239,68,68,0.1); color: var(--danger-light);
+  border: 1px solid rgba(239,68,68,0.25);
+}
+.hq-btn-danger:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); }
+.hq-btn-success {
+  background: rgba(16,185,129,0.1); color: var(--success-light);
+  border: 1px solid rgba(16,185,129,0.25);
+}
+.hq-btn-success:hover { background: rgba(16,185,129,0.2); }
+.hq-btn-ghost {
+  background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.hq-btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+.hq-btn-amber {
+  background: rgba(245,158,11,0.1); color: var(--warning-light);
+  border: 1px solid rgba(245,158,11,0.25);
+}
+.hq-btn-amber:hover { background: rgba(245,158,11,0.2); }
+.hq-btn-sm { padding: 5px 10px; font-size: 11px; border-radius: var(--radius-sm); }
+
+/* ═══════════════════════════════════════════════
+   PILLS & BADGES
+   ═══════════════════════════════════════════════ */
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: var(--radius-pill);
+  font-size: 10px; font-weight: 700; font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+.pill-active  { background: rgba(16,185,129,0.12); color: var(--success-light); border: 1px solid rgba(16,185,129,0.25); }
+.pill-banned  { background: rgba(239,68,68,0.12); color: var(--danger-light); border: 1px solid rgba(239,68,68,0.25); }
+.pill-muted   { background: rgba(245,158,11,0.12); color: var(--warning-light); border: 1px solid rgba(245,158,11,0.25); }
+.pill-pending { background: rgba(139,92,246,0.12); color: var(--accent-light); border: 1px solid rgba(139,92,246,0.25); }
+.pill-resolved{ background: rgba(100,116,139,0.12); color: var(--muted); border: 1px solid rgba(100,116,139,0.2); }
+.pill-pinned  { background: rgba(6,182,212,0.12); color: var(--accent2-light); border: 1px solid rgba(6,182,212,0.25); }
+
+/* ═══════════════════════════════════════════════
+   INPUTS
+   ═══════════════════════════════════════════════ */
+.hq-input {
+  padding: 9px 13px; border-radius: var(--radius-md);
+  border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+  color: var(--text); font-size: 13px; font-family: var(--font-display);
+  outline: none; transition: border-color 150ms, box-shadow 150ms;
+}
+.hq-input:focus {
+  border-color: rgba(139,92,246,0.5); box-shadow: 0 0 0 3px var(--glow-accent-soft);
+}
+.hq-input::placeholder { color: var(--muted); }
+textarea.hq-input { resize: vertical; min-height: 80px; line-height: 1.5; }
+select.hq-input { cursor: pointer; }
+
+/* ═══════════════════════════════════════════════
+   CARDS
+   ═══════════════════════════════════════════════ */
+.hq-card {
+  background: rgba(11, 15, 30, 0.7);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px; margin-bottom: 14px;
+  transition: border-color 200ms;
+}
+.hq-card:hover { border-color: rgba(139,92,246,0.18); }
+.hq-card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; margin-bottom: 10px; flex-wrap: wrap;
+}
+.hq-card-meta {
+  font-size: 11px; color: var(--muted); font-family: var(--font-mono);
+}
+.hq-card-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.hq-card-actions {
+  display: flex; gap: 7px; flex-wrap: wrap; margin-top: 14px;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURE TOGGLE
+   ═══════════════════════════════════════════════ */
+.feature-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.feature-card {
+  background: rgba(11,15,30,0.7); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  transition: border-color 200ms;
+}
+.feature-card:hover { border-color: rgba(139,92,246,0.2); }
+.feature-info { flex: 1; }
+.feature-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.feature-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.toggle-switch {
+  position: relative; width: 44px; height: 24px; flex-shrink: 0; cursor: pointer;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+  position: absolute; inset: 0; border-radius: 12px;
+  background: rgba(100,116,139,0.25); transition: background 200ms;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--muted); transition: left 200ms var(--ease-spring), background 200ms;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.toggle-switch input:checked ~ .toggle-track {
+  background: rgba(139,92,246,0.35); border-color: rgba(139,92,246,0.4);
+}
+.toggle-switch input:checked ~ .toggle-thumb {
+  left: 23px; background: var(--accent);
+  box-shadow: 0 0 10px rgba(139,92,246,0.5);
+}
+
+/* ═══════════════════════════════════════════════
+   ANNOUNCEMENT COMPOSER
+   ═══════════════════════════════════════════════ */
+.compose-box {
+  background: rgba(11,15,30,0.7); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px;
+}
+.compose-row {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; align-items: flex-end;
+}
+.compose-row .hq-input { flex: 1; min-width: 200px; }
+.compose-textarea { width: 100%; margin-bottom: 12px; }
+
+/* ═══════════════════════════════════════════════
+   LOGS
+   ═══════════════════════════════════════════════ */
+.log-list { display: flex; flex-direction: column; gap: 6px; }
+.log-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(11,15,30,0.6); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 12px 14px;
+  font-size: 12px; transition: background 120ms;
+}
+.log-item:hover { background: rgba(139,92,246,0.04); }
+.log-time {
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  flex-shrink: 0; margin-top: 1px; min-width: 80px;
+}
+.log-icon { font-size: 14px; flex-shrink: 0; }
+.log-text { flex: 1; color: var(--text-secondary); line-height: 1.5; }
+.log-text strong { color: var(--text); }
+.log-action {
+  font-family: var(--font-mono); font-size: 9px;
+  padding: 2px 7px; border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.log-ban   { background: rgba(239,68,68,0.1); color: var(--danger-light); }
+.log-del   { background: rgba(245,158,11,0.1); color: var(--warning-light); }
+.log-post  { background: rgba(139,92,246,0.1); color: var(--accent-light); }
+.log-flag  { background: rgba(6,182,212,0.1); color: var(--accent2-light); }
+.log-ok    { background: rgba(16,185,129,0.1); color: var(--success-light); }
+
+/* ═══════════════════════════════════════════════
+   MODAL (CONFIRMATION)
+   ═══════════════════════════════════════════════ */
+#hq-modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(5,8,16,0.8); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 200ms;
+}
+#hq-modal-overlay.open { opacity: 1; pointer-events: all; }
+.hq-modal {
+  background: #0d1224; border: 1px solid rgba(139,92,246,0.25);
+  border-radius: var(--radius-xl); padding: 36px 32px 28px;
+  max-width: 400px; width: calc(100% - 40px);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.06);
+  transform: scale(0.95); transition: transform 200ms var(--ease-spring);
+}
+#hq-modal-overlay.open .hq-modal { transform: scale(1); }
+.modal-icon { font-size: 36px; text-align: center; margin-bottom: 16px; }
+.modal-title {
+  font-size: 18px; font-weight: 800; color: var(--text);
+  text-align: center; margin-bottom: 8px;
+}
+.modal-sub {
+  font-size: 13px; color: var(--muted); text-align: center;
+  line-height: 1.6; margin-bottom: 24px;
+}
+.modal-actions { display: flex; gap: 10px; }
+.modal-actions .hq-btn { flex: 1; justify-content: center; padding: 11px; font-size: 13px; }
+
+/* ═══════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════ */
+#hq-toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 900;
+  font-size: 13px; font-weight: 600; padding: 12px 18px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(16px); opacity: 0;
+  transition: all 250ms var(--ease-spring); pointer-events: none;
+  max-width: 320px; font-family: var(--font-display);
+  display: flex; align-items: center; gap: 8px;
+}
+#hq-toast.show { transform: translateY(0); opacity: 1; }
+#hq-toast.toast-success {
+  background: rgba(16,185,129,0.15); color: var(--success-light);
+  border: 1px solid rgba(16,185,129,0.3);
+}
+#hq-toast.toast-error {
+  background: rgba(239,68,68,0.15); color: var(--danger-light);
+  border: 1px solid rgba(239,68,68,0.3);
+}
+#hq-toast.toast-info {
+  background: rgba(139,92,246,0.15); color: var(--accent-light);
+  border: 1px solid rgba(139,92,246,0.3);
+}
+
+/* ═══════════════════════════════════════════════
+   LOADING SKELETON
+   ═══════════════════════════════════════════════ */
+.skel {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% auto;
+  animation: skelShimmer 1.5s linear infinite;
+  border-radius: var(--radius-md);
+}
+@keyframes skelShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ═══════════════════════════════════════════════
+   SEARCH BAR
+   ═══════════════════════════════════════════════ */
+.hq-search {
+  position: relative; display: flex; align-items: center;
+}
+.hq-search .hq-input { padding-left: 36px; }
+.hq-search-icon {
+  position: absolute; left: 12px; font-size: 14px; pointer-events: none; opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════ */
+.hq-empty {
+  text-align: center; padding: 60px 20px; color: var(--muted);
+}
+.hq-empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+.hq-empty-text { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.hq-empty-sub  { font-size: 12px; }
+
+/* ═══════════════════════════════════════════════
+   GRID LAYOUTS
+   ═══════════════════════════════════════════════ */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR (main content)
+   ═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.2); border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════ */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; display: inline-block; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE (mobile sidebar) — FULLY FIXED
+   ═══════════════════════════════════════════════ */
+#mobile-menu-btn {
+  display: none; padding: 8px; border-radius: var(--radius-sm);
+  background: none; border: 1px solid var(--border);
+  color: var(--text); cursor: pointer; font-size: 16px; flex-shrink: 0;
+}
+
+/* Mobile sidebar overlay backdrop */
+#sidebar-overlay {
+  display: none; position: fixed; inset: 0; z-index: 199;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+}
+#sidebar-overlay.show { display: block; }
+
+@media (max-width: 768px) {
+  #hq-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  #hq-sidebar {
+    position: fixed; left: -280px; top: 0; bottom: 0;
+    width: 280px; z-index: 200;
+    transition: left 300ms var(--ease);
+    box-shadow: 4px 0 40px rgba(0,0,0,0.5);
+  }
+  #hq-sidebar.mobile-open { left: 0; }
+  #mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
+
+  .two-col, .three-col { grid-template-columns: 1fr !important; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Main content full width on mobile */
+  #hq-main { width: 100%; min-width: 0; overflow: hidden; }
+
+  .main-topbar { padding: 0 14px; }
+  .topbar-tag { display: none; }
+
+  .main-content {
+    padding: 16px 14px;
+    /* Extra bottom padding for gesture bar */
+    padding-bottom: 32px;
+  }
+
+  /* Tables scroll horizontally on mobile */
+  .hq-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .hq-table { min-width: 560px; }
+
+  /* Compose forms stack on mobile */
+  .compose-row { flex-direction: column; }
+  .compose-row .hq-input { width: 100% !important; min-width: 0; }
+
+  .inline-form { flex-direction: column; }
+  .inline-form .field-group { min-width: 0; width: 100%; }
+
+  /* Section actions wrap */
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .section-actions { width: 100%; flex-wrap: wrap; }
+  .section-actions .hq-search { flex: 1; min-width: 0; }
+  .section-actions .hq-input { width: 100% !important; }
+
+  /* Card actions wrap */
+  .hq-card-actions { flex-wrap: wrap; }
+
+  /* Feature grid: single col on small phones */
+  .feature-grid { grid-template-columns: 1fr !important; }
+
+  /* Auth card padding */
+  .auth-card { padding: 32px 24px 28px; }
+
+  /* Toast position */
+  #hq-toast { bottom: 16px; right: 12px; left: 12px; max-width: none; }
+
+  /* Stat cards smaller text on small screens */
+  .stat-val { font-size: 22px !important; }
+
+  /* Log items stack */
+  .log-item { flex-wrap: wrap; }
+  .log-time { min-width: 0; width: 100%; }
+
+  /* Modal full-width */
+  .hq-modal { padding: 24px 20px 20px; }
+}
+
+@media (max-width: 400px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
+}
+
+.page-subtitle {
+  font-size: 11px; color: var(--muted); margin-bottom: 20px;
+  font-family: var(--font-mono); letter-spacing: 0.5px;
+}
+.inline-form { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.inline-form .field-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
+.inline-form .field-group label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+</style>
+</head>
+<body>
+<div id="hq-bg"></div>
+<div id="sidebar-overlay"></div>
+
+<!-- ═══════════════════════════════════════════════
+     AUTH GATE — shown before login
+     ═══════════════════════════════════════════════ -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-emblem">⬡</div>
+    <div class="auth-label">Restricted Access</div>
+    <div class="auth-title">Golex HQ</div>
+    <div class="auth-sub">Admin Command Center. Authorized personnel only.</div>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-field">
+      <label>Email</label>
+      <input class="auth-input" type="email" id="auth-email" placeholder="admin@golex.app" autocomplete="email">
+    </div>
+    <div class="auth-field">
+      <label>Password</label>
+      <input class="auth-input" type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="auth-btn auth-btn-primary" id="auth-login-btn">Enter HQ</button>
+    <div class="auth-divider">or</div>
+    <button class="auth-btn auth-btn-google" id="auth-google-btn">🔐 Continue with Google</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     HQ SHELL
+     ═══════════════════════════════════════════════ -->
+<div id="hq-shell" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside id="hq-sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="sidebar-logo-hex">⬡</span>
+        <span class="sidebar-logo-text">GOLEX HQ</span>
+      </div>
+      <span class="sidebar-badge">Command Center</span>
+    </div>
+
+    <div class="sidebar-admin-info">
+      <div class="sidebar-admin-avatar" id="admin-avatar-initials">AD</div>
+      <div>
+        <div class="sidebar-admin-name" id="admin-display-name">Admin</div>
+        <div class="sidebar-admin-role">⬡ Super Admin</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <button class="nav-item active" data-panel="overview">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+
+      <div class="nav-section-label">Content</div>
+      <button class="nav-item" data-panel="announcements">
+        <span class="nav-icon">📢</span> Announcements
+      </button>
+      <button class="nav-item" data-panel="posts">
+        <span class="nav-icon">📝</span> Posts Manager
+      </button>
+      <button class="nav-item" data-panel="guilds">
+        <span class="nav-icon">🏰</span> Guilds
+      </button>
+
+      <div class="nav-section-label">Community</div>
+      <button class="nav-item" data-panel="users">
+        <span class="nav-icon">👥</span> Users
+        <span class="nav-badge" id="badge-banned" style="display:none">!</span>
+      </button>
+      <button class="nav-item" data-panel="reports">
+        <span class="nav-icon">🚩</span> Reports
+        <span class="nav-badge" id="badge-reports">0</span>
+      </button>
+      <button class="nav-item" data-panel="feedback">
+        <span class="nav-icon">💬</span> Feedback
+      </button>
+
+      <div class="nav-section-label">System</div>
+      <button class="nav-item" data-panel="features">
+        <span class="nav-icon">⚙️</span> Feature Flags
+      </button>
+      <button class="nav-item" data-panel="notifications">
+        <span class="nav-icon">🔔</span> Notifications
+      </button>
+      <button class="nav-item" data-panel="logs">
+        <span class="nav-icon">🗃️</span> Audit Logs
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-status">
+        <div class="status-dot-live"></div>
+        <span class="status-live-text">Firebase Live</span>
+      </div>
+      <button class="logout-btn" id="hq-logout-btn">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="hq-main">
+    <div class="main-topbar">
+      <div class="topbar-title">
+        <button id="mobile-menu-btn">☰</button>
+        <span class="topbar-icon" id="topbar-icon">📊</span>
+        <h1 id="topbar-title">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-time" id="topbar-clock"></span>
+        <span class="topbar-tag">HQ v2.1</span>
+      </div>
+    </div>
+
+    <div class="main-content">
+
+      <!-- ══════════════════════════════
+           PANEL: DASHBOARD
+           ══════════════════════════════ -->
+      <div class="hq-panel active" id="panel-overview">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card accent-accent">
+            <span class="stat-icon">👥</span>
+            <div class="stat-val" id="stat-total-users">—</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-card accent-cyan">
+            <span class="stat-icon">📝</span>
+            <div class="stat-val" id="stat-total-posts">—</div>
+            <div class="stat-label">Live Posts</div>
+          </div>
+          <div class="stat-card accent-amber">
+            <span class="stat-icon">🚩</span>
+            <div class="stat-val" id="stat-open-reports">—</div>
+            <div class="stat-label">Open Reports</div>
+          </div>
+          <div class="stat-card accent-red">
+            <span class="stat-icon">🔨</span>
+            <div class="stat-val" id="stat-banned-users">—</div>
+            <div class="stat-label">Banned Users</div>
+          </div>
+          <div class="stat-card accent-green">
+            <span class="stat-icon">📢</span>
+            <div class="stat-val" id="stat-announcements">—</div>
+            <div class="stat-label">Announcements</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">🗃️</span> Recent Admin Activity</div>
+        </div>
+        <div class="log-list" id="overview-log-list">
+          <div class="hq-empty">
+            <div class="hq-empty-icon">🗃️</div>
+            <div class="hq-empty-text">No activity yet</div>
+            <div class="hq-empty-sub">Admin actions will appear here</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: ANNOUNCEMENTS
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-announcements">
+        <div class="page-subtitle">POST · OFFICIAL ANNOUNCEMENTS · EXPLORE FEED</div>
+
+        <div class="compose-box">
+          <div class="section-title" style="margin-bottom:14px"><span class="s-icon">✍️</span> Compose Announcement</div>
+          <div class="inline-form" style="margin-bottom:12px">
+            <div class="field-group" style="flex:2">
+              <label>Title</label>
+              <input class="hq-input" id="ann-title" placeholder="e.g. New Feature Launch 🚀" style="width:100%">
+            </div>
+            <div class="field-group">
+              <label>Type</label>
+              <select class="hq-input" id="ann-type" style="width:100%">
+                <option value="announcement">📢 Announcement</option>
+                <option value="update">🔄 App Update</option>
+                <option value="maintenance">🔧 Maintenance</option>
+                <option value="event">🎉 Event</option>
+                <option value="policy">📋 Policy</option>
+              </select>
+            </div>
+          </div>
+          <textarea class="hq-input compose-textarea" id="ann-body" placeholder="Write the full announcement body here..." rows="4"></textarea>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button class="hq-btn hq-btn-primary" id="ann-post-btn">📢 Post to Explore</button>
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;color:var(--text-secondary)">
+              <input type="checkbox" id="ann-pin" style="accent-color:var(--accent)"> Pin to top
+            </label>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">📋</span> Posted Announcements</div>
+        </div>
+        <div id="announcements-list">
+          <div class="hq-empty">
+            <div class="hq-empty-icon">📢</div>
+            <div class="hq-empty-text">No announcements yet</div>
+            <div class="hq-empty-sub">Post your first one above</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: POSTS MANAGER
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-posts">
+        <div class="page-subtitle">REVIEW · DELETE · PROMOTE ALL POSTS IN EXPLORE</div>
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">📝</span> All Posts</div>
+          <div class="section-actions">
+            <div class="hq-search">
+              <span class="hq-search-icon">🔍</span>
+              <input class="hq-input" id="posts-search" placeholder="Search posts..." style="width:220px">
+            </div>
+            <button class="hq-btn hq-btn-ghost hq-btn-sm" id="posts-refresh-btn">↺ Refresh</button>
+          </div>
+        </div>
+        <div class="hq-table-wrap">
+          <table class="hq-table">
+            <thead>
+              <tr>
+                <th>Author</th><th>Content</th><th>Skill</th>
+                <th>Likes</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="posts-tbody">
+              <tr><td colspan="6"><div class="hq-empty"><div class="hq-empty-icon">⏳</div><div class="hq-empty-text">Loading posts...</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: GUILDS
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-guilds">
+        <div class="page-subtitle">MANAGE GUILD MESSAGES · DELETE ABUSIVE CONTENT</div>
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">🏰</span> Guild Messages</div>
+          <div class="section-actions">
+            <select class="hq-input" id="guild-filter-skill" style="width:180px">
+              <option value="">All Guilds</option>
+              <option value="Gamer">Gamer</option>
+              <option value="Editor">Editor</option>
+              <option value="Designer">Designer</option>
+              <option value="Coder">Coder</option>
+              <option value="Writer">Writer</option>
+              <option value="Artist">Artist</option>
+              <option value="Musician">Musician</option>
+              <option value="Marketer">Marketer</option>
+              <option value="Animator">Animator</option>
+              <option value="Photographer">Photographer</option>
+              <option value="Streamer">Streamer</option>
+            </select>
+            <button class="hq-btn hq-btn-ghost hq-btn-sm" id="guild-load-btn">Load Messages</button>
+          </div>
+        </div>
+        <div id="guild-messages-list">
+          <div class="hq-empty">
+            <div class="hq-empty-icon">🏰</div>
+            <div class="hq-empty-text">Select a guild to load messages</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: USERS
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-users">
+        <div class="page-subtitle">BAN · UNBAN · MUTE · RESTRICT USERS</div>
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">👥</span> User Directory</div>
+          <div class="section-actions">
+            <div class="hq-search">
+              <span class="hq-search-icon">🔍</span>
+              <input class="hq-input" id="users-search" placeholder="Search by username..." style="width:220px">
+            </div>
+            <select class="hq-input" id="users-filter-status">
+              <option value="all">All Users</option>
+              <option value="banned">Banned Only</option>
+              <option value="muted">Muted Only</option>
+              <option value="active">Active Only</option>
+            </select>
+            <button class="hq-btn hq-btn-ghost hq-btn-sm" id="users-refresh-btn">↺ Refresh</button>
+          </div>
+        </div>
+        <div class="hq-table-wrap">
+          <table class="hq-table">
+            <thead>
+              <tr>
+                <th>User</th><th>Skill</th><th>Points</th>
+                <th>Status</th><th>Joined</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="6"><div class="hq-empty"><div class="hq-empty-icon">⏳</div><div class="hq-empty-text">Loading users...</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: REPORTS
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-reports">
+        <div class="page-subtitle">REVIEW USER REPORTS · TAKE ACTION · MARK RESOLVED</div>
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">🚩</span> Pending Reports</div>
+          <div class="section-actions">
+            <select id="reports-filter" class="hq-select">
+  <option value="all">All</option>
+  <option value="pending">Pending</option>
+  <option value="resolved">Resolved</option>
+  <option value="chat_message">Chat Messages</option>
+  <option value="post">Posts</option>
+  <option value="user">Users</option>
+</select>
+            <button class="hq-btn hq-btn-ghost hq-btn-sm" id="reports-refresh-btn">↺ Refresh</button>
+          </div>
+        </div>
+        <div id="reports-list">
+          <div class="hq-empty">
+            <div class="hq-empty-icon">⏳</div>
+            <div class="hq-empty-text">Loading reports...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: FEEDBACK
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-feedback">
+        <div class="page-subtitle">CUSTOMER SATISFACTION · USER FEEDBACK</div>
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-card accent-green">
+            <span class="stat-icon">😊</span>
+            <div class="stat-val" id="fb-positive">—</div>
+            <div class="stat-label">Positive</div>
+          </div>
+          <div class="stat-card accent-amber">
+            <span class="stat-icon">😐</span>
+            <div class="stat-val" id="fb-neutral">—</div>
+            <div class="stat-label">Neutral</div>
+          </div>
+          <div class="stat-card accent-red">
+            <span class="stat-icon">😞</span>
+            <div class="stat-val" id="fb-negative">—</div>
+            <div class="stat-label">Negative</div>
+          </div>
+        </div>
+        <div id="feedback-list">
+          <div class="hq-empty">
+            <div class="hq-empty-icon">⏳</div>
+            <div class="hq-empty-text">Loading feedback...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: FEATURE FLAGS
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-features">
+        <div class="page-subtitle">TOGGLE APP FEATURES ON / OFF WITHOUT REDEPLOYING</div>
+        <div class="feature-grid" id="features-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: NOTIFICATIONS
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-notifications">
+        <div class="page-subtitle">SEND SYSTEM-WIDE ALERTS TO ALL USERS</div>
+        <div class="compose-box">
+          <div class="section-title" style="margin-bottom:14px"><span class="s-icon">🔔</span> Send Notification</div>
+          <div class="inline-form" style="margin-bottom:12px">
+            <div class="field-group" style="flex:2">
+              <label>Notification Title</label>
+              <input class="hq-input" id="notif-title" placeholder="e.g. Server maintenance in 1 hour" style="width:100%">
+            </div>
+            <div class="field-group">
+              <label>Priority</label>
+              <select class="hq-input" id="notif-priority" style="width:100%">
+                <option value="info">ℹ️ Info</option>
+                <option value="warning">⚠️ Warning</option>
+                <option value="critical">🚨 Critical</option>
+              </select>
+            </div>
+          </div>
+          <textarea class="hq-input compose-textarea" id="notif-body" placeholder="Notification message body..."></textarea>
+          <button class="hq-btn hq-btn-primary" id="notif-send-btn">🔔 Send to All Users</button>
+        </div>
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">📋</span> Sent Notifications</div>
+        </div>
+        <div id="notifications-list">
+          <div class="hq-empty">
+            <div class="hq-empty-icon">🔔</div>
+            <div class="hq-empty-text">No notifications sent yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════
+           PANEL: AUDIT LOGS
+           ══════════════════════════════ -->
+      <div class="hq-panel" id="panel-logs">
+        <div class="page-subtitle">COMPLETE RECORD OF ALL ADMIN ACTIONS</div>
+        <div class="section-header">
+          <div class="section-title"><span class="s-icon">🗃️</span> Admin Audit Log</div>
+          <div class="section-actions">
+            <select class="hq-input" id="logs-filter-type">
+              <option value="all">All Actions</option>
+              <option value="ban">Bans</option>
+              <option value="delete">Deletions</option>
+              <option value="post">Posts</option>
+              <option value="flag">Flags</option>
+            </select>
+            <button class="hq-btn hq-btn-ghost hq-btn-sm" id="logs-refresh-btn">↺ Refresh</button>
+          </div>
+        </div>
+        <div class="log-list" id="logs-list">
+          <div class="hq-empty">
+            <div class="hq-empty-icon">⏳</div>
+            <div class="hq-empty-text">Loading audit logs...</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end main-content -->
+  </main>
+</div><!-- end hq-shell -->
+
+<!-- CONFIRM MODAL -->
+<div id="hq-modal-overlay">
+  <div class="hq-modal">
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Are you sure?</div>
+    <div class="modal-sub" id="modal-sub">This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="hq-btn hq-btn-ghost" id="modal-cancel-btn">Cancel</button>
+      <button class="hq-btn hq-btn-danger" id="modal-confirm-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="hq-toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
+<script>
+/* ═════════════════════════════════════════════════
+   GOLEX HQ — MAIN SCRIPT
+   ═════════════════════════════════════════════════ */
+
+// ── STEP 1: FIREBASE CONFIG (same project as main app) ──
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCAqrHPZxtvIlMrF6O3AIeWPRWdG-mkKKI",
+  authDomain: "golex-51625.firebaseapp.com",
+  databaseURL: "https://golex-51625-default-rtdb.firebaseio.com",
+  projectId: "golex-51625",
+  storageBucket: "golex-51625.firebasestorage.app",
+  messagingSenderId: "526349915922",
+  appId: "1:526349915922:web:0e8968d99f9dd423b345cb"
+};
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.database();
+
+// ── STEP 2: ADMIN WHITELIST ──
+// Add your own UID here after first login. Check Firebase console → Authentication → Users
+// You can also put this list in Firebase at /admins/{uid}: true  (more secure, editable without redeployment)
+const HARDCODED_ADMIN_UIDS = [
+  // "KTxJLIgjLcNx1pD1daq2sdveOc13"
+];
+
+// ── STEP 3: GLOBAL STATE ──
+const HQ = {
+  adminUid: null,
+  adminEmail: null,
+  adminName: null,
+  currentPanel: 'overview',
+  activeListeners: [],
+};
+
+// ── HELPERS ──
+const $ = id => document.getElementById(id);
+function escHtml(s) {
+  if (!s) return '';
+  const el = document.createElement('span');
+  el.textContent = s;
+  return el.innerHTML;
+}
+function timeAgo(ts) {
+  if (!ts) return '—';
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60); if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h}h ago`;
+  return new Date(ts).toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+function formatTs(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function truncate(str, n) {
+  if (!str) return '';
+  return str.length > n ? str.slice(0, n) + '…' : str;
+}
+
+// ── TOAST ──
+let _toastTimer = null;
+function toast(msg, type = 'info') {
+  const t = $('hq-toast');
+  t.className = `show toast-${type}`;
+  t.textContent = type === 'success' ? '✓ ' + msg : type === 'error' ? '✕ ' + msg : 'ℹ ' + msg;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── CONFIRM MODAL ──
+function confirm(icon, title, sub, dangerLabel, onConfirm) {
+  $('modal-icon').textContent  = icon;
+  $('modal-title').textContent = title;
+  $('modal-sub').textContent   = sub;
+  const confirmBtn = $('modal-confirm-btn');
+  confirmBtn.textContent = dangerLabel;
+  $('hq-modal-overlay').classList.add('open');
+
+  const newBtn = confirmBtn.cloneNode(true);
+  confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+  newBtn.textContent = dangerLabel;
+  newBtn.onclick = () => {
+    $('hq-modal-overlay').classList.remove('open');
+    onConfirm();
+  };
+  $('modal-cancel-btn').onclick = () => $('hq-modal-overlay').classList.remove('open');
+}
+
+// ── AUDIT LOG WRITER ──
+async function writeLog(action, details) {
+  try {
+    await db.ref('hq/logs').push({
+      action,
+      details,
+      adminUid: HQ.adminUid,
+      adminEmail: HQ.adminEmail,
+      ts: Date.now()
+    });
+  } catch (e) { console.warn('[HQ] Log write failed:', e); }
+}
+
+/* ═════════════════════════════════════════════════
+   STEP 4: AUTHENTICATION & ADMIN CHECK
+   ═════════════════════════════════════════════════ */
+async function isAdmin(user) {
+  // First check hardcoded list
+  if (HARDCODED_ADMIN_UIDS.includes(user.uid)) return true;
+  // Then check Firebase at /admins/{uid}
+  try {
+    const snap = await db.ref(`admins/${user.uid}`).get();
+    if (!snap.exists()) return false;
+    const val = snap.val();
+    // FIX: Accept boolean true OR string "true". Reject "none"/null/false.
+    return val === true || val === 'true';
+  } catch(e) {
+    console.warn('[HQ] Admin check failed:', e);
+    return false;
+  }
+}
+
+auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    showAuthGate();
+    return;
+  }
+  const admin = await isAdmin(user);
+  if (!admin) {
+    toast('Access denied. You are not an admin.', 'error');
+    await auth.signOut();
+    showAuthGate();
+    return;
+  }
+  HQ.adminUid   = user.uid;
+  HQ.adminEmail = user.email;
+  HQ.adminName  = user.displayName || user.email.split('@')[0];
+  enterHQ();
+});
+
+function showAuthGate() {
+  $('auth-gate').classList.remove('hidden');
+  $('hq-shell').classList.add('hidden');
+}
+
+function enterHQ() {
+  $('auth-gate').classList.add('hidden');
+  $('hq-shell').classList.remove('hidden');
+
+  // Set admin UI
+  const initials = HQ.adminName.slice(0, 2).toUpperCase();
+  $('admin-avatar-initials').textContent = initials;
+  $('admin-display-name').textContent = HQ.adminName;
+
+  initClock();
+  initNavigation();
+  loadOverview();
+  loadReportsBadge();
+  loadAllFeatureFlags();
+}
+
+// AUTH FORM
+$('auth-login-btn').addEventListener('click', async () => {
+  const email = $('auth-email').value.trim();
+  const pass  = $('auth-password').value;
+  if (!email || !pass) { showAuthError('Please fill both fields.'); return; }
+  $('auth-login-btn').disabled = true;
+  $('auth-login-btn').textContent = 'Signing in...';
+  $('auth-error').classList.remove('show');
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch (e) {
+    // FIX: Friendlier error messages
+    const msg = e.code === 'auth/user-not-found'     ? 'No account found with this email.'
+              : e.code === 'auth/wrong-password'      ? 'Incorrect password.'
+              : e.code === 'auth/invalid-email'        ? 'Invalid email address.'
+              : e.code === 'auth/too-many-requests'    ? 'Too many attempts. Try again later.'
+              : e.code === 'auth/invalid-credential'   ? 'Invalid email or password.'
+              : e.message;
+    showAuthError(msg);
+    $('auth-login-btn').disabled = false;
+    $('auth-login-btn').textContent = 'Enter HQ';
+  }
+});
+
+// FIX: Clear auth error when user edits fields
+$('auth-email').addEventListener('input', () => $('auth-error').classList.remove('show'));
+$('auth-password').addEventListener('input', () => $('auth-error').classList.remove('show'));
+
+$('auth-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') $('auth-login-btn').click();
+});
+
+$('auth-google-btn').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    await auth.signInWithPopup(provider);
+  } catch (e) { showAuthError(e.message); }
+});
+
+function showAuthError(msg) {
+  const el = $('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+$('hq-logout-btn').addEventListener('click', async () => {
+  await writeLog('logout', { note: 'Admin signed out' });
+  await auth.signOut();
+});
+
+/* ═════════════════════════════════════════════════
+   STEP 5: CLOCK
+   ═════════════════════════════════════════════════ */
+function initClock() {
+  function tick() {
+    const now = new Date();
+    $('topbar-clock').textContent =
+      now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ═════════════════════════════════════════════════
+   STEP 6: NAVIGATION
+   ═════════════════════════════════════════════════ */
+function initNavigation() {
+  const panelTitles = {
+    overview: ['📊', 'Dashboard'],
+    announcements: ['📢', 'Announcements'],
+    posts: ['📝', 'Posts Manager'],
+    guilds: ['🏰', 'Guilds'],
+    users: ['👥', 'Users'],
+    reports: ['🚩', 'Reports'],
+    feedback: ['💬', 'Feedback'],
+    features: ['⚙️', 'Feature Flags'],
+    notifications: ['🔔', 'Notifications'],
+    logs: ['🗃️', 'Audit Logs'],
+  };
+
+  const panelLoaders = {
+    overview: loadOverview,
+    announcements: loadAnnouncements,
+    posts: loadPosts,
+    guilds: () => {},
+    users: loadUsers,
+    reports: loadReports,
+    feedback: loadFeedback,
+    features: loadAllFeatureFlags,
+    notifications: loadNotifications,
+    logs: loadLogs,
+  };
+
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = btn.dataset.panel;
+      if (!panel) return;
+
+      // Update nav
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Update topbar
+      const [icon, title] = panelTitles[panel] || ['📊', 'Dashboard'];
+      $('topbar-icon').textContent = icon;
+      $('topbar-title').textContent = title;
+
+      // Switch panel
+      document.querySelectorAll('.hq-panel').forEach(p => p.classList.remove('active'));
+      $(`panel-${panel}`).classList.add('active');
+
+      HQ.currentPanel = panel;
+      if (panelLoaders[panel]) panelLoaders[panel]();
+
+      // Close mobile sidebar
+      $('hq-sidebar').classList.remove('mobile-open');
+      $('sidebar-overlay').classList.remove('show');
+    });
+  });
+
+  $('mobile-menu-btn').addEventListener('click', () => {
+    const sidebar  = $('hq-sidebar');
+    const overlay  = $('sidebar-overlay');
+    const isOpen   = sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('show', isOpen);
+  });
+
+  // FIX: Close sidebar when overlay is tapped on mobile
+  $('sidebar-overlay').addEventListener('click', () => {
+    $('hq-sidebar').classList.remove('mobile-open');
+    $('sidebar-overlay').classList.remove('show');
+  });
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: OVERVIEW / DASHBOARD
+   ═════════════════════════════════════════════════ */
+async function loadOverview() {
+  // Load stats in parallel with error handling
+  Promise.all([
+    db.ref('users').get(),
+    db.ref('posts').get(),
+    db.ref('hq/bans').get(),
+    db.ref('hq/reports').get(),
+    db.ref('hq/announcements').get(),
+  ]).then(([usersSnap, postsSnap, bansSnap, reportsSnap, annSnap]) => {
+    $('stat-total-users').textContent    = usersSnap.exists()  ? Object.keys(usersSnap.val()).length  : 0;
+    $('stat-total-posts').textContent    = postsSnap.exists()  ? Object.keys(postsSnap.val()).length  : 0;
+    $('stat-banned-users').textContent   = bansSnap.exists()   ? Object.keys(bansSnap.val()).length   : 0;
+    $('stat-announcements').textContent  = annSnap.exists()    ? Object.keys(annSnap.val()).length    : 0;
+
+    let openReports = 0;
+    if (reportsSnap.exists()) {
+      const all = reportsSnap.val();
+      openReports = Object.values(all).filter(r => r.status === 'pending').length;
+    }
+    $('stat-open-reports').textContent = openReports;
+  }).catch(e => {
+    console.warn('[HQ] Stats load failed:', e);
+    toast('Could not load stats: ' + e.message, 'error');
+  });
+
+  // Recent logs
+  db.ref('hq/logs').orderByChild('ts').limitToLast(8).get().then(snap => {
+    const list = $('overview-log-list');
+    if (!snap.exists()) {
+      list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🗃️</div><div class="hq-empty-text">No activity yet</div></div>';
+      return;
+    }
+    const entries = [];
+    snap.forEach(child => entries.unshift({ key: child.key, ...child.val() }));
+    list.innerHTML = entries.map(log => renderLogItem(log)).join('');
+  }).catch(e => console.warn('[HQ] Logs load failed:', e));
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: ANNOUNCEMENTS
+   ═════════════════════════════════════════════════ */
+$('ann-post-btn').addEventListener('click', async () => {
+  const title = $('ann-title').value.trim();
+  const body  = $('ann-body').value.trim();
+  const type  = $('ann-type').value;
+  const pin   = $('ann-pin').checked;
+
+  if (!title || !body) { toast('Please fill title and body', 'error'); return; }
+
+  const btn = $('ann-post-btn');
+  btn.disabled = true; btn.textContent = 'Posting...';
+
+  try {
+    const postId = db.ref('posts').push().key;
+    const ts = Date.now();
+
+    // Post to Explore as official announcement
+    await db.ref(`posts/${postId}`).set({
+      userId: HQ.adminUid,
+      username: '[Golex Official]',
+      skill: 'Official',
+      content: `[${type.toUpperCase()}] ${title}\n\n${body}`,
+      createdAt: ts,
+      expiresAt: ts + 30 * 24 * 60 * 60 * 1000, // 30 days for official posts
+      likesCount: 0, commentsCount: 0,
+      isOfficial: true, pinned: pin,
+      annType: type,
+      annTitle: title,
+    });
+
+    // Also save to hq/announcements for HQ reference
+    const annId = db.ref('hq/announcements').push().key;
+    await db.ref(`hq/announcements/${annId}`).set({
+      title, body, type, pinned: pin, postId,
+      postedBy: HQ.adminEmail, ts
+    });
+
+    await writeLog('announcement_post', { title, type, pinned: pin, postId });
+    toast('Announcement posted!', 'success');
+    $('ann-title').value = '';
+    $('ann-body').value  = '';
+    $('ann-pin').checked = false;
+    loadAnnouncements();
+  } catch (e) {
+    toast('Failed to post: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '📢 Post to Explore';
+  }
+});
+
+async function loadAnnouncements() {
+  const snap = await db.ref('hq/announcements').orderByChild('ts').limitToLast(20).get();
+  const list = $('announcements-list');
+  if (!snap.exists()) {
+    list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">📢</div><div class="hq-empty-text">No announcements yet</div></div>';
+    return;
+  }
+  const entries = [];
+  snap.forEach(c => entries.unshift({ key: c.key, ...c.val() }));
+
+  list.innerHTML = entries.map(ann => `
+    <div class="hq-card">
+      <div class="hq-card-header">
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:3px">
+            ${ann.pinned ? '<span class="pill pill-pinned" style="margin-right:6px">📌 Pinned</span>' : ''}
+            ${escHtml(ann.title)}
+          </div>
+          <div class="hq-card-meta">${escHtml(ann.type)} · ${formatTs(ann.ts)} · by ${escHtml(ann.postedBy)}</div>
+        </div>
+      </div>
+      <div class="hq-card-body">${escHtml(truncate(ann.body, 200))}</div>
+      <div class="hq-card-actions">
+        ${ann.postId ? `<button class="hq-btn hq-btn-ghost hq-btn-sm" onclick="deleteAnnouncement('${ann.key}','${ann.postId}')">🗑 Delete</button>` : ''}
+        ${ann.postId && !ann.pinned ? `<button class="hq-btn hq-btn-amber hq-btn-sm" onclick="pinAnnouncement('${ann.postId}', '${ann.key}')">📌 Pin</button>` : ''}
+        ${ann.postId && ann.pinned  ? `<button class="hq-btn hq-btn-ghost hq-btn-sm" onclick="unpinAnnouncement('${ann.postId}', '${ann.key}')">📌 Unpin</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function deleteAnnouncement(annKey, postId) {
+  confirm('🗑️', 'Delete Announcement?', 'This will remove it from Explore and HQ.', '🗑 Delete', async () => {
+    try {
+      await Promise.all([
+        db.ref(`posts/${postId}`).remove(),
+        db.ref(`hq/announcements/${annKey}`).remove(),
+      ]);
+      await writeLog('announcement_delete', { annKey, postId });
+      toast('Announcement deleted', 'success');
+      loadAnnouncements();
+    } catch (e) { toast('Delete failed: ' + e.message, 'error'); }
+  });
+}
+
+async function pinAnnouncement(postId, annKey) {
+  await db.ref(`posts/${postId}`).update({ pinned: true });
+  await db.ref(`hq/announcements/${annKey}`).update({ pinned: true });
+  await writeLog('pin', { postId });
+  toast('Post pinned!', 'success');
+  loadAnnouncements();
+}
+
+async function unpinAnnouncement(postId, annKey) {
+  await db.ref(`posts/${postId}`).update({ pinned: false });
+  await db.ref(`hq/announcements/${annKey}`).update({ pinned: false });
+  await writeLog('unpin', { postId });
+  toast('Post unpinned', 'info');
+  loadAnnouncements();
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: POSTS MANAGER
+   ═════════════════════════════════════════════════ */
+let _allPostsCache = [];
+let _postsListener = null;
+
+async function loadPosts() {
+  const tbody = $('posts-tbody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="hq-empty"><div class="spin">⟳</div></div></td></tr>';
+
+  // FIX: Detach any existing listener before attaching a new one
+  if (_postsListener) {
+    db.ref('posts').off('value', _postsListener);
+    _postsListener = null;
+  }
+
+  // FIX: Use real-time listener so new posts appear without manual refresh
+  _postsListener = db.ref('posts').orderByChild('createdAt').limitToLast(80).on('value', snap => {
+    if (!snap.exists()) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="hq-empty"><div class="hq-empty-icon">📝</div><div class="hq-empty-text">No posts</div></div></td></tr>';
+      _allPostsCache = [];
+      return;
+    }
+    _allPostsCache = [];
+    snap.forEach(c => _allPostsCache.unshift({ key: c.key, ...c.val() }));
+    // Preserve search filter if active
+    const q = $('posts-search').value.toLowerCase().trim();
+    if (q) {
+      renderPostsTable(_allPostsCache.filter(p =>
+        (p.content || '').toLowerCase().includes(q) ||
+        (p.username || '').toLowerCase().includes(q)
+      ));
+    } else {
+      renderPostsTable(_allPostsCache);
+    }
+  }, err => {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="hq-empty"><div class="hq-empty-icon">⚠️</div><div class="hq-empty-text">Error: ${escHtml(err.message)}</div></div></td></tr>`;
+    toast('Posts load failed: ' + err.message, 'error');
+  });
+}
+
+function renderPostsTable(posts) {
+  const tbody = $('posts-tbody');
+  if (posts.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="hq-empty"><div class="hq-empty-icon">🔍</div><div class="hq-empty-text">No posts match</div></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = posts.map(post => {
+    const isOfficial = post.isOfficial;
+    const isPinned   = post.pinned;
+    return `
+      <tr>
+        <td class="primary">@${escHtml(post.username || '?')}</td>
+        <td style="max-width:240px">
+          ${isOfficial ? '<span class="pill pill-pinned" style="margin-right:4px">Official</span>' : ''}
+          ${isPinned   ? '<span class="pill pill-pinned" style="margin-right:4px">📌</span>' : ''}
+          ${escHtml(truncate(post.content, 80))}
+        </td>
+        <td>${escHtml(post.skill || '—')}</td>
+        <td style="font-family:var(--font-mono);font-size:12px">${post.likesCount || 0} ❤️</td>
+        <td>${isPinned ? '<span class="pill pill-pinned">Pinned</span>' : '<span class="pill pill-active">Live</span>'}</td>
+        <td>
+          <div style="display:flex;gap:5px">
+            ${!isPinned ? `<button class="hq-btn hq-btn-amber hq-btn-sm" onclick="adminPinPost('${post.key}')">📌</button>` : `<button class="hq-btn hq-btn-ghost hq-btn-sm" onclick="adminUnpinPost('${post.key}')">📌</button>`}
+            <button class="hq-btn hq-btn-danger hq-btn-sm" onclick="adminDeletePost('${post.key}', '${escHtml(post.userId || '')}')">🗑</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+$('posts-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) { renderPostsTable(_allPostsCache); return; }
+  renderPostsTable(_allPostsCache.filter(p =>
+    (p.content || '').toLowerCase().includes(q) ||
+    (p.username || '').toLowerCase().includes(q)
+  ));
+});
+
+$('posts-refresh-btn').addEventListener('click', loadPosts);
+
+async function adminDeletePost(postId, userId) {
+  confirm('🗑️', 'Delete this post?', 'Removed from Explore permanently.', '🗑 Delete', async () => {
+    try {
+      await db.ref(`posts/${postId}`).remove();
+      await writeLog('delete_post', { postId, ownerUid: userId });
+      toast('Post deleted', 'success');
+      loadPosts();
+    } catch (e) { toast('Failed: ' + e.message, 'error'); }
+  });
+}
+
+async function adminPinPost(postId) {
+  await db.ref(`posts/${postId}`).update({ pinned: true });
+  await writeLog('pin', { postId });
+  toast('Post pinned!', 'success');
+  loadPosts();
+}
+
+async function adminUnpinPost(postId) {
+  await db.ref(`posts/${postId}`).update({ pinned: false });
+  await writeLog('unpin', { postId });
+  toast('Post unpinned', 'info');
+  loadPosts();
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: GUILDS
+   ═════════════════════════════════════════════════ */
+$('guild-load-btn').addEventListener('click', loadGuildMessages);
+$('guild-filter-skill').addEventListener('change', () => {
+  if ($('guild-filter-skill').value) loadGuildMessages();
+});
+
+// FIX: Mirror the exact same guildId transformation used by the main app.
+// Main app: 'guild_' + skill.toLowerCase().replace(/[^a-z0-9]/g, '_')
+// Without this, HQ reads guilds/Coder/messages but messages are stored at guilds/guild_coder/messages.
+function getGuildId(skill) {
+  return 'guild_' + (skill || 'Explorer').toLowerCase().replace(/[^a-z0-9]/g, '_');
+}
+
+async function loadGuildMessages() {
+  const skill = $('guild-filter-skill').value;
+  if (!skill) { toast('Please select a guild', 'error'); return; }
+
+  // FIX: Use getGuildId() so the path matches where the main app actually writes messages.
+  const guildId = getGuildId(skill);
+
+  const list = $('guild-messages-list');
+  list.innerHTML = '<div class="hq-empty"><div class="spin">⟳</div> Loading...</div>';
+
+  try {
+    const snap = await db.ref(`guilds/${guildId}/messages`).limitToLast(60).get();
+    if (!snap.exists()) {
+      list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🏰</div><div class="hq-empty-text">No messages in this guild</div></div>';
+      return;
+    }
+
+    const now = Date.now();
+    const msgs = [];
+    snap.forEach(c => {
+      const msg = c.val();
+      // FIX: Filter out expired messages — main app uses expiresAt TTL (24h text, 6h image, etc.)
+      // Without this, all fetched messages would be expired/invisible even if the path was correct.
+      if (!msg.expiresAt || now < msg.expiresAt) {
+        msgs.push({ key: c.key, ...msg });
+      }
+    });
+
+    if (msgs.length === 0) {
+      list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🏰</div><div class="hq-empty-text">No active messages in this guild</div><div class="hq-empty-sub">Messages may have expired (text: 24h, images: 6h, files: 3h)</div></div>';
+      return;
+    }
+
+    // Sort by whichever timestamp field exists — newest first
+    msgs.sort((a, b) => {
+      const ta = a.timestamp || a.createdAt || a.ts || 0;
+      const tb = b.timestamp || b.createdAt || b.ts || 0;
+      return tb - ta;
+    });
+
+    list.innerHTML = msgs.map(msg => {
+      const ts = msg.timestamp || msg.createdAt || msg.ts || null;
+      const safeGuildId  = escHtml(guildId);
+      const safeSenderId = escHtml(msg.senderId || '');
+      // FIX: Main app writes 'username' (not 'senderName') — fall back chain matches the actual schema.
+      const safeSenderName = escHtml(msg.username || msg.senderName || msg.senderId || '?');
+
+      // Show content type label for non-text messages
+      let contentPreview;
+      if (msg.deleted) {
+        contentPreview = '<em style="color:var(--muted)">🗑 Message deleted</em>';
+      } else if (msg.type === 'image') {
+        contentPreview = '🖼 [Image]';
+      } else if (msg.type === 'file') {
+        contentPreview = `📎 [File: ${escHtml(msg.fileName || 'attachment')}]`;
+      } else if (msg.type === 'audio') {
+        contentPreview = '🎙 [Voice note]';
+      } else {
+        contentPreview = escHtml(truncate(msg.text || '', 200));
+      }
+
+      // Show expiry countdown
+      const expiresIn = msg.expiresAt ? msg.expiresAt - now : null;
+      const expiryLabel = expiresIn
+        ? (() => {
+            const h = Math.floor(expiresIn / 3600000);
+            const m = Math.floor((expiresIn % 3600000) / 60000);
+            return h > 0 ? `⏳ expires in ${h}h ${m}m` : `⏳ expires in ${m}m`;
+          })()
+        : '';
+
+      return `
+        <div class="hq-card" style="margin-bottom:8px">
+          <div class="hq-card-header">
+            <div>
+              <span style="font-weight:700;color:var(--text)">@${safeSenderName}</span>
+              <span class="hq-card-meta" style="margin-left:8px">${ts ? timeAgo(ts) : '—'}</span>
+              ${expiryLabel ? `<span class="hq-card-meta" style="margin-left:8px;color:var(--warning)">${expiryLabel}</span>` : ''}
+            </div>
+            <span class="pill pill-active" style="font-size:9px">${escHtml(msg.type || 'text')}</span>
+          </div>
+          <div class="hq-card-body">${contentPreview}</div>
+          <div class="hq-card-actions">
+            ${!msg.deleted ? `<button class="hq-btn hq-btn-danger hq-btn-sm" onclick="deleteGuildMessage('${safeGuildId}','${msg.key}','${safeSenderId}')">🗑 Delete</button>` : ''}
+            ${msg.senderId ? `<button class="hq-btn hq-btn-ghost hq-btn-sm" onclick="quickBanUser('${safeSenderId}', '${safeSenderName}')">🔨 Ban Sender</button>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<div class="hq-empty"><div class="hq-empty-icon">⚠️</div><div class="hq-empty-text">Error: ${escHtml(e.message)}</div></div>`;
+    toast('Guild load failed: ' + e.message, 'error');
+  }
+}
+
+async function deleteGuildMessage(guildId, msgKey, senderId) {
+  confirm('🗑️', 'Delete guild message?', 'This message will be removed permanently.', '🗑 Delete', async () => {
+    try {
+      // FIX: guildId is now the correctly transformed path (e.g. guild_coder), not the raw skill name.
+      await db.ref(`guilds/${guildId}/messages/${msgKey}`).remove();
+      await writeLog('delete_guild_msg', { guildId, msgKey, senderId });
+      toast('Message deleted', 'success');
+      loadGuildMessages();
+    } catch (e) { toast('Failed: ' + e.message, 'error'); }
+  });
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: USERS
+   ═════════════════════════════════════════════════ */
+let _allUsersCache = [];
+
+async function loadUsers() {
+  const tbody = $('users-tbody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="hq-empty"><div class="spin">⟳</div></div></td></tr>';
+
+  const [usersSnap, bansSnap, mutesSnap] = await Promise.all([
+    db.ref('users').get(),
+    db.ref('hq/bans').get(),
+    db.ref('hq/mutes').get(),
+  ]);
+
+  const bans  = bansSnap.exists()  ? bansSnap.val()  : {};
+  const mutes = mutesSnap.exists() ? mutesSnap.val() : {};
+
+  if (!usersSnap.exists()) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="hq-empty"><div class="hq-empty-icon">👥</div><div class="hq-empty-text">No users</div></div></td></tr>';
+    return;
+  }
+
+  _allUsersCache = [];
+  usersSnap.forEach(c => {
+    const u = c.val();
+    _allUsersCache.push({
+      uid: c.key,
+      ...u,
+      isBanned: !!bans[c.key],
+      isMuted:  !!mutes[c.key],
+    });
+  });
+
+  renderUsersTable(_allUsersCache);
+}
+
+function renderUsersTable(users) {
+  const tbody    = $('users-tbody');
+  const filter   = $('users-filter-status').value;
+  let filtered   = users;
+  if (filter === 'banned') filtered = users.filter(u => u.isBanned);
+  if (filter === 'muted')  filtered = users.filter(u => u.isMuted);
+  if (filter === 'active') filtered = users.filter(u => !u.isBanned && !u.isMuted);
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="hq-empty"><div class="hq-empty-icon">🔍</div><div class="hq-empty-text">No users match</div></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(u => {
+    const status = u.isBanned ? '<span class="pill pill-banned">Banned</span>'
+                 : u.isMuted  ? '<span class="pill pill-muted">Muted</span>'
+                 : '<span class="pill pill-active">Active</span>';
+    return `
+      <tr>
+        <td class="primary">
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--muted);display:block">${escHtml(u.uid.slice(0,8))}...</span>
+          @${escHtml(u.username || '?')}
+        </td>
+        <td>${escHtml(u.skill || '—')}</td>
+        <td style="font-family:var(--font-mono)">${u.points || 0}</td>
+        <td>${status}</td>
+        <td style="font-size:11px;color:var(--muted)">${u.createdAt ? timeAgo(u.createdAt) : '—'}</td>
+        <td>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            ${!u.isBanned
+              ? `<button class="hq-btn hq-btn-danger hq-btn-sm" onclick="banUser('${u.uid}','${escHtml(u.username||u.uid)}')">🔨 Ban</button>`
+              : `<button class="hq-btn hq-btn-success hq-btn-sm" onclick="unbanUser('${u.uid}','${escHtml(u.username||u.uid)}')">✓ Unban</button>`
+            }
+            ${!u.isMuted
+              ? `<button class="hq-btn hq-btn-amber hq-btn-sm" onclick="muteUser('${u.uid}','${escHtml(u.username||u.uid)}')">🔇 Mute</button>`
+              : `<button class="hq-btn hq-btn-ghost hq-btn-sm" onclick="unmuteUser('${u.uid}','${escHtml(u.username||u.uid)}')">🔊 Unmute</button>`
+            }
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+$('users-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) { renderUsersTable(_allUsersCache); return; }
+  renderUsersTable(_allUsersCache.filter(u =>
+    (u.username || '').toLowerCase().includes(q) ||
+    (u.uid || '').toLowerCase().includes(q)
+  ));
+});
+$('users-filter-status').addEventListener('change', () => renderUsersTable(_allUsersCache));
+$('users-refresh-btn').addEventListener('click', loadUsers);
+
+// BAN / UNBAN / MUTE / UNMUTE
+async function banUser(uid, username) {
+  confirm('🔨', `Ban @${username}?`, 'This user will be blocked from all Golex features.', '🔨 Ban User', async () => {
+    try {
+      // Write to hq/bans (admin-only path — no rules issue)
+      await db.ref(`hq/bans/${uid}`).set({
+        bannedAt: Date.now(), bannedBy: HQ.adminUid,
+        reason: 'Admin action'
+      });
+      // FIX: Also try to write ban flag to user record (may fail if DB rules restrict admin writing to users/{uid})
+      // If this fails, the main app should check hq/bans instead
+      try {
+        await db.ref(`users/${uid}/banned`).set(true);
+      } catch(ruleErr) {
+        console.warn('[HQ] Could not write ban flag to user record (check DB rules for users/$uid):', ruleErr.message);
+      }
+      await writeLog('ban', { uid, username });
+      toast(`@${username} banned`, 'success');
+      loadUsers();
+    } catch (e) { toast('Failed: ' + e.message, 'error'); }
+  });
+}
+
+async function unbanUser(uid, username) {
+  confirm('✓', `Unban @${username}?`, 'This user will be restored to active status.', '✓ Unban', async () => {
+    try {
+      await db.ref(`hq/bans/${uid}`).remove();
+      try { await db.ref(`users/${uid}/banned`).remove(); } catch(e) { /* rules may prevent */ }
+      await writeLog('unban', { uid, username });
+      toast(`@${username} unbanned`, 'success');
+      loadUsers();
+    } catch (e) { toast('Failed: ' + e.message, 'error'); }
+  });
+}
+
+async function muteUser(uid, username) {
+  confirm('🔇', `Mute @${username}?`, 'User can see content but cannot post or message.', '🔇 Mute', async () => {
+    try {
+      await db.ref(`hq/mutes/${uid}`).set({ mutedAt: Date.now(), mutedBy: HQ.adminUid });
+      try { await db.ref(`users/${uid}/muted`).set(true); } catch(e) { /* rules may prevent */ }
+      await writeLog('mute', { uid, username });
+      toast(`@${username} muted`, 'success');
+      loadUsers();
+    } catch (e) { toast('Failed: ' + e.message, 'error'); }
+  });
+}
+
+async function unmuteUser(uid, username) {
+  try {
+    await db.ref(`hq/mutes/${uid}`).remove();
+    try { await db.ref(`users/${uid}/muted`).remove(); } catch(e) { /* rules may prevent */ }
+    await writeLog('unmute', { uid, username });
+    toast(`@${username} unmuted`, 'info');
+    loadUsers();
+  } catch(e) { toast('Failed: ' + e.message, 'error'); }
+}
+
+async function quickBanUser(uid, username) {
+  banUser(uid, username);
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: REPORTS
+   ═════════════════════════════════════════════════ */
+async function loadReportsBadge() {
+  db.ref('hq/reports').orderByChild('status').equalTo('pending').on('value', snap => {
+    const count  = snap.exists() ? Object.keys(snap.val()).length : 0;
+    const badge  = $('badge-reports');
+    if (count > 0) {
+      badge.textContent  = count > 9 ? '9+' : count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  });
+}
+
+async function loadReports() {
+  const list   = $('reports-list');
+  const filter = $('reports-filter').value;
+  list.innerHTML = '<div class="hq-empty"><div class="spin">⟳</div></div>';
+
+  const snap = await db.ref('hq/reports').get();
+  if (!snap.exists()) {
+    list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🚩</div><div class="hq-empty-text">No reports yet</div></div>';
+    return;
+  }
+
+  let entries = [];
+  snap.forEach(c => entries.push({ key: c.key, ...c.val() }));
+
+if (filter === 'pending')      entries = entries.filter(r => r.status === 'pending');
+  if (filter === 'resolved')     entries = entries.filter(r => r.status === 'resolved');
+  if (filter === 'chat_message') entries = entries.filter(r => r.targetType === 'chat_message');
+  if (filter === 'post')         entries = entries.filter(r => r.targetType === 'post');
+  if (filter === 'user')         entries = entries.filter(r => r.targetType === 'user');
+  entries.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🚩</div><div class="hq-empty-text">No reports in this category</div></div>';
+    return;
+  }
+
+ list.innerHTML = entries.map(r => {
+    const isResolved = r.status === 'resolved';
+    const isChatMsg = r.targetType === 'chat_message';
+    return `
+      <div class="hq-card">
+        <div class="hq-card-header">
+          <div>
+            <div style="font-weight:700;color:var(--text);margin-bottom:3px">
+              ${isResolved ? '<span class="pill pill-resolved" style="margin-right:6px">Resolved</span>' : '<span class="pill pill-pending" style="margin-right:6px">Pending</span>'}
+              ${isChatMsg ? '<span class="pill pill-muted" style="margin-right:6px;background:rgba(6,182,212,0.12);color:var(--accent2-light);border-color:rgba(6,182,212,0.25)">💬 Chat Msg</span>' : ''}
+              ${escHtml(r.reason || 'No reason provided')}
+            </div>
+            <div class="hq-card-meta">
+              Reported by: ${escHtml(r.reporterUsername || r.reporterUid || '?')} ·
+              Target: ${r.targetType || '?'} · @${escHtml(r.targetUsername || '?')} ·
+              ${timeAgo(r.ts)}
+            </div>
+          </div>
+        </div>
+        ${(r.contentPreview || r.messageContentPreview) ? `<div class="hq-card-body">"${escHtml(truncate(r.contentPreview || r.messageContentPreview, 160))}"</div>` : ''}
+        ${isChatMsg && r.chatId && r.messageId ? `<div class="hq-card-body" style="font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:4px">Chat: ${escHtml(r.chatId)} · MsgID: ${escHtml(r.messageId)}</div>` : ''}
+        <div class="hq-card-actions">
+          ${!isResolved ? `<button class="hq-btn hq-btn-success hq-btn-sm" onclick="resolveReport('${r.key}')">✓ Mark Resolved</button>` : ''}
+          ${r.targetPostId ? `<button class="hq-btn hq-btn-danger hq-btn-sm" onclick="adminDeletePost('${r.targetPostId}','')">🗑 Delete Post</button>` : ''}
+          ${isChatMsg && r.chatId && r.messageId ? `<button class="hq-btn hq-btn-danger hq-btn-sm" onclick="adminDeleteChatMessage('${escHtml(r.chatId)}','${escHtml(r.messageId)}','${r.key}')">🗑 Delete Chat Msg</button>` : ''}
+          ${r.targetUid ? `<button class="hq-btn hq-btn-danger hq-btn-sm" onclick="banUser('${r.targetUid}','${escHtml(r.targetUsername||r.targetUid)}')">🔨 Ban User</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+$('reports-filter').addEventListener('change', loadReports);
+$('reports-refresh-btn').addEventListener('click', loadReports);
+async function adminDeleteChatMessage(chatId, messageId, reportKey) {
+  confirm('🗑️', 'Delete this chat message?', 'It will be removed from both users\' chats.', '🗑 Delete', async () => {
+    try {
+      await db.ref(`chats/${chatId}/messages/${messageId}`).remove();
+      await writeLog('delete_chat_message', { chatId, messageId });
+      toast('Chat message deleted', 'success');
+      // Auto-resolve the report
+      await db.ref(`hq/reports/${reportKey}`).update({ status: 'resolved', resolvedBy: HQ.adminEmail, resolvedAt: Date.now() });
+      loadReports();
+    } catch (e) { toast('Failed: ' + e.message, 'error'); }
+  });
+}
+async function resolveReport(key) {
+  await db.ref(`hq/reports/${key}`).update({ status: 'resolved', resolvedAt: Date.now(), resolvedBy: HQ.adminUid });
+  await writeLog('resolve_report', { reportKey: key });
+  toast('Report marked resolved', 'success');
+  loadReports();
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: FEEDBACK
+   ═════════════════════════════════════════════════ */
+async function loadFeedback() {
+  const list = $('feedback-list');
+  list.innerHTML = '<div class="hq-empty"><div class="spin">⟳</div></div>';
+
+  const snap = await db.ref('hq/feedback').get();
+
+  let pos = 0, neu = 0, neg = 0;
+  if (!snap.exists()) {
+    list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">💬</div><div class="hq-empty-text">No feedback submitted yet</div></div>';
+    $('fb-positive').textContent = 0; $('fb-neutral').textContent = 0; $('fb-negative').textContent = 0;
+    return;
+  }
+
+  const entries = [];
+  snap.forEach(c => entries.push({ key: c.key, ...c.val() }));
+  entries.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  entries.forEach(f => { if (f.rating >= 4) pos++; else if (f.rating >= 3) neu++; else neg++; });
+
+  $('fb-positive').textContent = pos;
+  $('fb-neutral').textContent  = neu;
+  $('fb-negative').textContent = neg;
+
+  list.innerHTML = entries.map(f => {
+    const emoji = f.rating >= 4 ? '😊' : f.rating >= 3 ? '😐' : '😞';
+    return `
+      <div class="hq-card" style="margin-bottom:8px">
+        <div class="hq-card-header">
+          <div>
+            <span style="font-size:18px">${emoji}</span>
+            <span style="font-weight:700;color:var(--text);margin-left:8px">Rating: ${f.rating || '?'}/5</span>
+            <span class="hq-card-meta" style="margin-left:10px">${timeAgo(f.ts)}</span>
+          </div>
+          <span class="hq-card-meta">@${escHtml(f.username || '?')}</span>
+        </div>
+        ${f.message ? `<div class="hq-card-body">${escHtml(f.message)}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: FEATURE FLAGS
+   ═════════════════════════════════════════════════ */
+const DEFAULT_FEATURES = [
+  { key: 'explore_enabled',     name: 'Explore Feed',          desc: 'Show/hide the Explore posts feed for all users' },
+  { key: 'guild_enabled',       name: 'Guild Chat',            desc: 'Enable or disable all Guild rooms' },
+  { key: 'calls_enabled',       name: 'Voice & Video Calls',   desc: 'Allow users to start calls' },
+  { key: 'create_posts_enabled',name: 'Create Posts',          desc: 'Allow users to create new posts' },
+  { key: 'endorsements_enabled',name: 'Endorsements',          desc: 'Allow users to endorse each other' },
+  { key: 'new_signups_enabled', name: 'New Signups',           desc: 'Allow new users to register' },
+  { key: 'maintenance_mode',    name: 'Maintenance Mode',      desc: 'Show maintenance banner to all users' },
+  { key: 'pfp_upload_enabled',  name: 'Profile Photo Upload',  desc: 'Allow profile picture changes' },
+];
+
+async function loadAllFeatureFlags() {
+  const grid = $('features-grid');
+  grid.innerHTML = '<div class="hq-empty"><div class="spin">⟳</div></div>';
+  try {
+    const snap = await db.ref('hq/features').get();
+    const current = snap.exists() ? snap.val() : {};
+
+    grid.innerHTML = DEFAULT_FEATURES.map(f => {
+      // FIX: explicitly check value; undefined = default ON, false = OFF, true = ON
+      const isOn = current[f.key] !== false;
+      return `
+        <div class="feature-card" id="fc-${f.key}">
+          <div class="feature-info">
+            <div class="feature-name">${escHtml(f.name)}</div>
+            <div class="feature-desc">${escHtml(f.desc)}</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" data-feature="${f.key}" ${isOn ? 'checked' : ''} onchange="toggleFeature('${f.key}', this.checked, '${escHtml(f.name)}', this)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">⚠️</div><div class="hq-empty-text">Failed to load features: ' + escHtml(e.message) + '</div></div>';
+  }
+}
+
+async function toggleFeature(key, isOn, name, checkboxEl) {
+  try {
+    await db.ref(`hq/features/${key}`).set(isOn);
+    await writeLog('feature_toggle', { key, isOn, name });
+    toast(`${name} ${isOn ? 'enabled ✓' : 'disabled'}`, isOn ? 'success' : 'info');
+  } catch (e) {
+    toast('Failed: ' + e.message, 'error');
+    // FIX: revert the specific checkbox instead of reloading all
+    if (checkboxEl) checkboxEl.checked = !isOn;
+  }
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: NOTIFICATIONS
+   ═════════════════════════════════════════════════ */
+$('notif-send-btn').addEventListener('click', async () => {
+  const title    = $('notif-title').value.trim();
+  const body     = $('notif-body').value.trim();
+  const priority = $('notif-priority').value;
+  if (!title) { toast('Please enter a title', 'error'); return; }
+
+  confirm('🔔', 'Send to ALL users?', `"${title}" will be pushed to every user's notification feed.`, '🔔 Send', async () => {
+    const btn = $('notif-send-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    try {
+      const ts  = Date.now();
+      const key = db.ref('hq/notifications').push().key;
+
+      // Save to HQ log
+      await db.ref(`hq/notifications/${key}`).set({
+        title, body, priority, ts,
+        sentBy: HQ.adminEmail,
+      });
+
+      // FIX: Also broadcast to every user's notifications node so the main app can show it
+      // We read all user UIDs and fan-out the notification
+      const usersSnap = await db.ref('users').get();
+      if (usersSnap.exists()) {
+        const updates = {};
+        usersSnap.forEach(c => {
+          updates[`users/${c.key}/notifications/${key}`] = {
+            title, body, priority, ts,
+            type: 'system', read: false,
+          };
+        });
+        await db.ref().update(updates);
+      }
+
+      await writeLog('notification_sent', { title, priority, key });
+      toast(`Notification sent to all users!`, 'success');
+      $('notif-title').value = '';
+      $('notif-body').value  = '';
+      loadNotifications();
+    } catch (e) {
+      toast('Failed: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔔 Send to All Users';
+    }
+  });
+});
+
+async function loadNotifications() {
+  const snap = await db.ref('hq/notifications').orderByChild('ts').limitToLast(20).get();
+  const list = $('notifications-list');
+  if (!snap.exists()) {
+    list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🔔</div><div class="hq-empty-text">No notifications sent</div></div>';
+    return;
+  }
+  const entries = [];
+  snap.forEach(c => entries.unshift({ key: c.key, ...c.val() }));
+  list.innerHTML = entries.map(n => `
+    <div class="hq-card" style="margin-bottom:8px">
+      <div class="hq-card-header">
+        <div>
+          <span style="font-weight:700;color:var(--text)">${escHtml(n.title)}</span>
+          <span class="hq-card-meta" style="margin-left:8px">${formatTs(n.ts)}</span>
+        </div>
+        <span class="pill ${n.priority === 'critical' ? 'pill-banned' : n.priority === 'warning' ? 'pill-muted' : 'pill-active'}">${n.priority || 'info'}</span>
+      </div>
+      ${n.body ? `<div class="hq-card-body">${escHtml(n.body)}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+/* ═════════════════════════════════════════════════
+   PANEL: AUDIT LOGS
+   ═════════════════════════════════════════════════ */
+async function loadLogs() {
+  const list = $('logs-list');
+  list.innerHTML = '<div class="hq-empty"><div class="spin">⟳</div></div>';
+
+  const snap = await db.ref('hq/logs').orderByChild('ts').limitToLast(60).get();
+  if (!snap.exists()) {
+    list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🗃️</div><div class="hq-empty-text">No logs yet</div></div>';
+    return;
+  }
+
+  const filter  = $('logs-filter-type').value;
+  const entries = [];
+  snap.forEach(c => entries.unshift({ key: c.key, ...c.val() }));
+
+  const filtered = filter === 'all' ? entries : entries.filter(l => {
+    if (filter === 'ban')    return ['ban','unban','mute','unmute'].includes(l.action);
+    if (filter === 'delete') return ['delete_post','delete_guild_msg','announcement_delete'].includes(l.action);
+    if (filter === 'post')   return ['announcement_post','notification_sent'].includes(l.action);
+    if (filter === 'flag')   return ['resolve_report','feature_toggle'].includes(l.action);
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="hq-empty"><div class="hq-empty-icon">🔍</div><div class="hq-empty-text">No matching logs</div></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(log => renderLogItem(log)).join('');
+}
+
+$('logs-filter-type').addEventListener('change', loadLogs);
+$('logs-refresh-btn').addEventListener('click', loadLogs);
+
+function renderLogItem(log) {
+  const actionMeta = {
+    'ban':                  { icon: '🔨', label: 'ban',    cls: 'log-ban'  },
+    'unban':                { icon: '✓',  label: 'unban',  cls: 'log-ok'   },
+    'mute':                 { icon: '🔇', label: 'mute',   cls: 'log-ban'  },
+    'unmute':               { icon: '🔊', label: 'unmute', cls: 'log-ok'   },
+    'delete_post':          { icon: '🗑', label: 'delete', cls: 'log-del'  },
+    'delete_guild_msg':     { icon: '🗑', label: 'delete', cls: 'log-del'  },
+    'announcement_post':    { icon: '📢', label: 'post',   cls: 'log-post' },
+    'announcement_delete':  { icon: '🗑', label: 'delete', cls: 'log-del'  },
+    'resolve_report':       { icon: '✓',  label: 'flag',   cls: 'log-flag' },
+    'feature_toggle':       { icon: '⚙️', label: 'flag',   cls: 'log-flag' },
+    'notification_sent':    { icon: '🔔', label: 'post',   cls: 'log-post' },
+    'pin':                  { icon: '📌', label: 'post',   cls: 'log-post' },
+    'unpin':                { icon: '📌', label: 'flag',   cls: 'log-flag' },
+    'logout':               { icon: '↩',  label: 'ok',     cls: 'log-ok'   },
+  };
+  const m = actionMeta[log.action] || { icon: '•', label: log.action, cls: 'log-ok' };
+  const detailStr = log.details ? Object.entries(log.details).map(([k,v]) => `${k}: ${v}`).join(' · ') : '';
+
+  return `
+    <div class="log-item">
+      <span class="log-time">${timeAgo(log.ts)}</span>
+      <span class="log-icon">${m.icon}</span>
+      <div class="log-text">
+        <strong>${escHtml(log.adminEmail || 'Admin')}</strong> → <strong>${escHtml(log.action)}</strong>
+        ${detailStr ? `<span style="color:var(--muted)"> · ${escHtml(detailStr)}</span>` : ''}
+      </div>
+      <span class="log-action ${m.cls}">${m.label}</span>
+    </div>
+  `;
+}
+
+/* ═════════════════════════════════════════════════
+   EXPOSE FUNCTIONS TO GLOBAL (for inline onclick)
+   ═════════════════════════════════════════════════ */
+window.banUser             = banUser;
+window.unbanUser           = unbanUser;
+window.muteUser            = muteUser;
+window.unmuteUser          = unmuteUser;
+window.quickBanUser        = quickBanUser;
+window.adminDeletePost     = adminDeletePost;
+window.adminPinPost        = adminPinPost;
+window.adminUnpinPost      = adminUnpinPost;
+window.deleteAnnouncement  = deleteAnnouncement;
+window.pinAnnouncement     = pinAnnouncement;
+window.unpinAnnouncement   = unpinAnnouncement;
+window.deleteGuildMessage  = deleteGuildMessage;
+window.resolveReport       = resolveReport;
+window.adminDeleteChatMessage = adminDeleteChatMessage;
+window.toggleFeature       = toggleFeature;
+
+console.log('%c[Golex HQ v2.1] 🛡️ Admin Panel Ready — All fixes applied', 'color:#8b5cf6;font-weight:bold;font-size:14px');
+</script>
+</body>
+</html>
