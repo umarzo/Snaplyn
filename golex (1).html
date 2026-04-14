@@ -851,6 +851,9 @@ body::after {
   #rooms-screen,
   #room-chat-screen,
   #room-create-screen,
+  #projects-screen,
+  #project-create-screen,
+  #project-workspace-screen,
   #profile-modal {
     height: 100%;
   }
@@ -1592,6 +1595,8 @@ textarea.input { resize: none; line-height: 1.5; min-height: 70px; }
   cursor: pointer;
 }
 .room-msg-sender-name:hover { color: var(--accent-light); }
+  color: var(--accent-light); margin-left: 4px;
+}
 .room-msg-bubble {
   padding: 8px 12px;
   background: var(--surface);
@@ -2859,6 +2864,11 @@ textarea.input { resize: none; line-height: 1.5; min-height: 70px; }
   transition: color 0.15s;
 }
 .guild-msg-username:hover { color: var(--accent-light); }
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--accent-light);
+  line-height: 1;
+}
 .guild-msg.mine .guild-msg-username { color: var(--accent2-light); }
 
 /* Skill tag — tiny and unobtrusive */
@@ -5956,6 +5966,601 @@ html[data-theme="dev"] .skel-post-card {
 /* Explore main title update animation */
 #explore-main-title {
   transition: opacity var(--duration-fast) var(--ease);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GOLEX MOBILE LAYOUT SYSTEM v2 — Flagship Small Screen Redesign
+   Inspired by the clarity of the 1-on-1 Chat UI:
+   every pixel earns its place, content leads, chrome steps back.
+   
+   ≤599px → Mobile   (primary)
+   ≤399px → Compact  (extra-small safety net)
+   ≡ All changes preserve or improve ≥600px behaviour ≡
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 599px) {
+
+  /* ────────────────────────────────────────────────────────
+     1. CHROME BAR — slimmer, logo stays prominent
+     ──────────────────────────────────────────────────────── */
+  .chrome {
+    padding: 7px 14px 7px;
+    min-height: 0;
+  }
+  .chrome-logo {
+    font-size: 14px;
+    gap: 5px;
+  }
+  .chrome-logo::before {
+    font-size: 10px;
+  }
+  /* Version string wastes space on mobile */
+  .chrome-version {
+    display: none;
+  }
+  .chrome-dot {
+    width: 8px;
+    height: 8px;
+  }
+  .chrome-dots {
+    gap: 5px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     2. BASE SCREEN — less generous padding
+     ──────────────────────────────────────────────────────── */
+  .screen {
+    padding: 14px 14px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     3. BOTTOM NAV — compact but fully touch-accessible
+        Maintains 44px+ tap zone per WCAG via padding
+     ──────────────────────────────────────────────────────── */
+  #main-nav {
+    padding: 3px 2px 8px;
+    gap: 0;
+  }
+  .nav-btn {
+    min-width: 44px;
+    padding: 6px 7px 5px;
+    gap: 2px;
+    border-radius: var(--radius-xs);
+  }
+  .nav-btn .nav-icon {
+    font-size: 19px;
+  }
+  .nav-btn .nav-label {
+    font-size: 8px;
+    letter-spacing: 0.2px;
+  }
+  .nav-btn.create-btn {
+    padding: 7px 13px;
+    margin: -1px 0;
+    gap: 5px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     4. EXPLORE — biggest problem area, full rethink
+        Stack: stories (shrunk) → title-less search row
+               → compact filter pills → compact tabs
+        Net saving: ~55–70px of vertical header chrome
+     ──────────────────────────────────────────────────────── */
+
+  /* Stories: smaller bubbles, tighter scroll */
+  #stories-scroll {
+    padding: 5px 10px 5px;
+    gap: 8px;
+  }
+  .story-bubble {
+    width: 42px;
+    height: 42px;
+  }
+  .story-bubble-inner {
+    font-size: 13px;
+  }
+  .story-add-inner {
+    font-size: 17px;
+  }
+  .story-label {
+    font-size: 7.5px;
+    max-width: 42px;
+    letter-spacing: 0;
+  }
+
+  /* Explore top: remove top/side whitespace */
+  .explore-top {
+    padding: 6px 10px 0;
+  }
+  .explore-top-row {
+    margin-bottom: 5px;
+    gap: 6px;
+  }
+
+  /* Hide "🌍 Feed" / "👥 People" title on mobile —
+     the tab bar already communicates this */
+  .explore-top-row h2 {
+    display: none;
+  }
+
+  /* Search input: full-width, good font size */
+  .explore-top-row .explore-search-wrap input {
+    font-size: 13px;
+    padding: 7px 10px 7px 27px;
+  }
+  .explore-top-row .explore-search-wrap::before {
+    font-size: 13px;
+    left: 8px;
+  }
+
+  /* Sort dropdown: more compact */
+  .explore-top-row .feed-sort-btn {
+    font-size: 10px;
+    padding: 5px 7px;
+  }
+
+  /* Filter pills row: more compact */
+  .explore-filters {
+    padding: 0 0 5px;
+    gap: 4px;
+  }
+  .filter-pill {
+    padding: 3px 10px;
+    font-size: 10.5px;
+    border-radius: var(--radius-pill);
+  }
+
+  /* Tab bar: tighter */
+  .explore-tab-bar {
+    padding: 0;
+  }
+  .explore-tab {
+    font-size: 10px;
+    padding: 5px 10px;
+    letter-spacing: 0.2px;
+  }
+
+  /* Posts feed: reclaim bottom padding to match actual nav height */
+  #posts-feed {
+    padding: 6px 8px 68px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     5. COMMUNITIES — 3 rows of header → 2 tight rows
+     ──────────────────────────────────────────────────────── */
+
+  /* Reduce outer padding */
+  .communities-top {
+    padding: 8px 12px 0;
+  }
+  .communities-top-row {
+    gap: 7px;
+    margin-bottom: 7px;
+    align-items: center;
+  }
+
+  /* Hide the large "Communities" title — search speaks for itself */
+  .communities-top-row h2 {
+    display: none;
+  }
+
+  /* Search: slightly more compact */
+  .communities-search {
+    font-size: 13px;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Create button: compact pill */
+  .community-create-btn {
+    font-size: 11px;
+    padding: 7px 11px;
+  }
+
+  /* Filter pills row */
+  .communities-filter-row {
+    gap: 5px;
+    padding-bottom: 5px;
+  }
+
+  /* Toggle row: tighter */
+  .communities-toggle-row {
+    padding: 2px 0 6px;
+    gap: 5px;
+  }
+  .comm-toggle-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+
+  /* Communities list: reduce bottom padding */
+  #communities-list {
+    padding: 0 12px 68px;
+    gap: 7px;
+  }
+  .community-card {
+    padding: 11px 12px;
+    gap: 10px;
+    border-radius: var(--radius-md);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     6. ROOMS — oversized header, needs tightening
+     ──────────────────────────────────────────────────────── */
+
+  /* Top block: 18px 20px → 10px 14px saves ~16px */
+  .rooms-top {
+    padding: 10px 14px 8px;
+  }
+  .rooms-top-row {
+    margin-bottom: 8px;
+  }
+  .rooms-top-title {
+    font-size: 15px;
+  }
+  .rooms-create-btn {
+    font-size: 11px;
+    padding: 7px 12px;
+    gap: 5px;
+  }
+
+  /* Room cards: tighter */
+  .room-card {
+    padding: 11px 14px;
+    margin: 0 8px 5px;
+  }
+  .room-card-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  /* Section label: tighter */
+  .rooms-section-label {
+    margin: 0 14px 6px;
+    padding-top: 10px;
+  }
+
+  /* List scroll: reduce bottom padding */
+  .rooms-list-wrap {
+    padding-bottom: 68px;
+  }
+
+  /* Room create/chat screens */
+  .room-create-topbar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .room-create-body {
+    padding: 18px 14px 90px;
+  }
+  .room-submit-wrap {
+    padding: 12px 16px 20px;
+  }
+  .room-chat-topbar {
+    padding: 9px 12px;
+    gap: 8px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     7. USER LIST / DMs — compact but readable header
+     ──────────────────────────────────────────────────────── */
+
+  /* Directory header */
+  .dir-header {
+    margin-bottom: 10px;
+  }
+  .dir-title {
+    font-size: 19px;
+  }
+  .dir-count {
+    font-size: 10px;
+  }
+
+  /* Search bar */
+  .search-wrap {
+    margin-bottom: 7px;
+  }
+  .search-wrap .input {
+    padding-left: 34px;
+    font-size: 13px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  .search-icon {
+    left: 12px;
+    font-size: 12px;
+  }
+
+  /* Filter row: compacted inputs */
+  .filter-row {
+    gap: 6px;
+    margin-bottom: 9px;
+  }
+  .filter-row .input {
+    font-size: 12px;
+    padding: 8px 28px 8px 10px;
+  }
+  .toggle-pill {
+    font-size: 11px;
+    padding: 0 9px;
+    height: 36px;
+  }
+
+  /* User item: tighter */
+  .user-item {
+    padding: 10px 11px;
+    gap: 10px;
+    margin-bottom: 5px;
+  }
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+  .user-name {
+    font-size: 13px;
+  }
+  .user-preview {
+    font-size: 11px;
+  }
+
+  /* Recs section: tighter */
+  #recs-wrap {
+    margin-bottom: 10px;
+  }
+  .rec-card {
+    min-width: 106px;
+    padding: 10px 12px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     8. GUILD / COMMUNITIES CHAT — already good, fine-tune
+     ──────────────────────────────────────────────────────── */
+
+  .guild-header {
+    padding: 6px 12px;
+    gap: 7px;
+  }
+  .guild-header-icon {
+    font-size: 16px;
+  }
+  .guild-header-name {
+    font-size: 12px;
+  }
+  .guild-member-count {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  /* Guild messages: tighter */
+  .guild-msg {
+    padding: 2px 12px;
+  }
+
+  /* Guild input: already close to reference quality */
+  .guild-input-area {
+    padding: 7px 10px 11px;
+    gap: 5px;
+  }
+  .guild-input-area .input {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  .guild-input-area .icon-btn {
+    width: 33px;
+    height: 33px;
+  }
+  .guild-send-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     9. 1-on-1 CHAT — reference standard, minimal tweaks
+     ──────────────────────────────────────────────────────── */
+
+  .chat-topbar {
+    padding: 9px 12px;
+    gap: 9px;
+  }
+  .back-btn {
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+  .icon-btn {
+    padding: 7px 9px;
+  }
+  #msgs-wrap {
+    padding: 10px 12px 8px;
+    gap: 5px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     10. CREATE SCREEN — padding:0 already; tighten inner elements
+     ──────────────────────────────────────────────────────── */
+  .content-type-btn {
+    padding: 10px 4px;
+  }
+  .content-type-icon {
+    font-size: 18px;
+  }
+  .content-type-label {
+    font-size: 9px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     11. PEOPLE TAB (inside Explore)
+     ──────────────────────────────────────────────────────── */
+  .people-filter-row {
+    padding: 6px 10px 5px;
+    gap: 5px;
+  }
+  .people-skill-pill {
+    font-size: 10.5px;
+    padding: 4px 10px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     12. POST CARDS — give messages room to breathe
+     ──────────────────────────────────────────────────────── */
+  .post-card {
+    padding: 12px 11px 10px;
+    margin-bottom: 7px;
+    border-radius: var(--radius-md);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     13. PROFILE MODAL — full-screen on mobile
+     ──────────────────────────────────────────────────────── */
+  #profile-modal {
+    padding: 0;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     14. NOTIFICATION PANEL — tighter padding
+     ──────────────────────────────────────────────────────── */
+  #notif-list {
+    padding: 8px 10px;
+  }
+  .notif-item {
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     15. DOWNLOADS SCREEN — padding:0 already; handled internally
+     ──────────────────────────────────────────────────────── */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXTRA-SMALL DEVICES ≤399px (very small Android phones)
+   Extra safety net — ensures nothing overflows or crowds
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 399px) {
+
+  /* Chrome: ultra-compact */
+  .chrome {
+    padding: 5px 12px 5px;
+  }
+  .chrome-logo {
+    font-size: 13px;
+  }
+  .chrome-dots {
+    gap: 4px;
+  }
+  .chrome-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  /* Nav: fit all 5 items */
+  .nav-btn {
+    min-width: 38px;
+    padding: 5px 5px 4px;
+  }
+  .nav-btn .nav-icon {
+    font-size: 18px;
+  }
+  .nav-btn .nav-label {
+    font-size: 7px;
+  }
+  .nav-btn.create-btn {
+    padding: 6px 9px;
+  }
+
+  /* Stories: smallest size before illegibility */
+  #stories-scroll {
+    padding: 4px 8px 4px;
+    gap: 7px;
+  }
+  .story-bubble {
+    width: 36px;
+    height: 36px;
+  }
+  .story-bubble-inner {
+    font-size: 11px;
+  }
+  .story-label {
+    font-size: 7px;
+    max-width: 36px;
+  }
+
+  /* Explore: ultra-compact tabs */
+  .explore-top {
+    padding: 4px 8px 0;
+  }
+  .explore-tab {
+    font-size: 9.5px;
+    padding: 4px 8px;
+  }
+  .filter-pill {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  .explore-top-row .feed-sort-btn {
+    font-size: 9.5px;
+    padding: 4px 5px;
+  }
+
+  /* Communities: max compact */
+  .communities-top {
+    padding: 6px 10px 0;
+  }
+  .communities-search {
+    font-size: 12px;
+    padding: 6px 9px;
+  }
+  .community-create-btn {
+    font-size: 10px;
+    padding: 6px 9px;
+  }
+  .comm-toggle-btn {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+
+  /* Rooms: max compact */
+  .rooms-top {
+    padding: 8px 12px 6px;
+  }
+  .rooms-top-title {
+    font-size: 14px;
+  }
+  .rooms-create-btn {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+  .room-card {
+    padding: 10px 12px;
+    margin: 0 6px 5px;
+  }
+
+  /* User list */
+  .dir-title {
+    font-size: 17px;
+  }
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  .filter-row .input {
+    font-size: 11px;
+    padding: 7px 24px 7px 9px;
+  }
+  .user-item {
+    padding: 9px 10px;
+  }
+  .user-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  /* Post cards */
+  .post-card {
+    padding: 10px 10px 9px;
+  }
 }
 
 </style>
@@ -9096,744 +9701,1654 @@ html[data-theme="dev"] .notif-panel-header::after {
    pseudo-element orbs from bleeding past right edge ────────────── */
 #golex-intro-overlay { contain: paint; }
 
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE LAYOUT PATCH — Create Screen Inner Elements
+   These are in a separate style block for specificity reasons.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 599px) {
 
-/* ══════════════════════════════════════════════════════════════════════
-   GOLEX SMALL-DEVICE LAYOUT SYSTEM — Flagship Mobile v1
-   ──────────────────────────────────────────────────────────────────────
-   Targets: 360px – 479px wide (most budget/mid Android, smaller iPhones)
-   Design principle: Content first. Every pixel is earned.
-   Reference quality: 1-on-1 chat UI (the existing gold standard).
-   ══════════════════════════════════════════════════════════════════════ */
-
-@media (max-width: 479px) {
-
-  /* ────────────────────────────────────────────
-     GLOBAL BASE — tighter spacing tokens
-     ──────────────────────────────────────────── */
-  .screen {
-    padding: 14px 14px 14px;
+  /* Create screen mode tabs: reduce overhead */
+  .create-mode-tabs {
+    padding: 10px 12px 0;
+    gap: 6px;
+  }
+  .create-mode-tab {
+    font-size: 11px;
+    padding: 7px 10px;
   }
 
-  /* ────────────────────────────────────────────
-     CHROME BAR — slimmer top bar
-     ──────────────────────────────────────────── */
-  .chrome {
-    padding: 8px 14px 7px;
+  /* Create screen header: tighter */
+  .create-header {
+    padding: 12px 14px 0;
   }
-  .chrome-logo {
-    font-size: 15px;
-  }
-  .chrome-dots {
-    gap: 5px;
-  }
-  .chrome-dot {
-    width: 8px;
-    height: 8px;
-  }
-  .chrome-version {
-    font-size: 8px;
-  }
-
-  /* ────────────────────────────────────────────
-     BOTTOM NAV — lean, touch-optimised
-     ──────────────────────────────────────────── */
-  #main-nav {
-    padding: 4px 2px 8px;
-    gap: 0;
-  }
-  .nav-btn {
-    padding: 5px 6px;
-    min-width: 48px;
-    gap: 1px;
-    border-radius: var(--radius-xs);
-    touch-action: manipulation;
-  }
-  .nav-btn .nav-icon {
+  .create-header h2 {
     font-size: 18px;
   }
-  .nav-btn .nav-label {
-    font-size: 7.5px;
-    letter-spacing: 0;
-  }
-  .nav-btn.create-btn {
-    padding: 6px 10px;
-    margin: -1px 2px;
-    gap: 4px;
-  }
-  .nav-btn.create-btn .nav-label {
-    font-size: 9px;
-  }
-
-  /* ────────────────────────────────────────────
-     USER LIST SCREEN (Chat List)
-     ──────────────────────────────────────────── */
-  #user-list-screen {
-    padding: 12px 12px 8px;
-  }
-  .dir-header {
+  .create-microcopy {
+    font-size: 11px;
     margin-bottom: 10px;
   }
-  .dir-title {
-    font-size: 18px;
-  }
-  .dir-count {
-    font-size: 10px;
-  }
-  .search-wrap {
-    margin-bottom: 8px;
-  }
-  .filter-row {
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-  .toggle-pill {
-    font-size: 11px;
-    padding: 0 10px;
-    height: 36px;
-  }
-  #recs-wrap {
-    margin-bottom: 10px;
-  }
-  .rec-card {
-    padding: 10px 12px;
-    min-width: 100px;
-  }
-  .rec-name {
-    font-size: 11px;
-  }
-  .user-item {
-    padding: 9px 11px;
-    gap: 10px;
-    margin-bottom: 5px;
-  }
-  .user-avatar {
-    width: 38px;
-    height: 38px;
-    font-size: 13px;
-  }
-  .user-name {
-    font-size: 13px;
-  }
-  .user-preview {
-    font-size: 11px;
-  }
-  .avatar-btn {
-    width: 34px;
-    height: 34px;
-  }
-  #profile-completion-banner {
-    padding: 8px 11px;
-    font-size: 11px;
-    margin-bottom: 9px;
+
+  /* Create screen body: side padding slightly tighter, bottom = nav height */
+  .create-body {
+    padding: 0 14px 68px;
+    gap: 12px;
   }
 
-  /* ────────────────────────────────────────────
-     EXPLORE SCREEN — compress the 3-row header
-     ──────────────────────────────────────────── */
-  .explore-top {
-    padding: 6px 11px 0;
-  }
-  .explore-top-row {
-    margin-bottom: 5px;
-    gap: 6px;
-  }
-  .explore-top-row h2 {
-    font-size: 14px;
-    letter-spacing: -0.2px;
-  }
-  .explore-top-row .explore-search-wrap input {
-    font-size: 11px;
-    padding: 5px 9px 5px 26px;
-  }
-  .explore-top-row .explore-search-wrap::before {
-    font-size: 13px;
-    left: 8px;
-  }
-  .explore-top-row .feed-sort-btn {
-    font-size: 10px;
-    padding: 4px 7px;
-  }
-  .explore-filters {
-    padding: 0 0 5px;
-    gap: 4px;
-  }
-  .filter-pill {
-    padding: 3px 9px;
-    font-size: 10px;
-  }
-  .explore-tab {
-    font-size: 10px;
-    padding: 5px 10px;
-    letter-spacing: 0.2px;
-  }
-  #stories-scroll {
-    padding: 6px 10px 6px;
-    gap: 8px;
-  }
-  .story-bubble {
-    width: 46px;
-    height: 46px;
-  }
-  .story-bubble-inner {
-    font-size: 16px;
-  }
-  .story-label {
-    font-size: 8px;
-    max-width: 46px;
-  }
-  #posts-feed {
-    padding: 6px 8px 80px;
-  }
-  .post-card {
-    padding: 11px 11px;
-    margin-bottom: 8px;
-    border-radius: var(--radius-md);
-  }
-  .post-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    font-size: 11px;
-  }
-  .post-username {
-    font-size: 12px;
+  /* Community creation form: tighter padding */
+  #create-community-form {
+    padding: 12px;
+    gap: 12px;
   }
 
-  /* People filter row (Explore > People) */
-  .people-filter-row {
-    padding: 5px 11px 4px;
-    gap: 5px;
-  }
-  .people-skill-pill {
-    font-size: 11px;
-    padding: 4px 9px;
-  }
-  .people-card {
-    padding: 9px 11px;
-  }
-  .people-card-name {
-    font-size: 13px;
-  }
-
-  /* ────────────────────────────────────────────
-     COMMUNITIES SCREEN
-     ──────────────────────────────────────────── */
-  .communities-top {
-    padding: 9px 12px 0;
-  }
-  .communities-top-row {
-    margin-bottom: 7px;
-    gap: 7px;
-  }
-  .communities-top-row h2 {
-    font-size: 15px;
-    letter-spacing: -0.2px;
-  }
-  .communities-search {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-  .community-create-btn {
-    font-size: 11px;
-    padding: 6px 10px;
-    border-radius: var(--radius-sm);
-  }
-  .communities-filter-row {
-    gap: 5px;
-    padding-bottom: 5px;
-  }
-  .communities-toggle-row {
-    padding: 2px 0 7px;
-    gap: 6px;
-  }
-  .comm-toggle-btn {
-    font-size: 11px;
-    padding: 5px 11px;
-  }
-  #communities-list {
-    padding: 8px 11px 80px;
-    gap: 7px;
-  }
-  .community-card {
-    padding: 10px 11px;
-    gap: 10px;
-    border-radius: var(--radius-md);
-  }
-  .community-card-icon {
-    width: 34px;
-    height: 34px;
-    font-size: 17px;
-  }
-  .community-card-name {
-    font-size: 13px;
-  }
-  .community-card-desc {
-    font-size: 11px;
-  }
-  .community-card-meta {
-    font-size: 10px;
-  }
-  .community-join-btn {
-    font-size: 10px;
-    padding: 5px 9px;
-  }
-
-  /* ────────────────────────────────────────────
-     COMMUNITY FEED SCREEN
-     ──────────────────────────────────────────── */
-  .comm-feed-top {
-    padding: 8px 12px;
-    gap: 7px;
-  }
-  .comm-feed-icon {
-    font-size: 19px;
-  }
-  .comm-feed-name {
-    font-size: 13px;
-  }
-  .comm-feed-member-badge {
-    font-size: 10px;
-    white-space: nowrap;
-  }
-  .comm-feed-join-btn {
-    font-size: 10px;
-    padding: 5px 10px;
-  }
-  .community-tabs {
-    min-height: 38px;
-  }
-  .comm-tab-btn {
-    font-size: 12px;
-    padding: 8px 0;
-  }
-  .comm-posts-controls {
-    padding: 6px 11px 0;
-  }
-  .comm-type-filters {
-    gap: 5px;
-    padding-bottom: 5px;
-  }
-  .comm-sort-row {
-    gap: 10px;
-    padding-bottom: 6px;
-  }
-  .comm-sort-btn {
-    font-size: 10px;
-  }
-  #community-posts-feed {
-    padding: 9px 11px 80px;
-    gap: 7px;
-  }
-  .comm-post-card {
-    padding: 10px 11px;
-    border-radius: var(--radius-md);
-  }
-  .comm-post-title {
-    font-size: 14px;
-  }
-  .comm-post-body {
-    font-size: 12px;
-  }
-  .comm-post-avatar {
-    width: 26px;
-    height: 26px;
-    font-size: 10px;
-  }
-  .comm-post-username {
-    font-size: 11px;
-  }
-  .comm-post-time {
-    font-size: 10px;
-  }
-  .comm-vote-btn {
-    width: 26px;
-    height: 25px;
-    font-size: 12px;
-  }
-  .comm-vote-score {
-    font-size: 12px;
-  }
-  .comm-voting-row {
-    gap: 5px;
-    margin-top: 8px;
-  }
-
-  /* ────────────────────────────────────────────
-     GUILD / ROOMS SCREENS
-     (already fairly compact — minor tweaks)
-     ──────────────────────────────────────────── */
-  .guild-header {
-    padding: 6px 11px;
-    gap: 7px;
-  }
-  .guild-header-name {
-    font-size: 12px;
-  }
-  .guild-member-count {
-    font-size: 9px;
-    padding: 2px 7px;
-  }
-  #guild-msgs-wrap {
-    padding: 12px 10px 6px;
-  }
-  .guild-msg-body {
-    max-width: min(78vw, 320px);
-  }
-  .guild-msg-text {
-    font-size: 13px;
-    padding: 7px 11px;
-  }
-  .guild-input-area {
-    padding: 8px 10px 12px;
-    gap: 5px;
-  }
-  .guild-input-area .input {
-    font-size: 13px;
-    padding: 8px 12px;
-  }
-  .guild-input-area .icon-btn {
-    width: 32px;
-    height: 32px;
-  }
-  .guild-send-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
-  }
-
-  /* Rooms */
-  .rooms-top {
-    padding: 12px 14px 9px;
-  }
-  .rooms-top-row {
-    margin-bottom: 9px;
-  }
-  .rooms-top-title {
-    font-size: 15px;
-  }
-  .rooms-create-btn {
-    padding: 7px 12px;
-    font-size: 11px;
-    gap: 4px;
-  }
-  .rooms-section-label {
-    margin: 0 14px 6px;
-    padding-top: 10px;
-    font-size: 8px;
-  }
-  .rooms-list-wrap {
-    padding: 0 0 74px;
-  }
-  .room-card {
-    padding: 10px 13px;
-    margin: 0 8px 5px;
-    gap: 9px;
-    border-radius: var(--radius-md);
-  }
-  .room-card-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 17px;
-  }
-  .room-card-name {
-    font-size: 13px;
-  }
-  .room-card-desc {
-    font-size: 11px;
-  }
-
-  /* Room create / room chat */
-  .room-create-topbar {
-    padding: 10px 13px;
-  }
-  .room-create-topbar-title {
-    font-size: 14px;
-  }
-  .room-input-area {
-    padding: 8px 12px 13px;
-    gap: 6px;
-  }
-
-  /* ────────────────────────────────────────────
-     CREATE SCREEN
-     ──────────────────────────────────────────── */
-  #create-screen {
-    padding: 12px 13px 14px;
-  }
+  /* Share type row: compact */
   .create-share-type-row {
-    gap: 6px;
     margin-bottom: 12px;
   }
   .create-share-type-btn {
     padding: 8px 8px;
     font-size: 11px;
+  }
+
+  /* Section labels in create: less space */
+  .create-section-label {
+    margin-bottom: 5px;
+  }
+
+  /* Input and textarea in create: match mobile input standard */
+  #create-textarea {
+    font-size: 14px;
+    padding: 10px 12px;
+    min-height: 90px;
+  }
+
+  /* Room create form body */
+  .room-create-body {
+    padding: 16px 13px 88px;
+  }
+  .room-form-section {
+    margin-bottom: 16px;
+  }
+
+  /* Room type cards grid: tighter */
+  .room-type-card {
+    padding: 12px 10px;
+  }
+  .room-type-card-icon {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .room-type-card-name {
+    font-size: 12px;
+  }
+  .room-type-card-desc {
+    font-size: 10px;
+  }
+
+  /* Community creation screen */
+  .comm-create-body {
+    padding: 12px 14px 80px;
+  }
+
+  /* Leaderboard panel: tighter */
+  #leaderboard-panel {
+    padding-bottom: 68px;
+  }
+
+  /* Post card header: tighter avatar area */
+  .post-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Chat input area: match guild input quality */
+  .chat-input-area {
+    padding: 7px 10px 11px;
     gap: 5px;
   }
-  .content-type-grid {
+  .chat-input-area .input {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  /* Rooms chat input */
+  .room-input-area {
+    padding: 7px 10px 11px;
+    gap: 5px;
+  }
+
+  /* Back buttons: accessible size */
+  .back-btn {
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+
+  /* Recs horizontal scroll: slightly shorter cards */
+  .recs-scroll {
+    padding-bottom: 2px;
     gap: 6px;
-    margin-bottom: 12px;
   }
-  .content-type-btn {
-    padding: 10px 5px;
+  .rec-card {
+    min-width: 100px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
   }
-  .content-type-icon {
-    font-size: 17px;
+  .rec-name {
+    font-size: 11px;
   }
-  .content-type-label {
+  .rec-skill {
     font-size: 9px;
   }
 
-  /* ────────────────────────────────────────────
-     ONBOARDING STEPS
-     ──────────────────────────────────────────── */
-  .onboard-step {
-    padding: 16px 15px 20px;
-  }
-  .onboard-progress-bar {
-    margin-bottom: 16px;
-    gap: 4px;
+  /* Profile completion banner: compact */
+  #profile-completion-banner {
+    padding: 8px 12px;
+    font-size: 11px;
+    margin-bottom: 9px;
+    border-radius: var(--radius-sm);
   }
 
-  /* ────────────────────────────────────────────
-     MODALS & OVERLAYS
-     ──────────────────────────────────────────── */
-  .modal-topbar {
-    padding: 11px 15px;
-  }
-  .modal-topbar-title {
-    font-size: 14px;
-  }
-  .modal-body {
-    padding: 16px 15px 26px;
-  }
-  .modal-avatar {
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
+  /* Guild reaction picker: reposition to avoid overflow */
+  .guild-reaction-picker {
+    bottom: calc(100% + 4px);
   }
 
-  /* Login screen */
-  .login-emblem {
-    width: 72px;
-    height: 72px;
-    border-radius: 18px;
-    font-size: 30px;
-  }
-  .login-emblem img {
-    width: 50px;
-    height: 50px;
-  }
-  .login-title {
-    font-size: 26px;
-  }
-  .login-sub {
-    font-size: 13px;
+  /* Section separator: tighter */
+  .section-sep {
+    margin: 8px 0 6px;
   }
 
-  /* Connection bar */
-  #connection-bar {
-    padding: 4px 10px;
-    font-size: 10px;
-    gap: 4px;
-  }
-
-  /* ────────────────────────────────────────────
-     EMPTY STATES — tighter to free more space
-     ──────────────────────────────────────────── */
-  .rooms-empty {
-    padding: 24px 16px;
-  }
-  .rooms-empty-icon {
-    font-size: 30px;
-  }
-  .guild-empty {
-    padding: 24px 16px;
-  }
-  .guild-empty-icon {
-    font-size: 36px;
-  }
-  .guild-empty-title {
-    font-size: 15px;
-  }
-  .guild-empty-sub {
-    font-size: 12px;
-  }
-
-  /* ────────────────────────────────────────────
-     TOUCH TARGETS — ensure minimum 44px for key
-     interactive elements on mobile
-     ──────────────────────────────────────────── */
-  .nav-btn,
-  .community-join-btn,
-  .communities-search,
-  .community-create-btn,
-  .comm-toggle-btn,
-  .comm-tab-btn,
-  .rooms-create-btn,
-  .community-card {
-    touch-action: manipulation;
-  }
-  .community-join-btn,
-  .community-create-btn,
-  .comm-toggle-btn {
-    min-height: 34px;
+  /* Profile modal body if present */
+  .profile-body {
+    padding: 14px 14px;
   }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   VERY SMALL DEVICES — < 360px (some older/budget Androids)
-   Survival mode: hide nav labels, collapse headers to single rows
-   ══════════════════════════════════════════════════════════════════════ */
-
-@media (max-width: 359px) {
-  /* Nav: icon-only to save horizontal space */
-  .nav-btn {
-    min-width: 40px;
-    padding: 5px 4px;
+@media (max-width: 399px) {
+  /* Create tabs: ultra-compact */
+  .create-mode-tabs {
+    padding: 8px 10px 0;
   }
-  .nav-btn .nav-label {
-    display: none;
-  }
-  .nav-btn.create-btn .nav-label {
-    display: none;
-  }
-  .nav-btn.create-btn {
+  .create-mode-tab {
+    font-size: 10px;
     padding: 6px 8px;
   }
-
-  /* Chrome: hide version */
-  .chrome-version {
-    display: none;
+  .create-header {
+    padding: 10px 12px 0;
   }
-  .chrome {
-    padding: 7px 12px 6px;
+  .create-body {
+    padding: 0 12px 68px;
   }
-
-  /* Explore: hide title (search occupies full width) */
-  .explore-top-row h2 {
-    display: none;
+  #create-community-form {
+    padding: 10px;
   }
-  .explore-top-row .explore-search-wrap {
-    flex: 1;
-  }
-
-  /* Communities: hide title */
-  .communities-top-row h2 {
-    display: none;
-  }
-
-  /* Generic screen padding */
-  .screen {
-    padding: 12px 11px 12px;
-  }
-
-  /* Post / community cards */
-  .post-card {
-    padding: 9px 10px;
-  }
-  .community-card {
-    padding: 9px 10px;
-  }
-  .room-card {
-    margin: 0 6px 4px;
-    padding: 9px 10px;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   MEDIUM MOBILE (480px – 599px) — polish pass
-   Minor density improvements that don't exist in the base styles
-   ══════════════════════════════════════════════════════════════════════ */
-
-@media (min-width: 480px) and (max-width: 599px) {
-  .chrome {
-    padding: 10px 17px 9px;
-  }
-  #main-nav {
-    padding: 5px 6px 9px;
-  }
-  .nav-btn {
-    padding: 6px 10px;
-    min-width: 54px;
-  }
-  .explore-top {
-    padding: 7px 14px 0;
-  }
-  .communities-top {
-    padding: 11px 14px 0;
-  }
-  #communities-list {
-    padding: 0 14px 80px;
-  }
-  #community-posts-feed {
-    padding: 10px 14px 80px;
-  }
-  #posts-feed {
-    padding: 8px 10px 80px;
-  }
-  .rooms-top {
-    padding: 14px 16px 10px;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   GLOBAL MOBILE TOUCH REFINEMENTS (all screens < 1024px)
-   Applied on top of all size-specific rules
-   ══════════════════════════════════════════════════════════════════════ */
-
-@media (max-width: 1023px) {
-  /* Tighten generic screen padding (currently 24px 20px is too much on mobile) */
-  .screen {
-    padding: 16px 16px 16px;
-  }
-  /* Override for screens that manage their own padding */
-  #chat-screen,
-  #explore-screen,
-  #guild-screen,
-  #rooms-screen,
-  #room-chat-screen,
-  #room-create-screen,
-  #communities-screen,
-  #community-feed-screen {
-    padding: 0 !important;
-  }
-
-  /* Better touch targets for all interactive elements */
-  .btn {
-    min-height: 44px;
-    touch-action: manipulation;
-  }
-  .input {
-    touch-action: manipulation;
-  }
-  /* Avoid double-tap zoom on buttons */
-  button,
-  .nav-btn,
-  .filter-pill,
-  .comm-toggle-btn,
-  .explore-tab {
-    touch-action: manipulation;
-  }
-
-  /* Slightly more compact filter pills */
-  .filter-pill {
-    padding: 4px 11px;
+  /* Post avatar: ultra-small */
+  .post-avatar {
+    width: 30px;
+    height: 30px;
     font-size: 11px;
   }
-  .explore-tab {
-    font-size: 11px;
-    padding: 6px 12px;
-  }
-
-  /* Reduce post cards on all mobile */
-  .post-card {
-    border-radius: var(--radius-md);
-  }
-  .community-card {
-    border-radius: var(--radius-md);
-  }
 }
 
+
+/* ════════════════════════════════════════════════════════════════
+   ██████╗ ██████╗  ██████╗      ██╗███████╗ ██████╗████████╗███████╗
+   ██╔══██╗██╔══██╗██╔═══██╗     ██║██╔════╝██╔════╝╚══██╔══╝██╔════╝
+   ██████╔╝██████╔╝██║   ██║     ██║█████╗  ██║        ██║   ███████╗
+   ██╔═══╝ ██╔══██╗██║   ██║██   ██║██╔══╝  ██║        ██║   ╚════██║
+   ██║     ██║  ██║╚██████╔╝╚█████╔╝███████╗╚██████╗   ██║   ███████║
+   ╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚════╝ ╚══════╝ ╚═════╝   ╚═╝   ╚══════╝
+   SKILL-BASED PROJECTS & COLLABORATIONS — Golex 3.0 Addition
+   ════════════════════════════════════════════════════════════════ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PROJECTS SCREEN — List & Discovery
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#projects-screen {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+#projects-screen.active { display: flex; }
+
+.projects-top {
+  padding: 18px 18px 0;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.projects-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.projects-top-title {
+  font-size: 18px;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--text);
+}
+.projects-create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  box-shadow: var(--shadow-accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.projects-create-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-accent-lg); }
+
+/* Tab bar */
+.projects-tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.projects-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.projects-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(37, 99, 235, 0.03);
+}
+.projects-tab:hover:not(.active) { color: var(--text); background: rgba(37,99,235,0.03); }
+
+/* Tab content panels */
+.projects-tab-panel { display: none; }
+.projects-tab-panel.active { display: block; }
+
+/* Scrollable list area */
+.projects-list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.projects-list-wrap::-webkit-scrollbar { width: 4px; }
+.projects-list-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.projects-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 4px 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.projects-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  border-radius: 1px;
+}
+
+/* Project card */
+.project-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(to bottom, var(--accent), var(--accent3));
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+.project-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.project-card:hover::before { opacity: 1; }
+
+.project-card-cover {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(37,99,235,0.18), rgba(79,70,229,0.14));
+  border: 1px solid rgba(37,99,235,0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.project-card-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+.project-card-body { flex: 1; min-width: 0; }
+.project-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-display);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.project-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+.project-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.project-card-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+}
+.project-role-pills {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.project-role-pill {
+  font-size: 9px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--accent-light);
+  background: rgba(37,99,235,0.08);
+  border: 1px solid rgba(37,99,235,0.18);
+  border-radius: var(--radius-pill);
+  padding: 2px 7px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.project-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.project-join-btn {
+  padding: 6px 13px;
+  background: rgba(37,99,235,0.10);
+  border: 1px solid rgba(37,99,235,0.28);
+  color: var(--accent-light);
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  white-space: nowrap;
+}
+.project-join-btn:hover { background: rgba(37,99,235,0.18); transform: translateY(-1px); }
+.project-join-btn.member {
+  background: rgba(5,150,105,0.08);
+  border-color: rgba(5,150,105,0.28);
+  color: var(--success-light);
+}
+.project-join-btn.request {
+  background: rgba(245,158,11,0.08);
+  border-color: rgba(245,158,11,0.28);
+  color: var(--warning-light);
+}
+.project-visibility-badge {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  border-radius: var(--radius-pill);
+  padding: 2px 7px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.project-visibility-badge.public {
+  background: rgba(5,150,105,0.08);
+  border: 1px solid rgba(5,150,105,0.2);
+  color: var(--success-light);
+}
+.project-visibility-badge.private {
+  background: rgba(79,70,229,0.08);
+  border: 1px solid rgba(79,70,229,0.2);
+  color: var(--accent3-light);
+}
+
+/* Empty state for projects list */
+.projects-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+}
+.projects-empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+.projects-empty-title {
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.projects-empty-sub {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Skeleton project card */
+.skel-project-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
+  animation: skeletonFadeIn 0.4s var(--ease) both;
+}
+.skel-project-card:nth-child(2) { animation-delay: 0.08s; }
+.skel-project-card:nth-child(3) { animation-delay: 0.16s; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PROJECT CREATE SCREEN
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#project-create-screen {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+#project-create-screen.active { display: flex; }
+
+.proj-create-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.proj-create-back {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.proj-create-back:hover { border-color: var(--border-hover); color: var(--text); }
+.proj-create-topbar-title {
+  font-size: 15px;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--text);
+}
+
+.proj-create-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.proj-create-body::-webkit-scrollbar { width: 4px; }
+.proj-create-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.proj-form-section {
+  margin-bottom: 18px;
+}
+.proj-form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* Visibility type cards (same style as room type cards) */
+.proj-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.proj-type-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  text-align: center;
+}
+.proj-type-card:hover { border-color: var(--border-hover); }
+.proj-type-card.selected {
+  border-color: var(--accent);
+  background: rgba(37,99,235,0.06);
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.14);
+}
+.proj-type-card-icon { font-size: 22px; margin-bottom: 6px; }
+.proj-type-card-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.proj-type-card-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* Roles section */
+.proj-roles-list { display: flex; flex-direction: column; gap: 8px; }
+.proj-role-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  animation: skeletonFadeIn 0.3s var(--ease) both;
+}
+.proj-role-row select,
+.proj-role-row input[type="number"] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--text);
+  font-size: 12px;
+  padding: 6px 8px;
+  font-family: var(--font-display);
+  outline: none;
+  transition: border-color var(--duration-fast);
+}
+.proj-role-row select:focus,
+.proj-role-row input[type="number"]:focus { border-color: var(--accent); }
+.proj-role-row select { flex: 1; min-width: 0; cursor: pointer; }
+.proj-role-row input[type="number"] { width: 60px; flex-shrink: 0; }
+.proj-role-remove-btn {
+  background: none;
+  border: 1px solid rgba(239,68,68,0.25);
+  color: var(--danger-light);
+  width: 26px; height: 26px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.proj-role-remove-btn:hover { background: rgba(239,68,68,0.10); }
+.proj-add-role-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(37,99,235,0.06);
+  border: 1px dashed rgba(37,99,235,0.28);
+  color: var(--accent-light);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  margin-top: 6px;
+  width: 100%;
+  justify-content: center;
+}
+.proj-add-role-btn:hover { background: rgba(37,99,235,0.12); }
+
+/* Cover image preview */
+.proj-cover-preview {
+  width: 100%;
+  height: 90px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(79,70,229,0.06));
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all var(--duration-fast) var(--ease);
+  position: relative;
+}
+.proj-cover-preview:hover { border-color: var(--accent); }
+.proj-cover-preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.proj-cover-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-family: var(--font-display);
+  pointer-events: none;
+}
+.proj-cover-placeholder-icon { font-size: 22px; opacity: 0.6; }
+
+/* Seeking members toggle */
+.proj-seek-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(245,158,11,0.04);
+  border: 1px solid rgba(245,158,11,0.18);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.proj-seek-row:hover { background: rgba(245,158,11,0.08); }
+.proj-seek-row input[type="checkbox"] { accent-color: var(--warning); flex-shrink: 0; }
+.proj-seek-label {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  cursor: pointer;
+  user-select: none;
+}
+.proj-seek-label b { color: var(--warning-light); }
+
+.proj-submit-wrap {
+  padding: 12px 16px 16px;
+  background: linear-gradient(to top, var(--surface) 70%, transparent);
+  flex-shrink: 0;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PROJECT WORKSPACE SCREEN
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#project-workspace-screen {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+#project-workspace-screen.active { display: flex; }
+
+/* Workspace header */
+.proj-ws-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.proj-ws-back {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.proj-ws-back:hover { border-color: var(--border-hover); color: var(--text); }
+.proj-ws-cover-mini {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(79,70,229,0.15));
+  border: 1px solid rgba(37,99,235,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.proj-ws-cover-mini img { width: 100%; height: 100%; object-fit: cover; }
+.proj-ws-info { flex: 1; min-width: 0; }
+.proj-ws-name {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.proj-ws-sub {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.proj-ws-avatars {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.proj-ws-avatar-stack {
+  display: flex;
+  flex-direction: row-reverse;
+}
+.proj-ws-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(79,70,229,0.15));
+  border: 2px solid var(--surface);
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  margin-left: -6px;
+  overflow: hidden;
+}
+.proj-ws-avatar:first-child { margin-left: 0; }
+.proj-ws-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.proj-ws-more-count {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--surface);
+  font-size: 8px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  margin-left: -6px;
+  flex-shrink: 0;
+}
+.proj-ws-menu-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.proj-ws-menu-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* Workspace tab bar */
+.proj-ws-tab-bar {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.proj-ws-tab {
+  flex: 1;
+  padding: 10px 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+  gap: 5px;
+}
+.proj-ws-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.proj-ws-tab:hover:not(.active) { color: var(--text); background: rgba(37,99,235,0.03); }
+
+/* Workspace panels */
+.proj-ws-panel { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.proj-ws-panel.active { display: flex; }
+
+/* ── Chat Panel ── */
+.proj-chat-msgs {
+  flex: 1;
+  display: block;
+  overflow-y: auto;
+  padding: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.proj-chat-msgs::-webkit-scrollbar { width: 4px; }
+.proj-chat-msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.proj-msg-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  align-items: flex-end;
+}
+.proj-msg-row.sent { flex-direction: row-reverse; }
+.proj-msg-row.grouped { margin-bottom: 2px; }
+
+.proj-msg-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(79,70,229,0.15));
+  font-size: 9px; font-weight: 700; font-family: var(--font-mono);
+  color: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+.proj-msg-avatar:hover { opacity: 0.8; }
+.proj-msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.proj-msg-avatar.hidden { visibility: hidden; }
+
+.proj-msg-content { max-width: 75%; display: flex; flex-direction: column; gap: 2px; }
+.proj-msg-row.sent .proj-msg-content { align-items: flex-end; }
+
+.proj-msg-sender {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent-light);
+  font-family: var(--font-mono);
+  padding: 0 2px;
+  cursor: pointer;
+}
+.proj-msg-sender:hover { text-decoration: underline; }
+
+.proj-msg-bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px 14px 14px 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: var(--font-display);
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+}
+.proj-msg-row.sent .proj-msg-bubble {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+  color: #fff;
+  border-radius: 14px 14px 4px 14px;
+  box-shadow: var(--shadow-accent);
+}
+.proj-msg-bubble a { color: inherit; text-decoration: underline; opacity: 0.85; }
+
+.proj-msg-time {
+  font-size: 9px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  padding: 0 4px;
+}
+
+.proj-msg-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+/* Date divider */
+.proj-date-divider {
+  text-align: center;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  padding: 8px 0;
+  position: relative;
+}
+.proj-date-divider::before, .proj-date-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 35%;
+  height: 1px;
+  background: var(--border);
+}
+.proj-date-divider::before { left: 0; }
+.proj-date-divider::after { right: 0; }
+
+/* Typing indicator */
+.proj-typing-bar {
+  min-height: 18px;
+  padding: 0 14px 2px;
+  font-size: 10px;
+  color: var(--muted);
+  font-style: italic;
+  font-family: var(--font-display);
+  flex-shrink: 0;
+}
+
+/* Chat input area */
+.proj-chat-input-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.proj-chat-input-wrap {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--duration-fast);
+}
+.proj-chat-input-wrap:focus-within { border-color: var(--border-focus); }
+.proj-chat-textarea {
+  width: 100%;
+  min-height: 36px;
+  max-height: 110px;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 13px;
+  color: var(--text);
+  font-family: var(--font-display);
+  line-height: 1.4;
+}
+.proj-chat-send-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border: none;
+  color: #fff;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--duration-fast) var(--ease);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-accent);
+}
+.proj-chat-send-btn:hover { transform: scale(1.08); }
+.proj-chat-send-btn:disabled { opacity: 0.4; pointer-events: none; }
+.proj-chat-img-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 34px; height: 34px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--duration-fast) var(--ease);
+  flex-shrink: 0;
+}
+.proj-chat-img-btn:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* ── Board (Kanban) Panel ── */
+.proj-board-wrap {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.proj-board-wrap::-webkit-scrollbar { height: 4px; }
+.proj-board-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.proj-kanban {
+  display: flex;
+  gap: 12px;
+  height: 100%;
+  min-width: max-content;
+}
+
+.proj-kanban-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 260px;
+  flex-shrink: 0;
+  min-height: 0;
+}
+.proj-kanban-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+.proj-kanban-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.proj-kanban-col-title .col-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+}
+.col-todo .col-dot { background: var(--muted); }
+.col-doing .col-dot { background: var(--warning); }
+.col-done .col-dot { background: var(--success); }
+
+.proj-kanban-col-count {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 1px 7px;
+}
+
+.proj-kanban-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  min-height: 80px;
+}
+.proj-kanban-tasks::-webkit-scrollbar { width: 3px; }
+.proj-kanban-tasks::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Drag-over highlight */
+.proj-kanban-tasks.drag-over {
+  background: rgba(37,99,235,0.04);
+  border: 1px dashed rgba(37,99,235,0.28);
+  border-radius: var(--radius-md);
+}
+
+.proj-task-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  cursor: grab;
+  transition: all var(--duration-fast) var(--ease);
+  animation: skeletonFadeIn 0.3s var(--ease) both;
+  position: relative;
+}
+.proj-task-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-hover); transform: translateY(-1px); }
+.proj-task-card:active { cursor: grabbing; }
+.proj-task-card.dragging { opacity: 0.45; transform: rotate(1.5deg) scale(1.02); box-shadow: var(--shadow-lg); }
+.proj-task-card.done-glow {
+  border-color: rgba(5,150,105,0.35);
+  box-shadow: 0 0 12px rgba(5,150,105,0.12);
+}
+
+.proj-task-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-display);
+  margin-bottom: 5px;
+  line-height: 1.35;
+  word-break: break-word;
+}
+.proj-task-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-bottom: 7px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.proj-task-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.proj-task-assignee {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  min-width: 0;
+  overflow: hidden;
+}
+.proj-task-assignee-avatar {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(79,70,229,0.15));
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.proj-task-assignee-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.proj-task-assignee-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.proj-task-move-btns {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.proj-task-move-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 22px; height: 22px;
+  border-radius: var(--radius-xs);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+}
+.proj-task-move-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Add task button */
+.proj-add-task-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(37,99,235,0.04);
+  border: 1px dashed rgba(37,99,235,0.22);
+  border-radius: var(--radius-md);
+  color: var(--accent-light);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  flex-shrink: 0;
+}
+.proj-add-task-btn:hover { background: rgba(37,99,235,0.09); }
+
+/* Task empty placeholder */
+.proj-task-empty {
+  text-align: center;
+  padding: 20px 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-family: var(--font-display);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+}
+
+/* ── Members Panel ── */
+.proj-members-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.proj-members-wrap::-webkit-scrollbar { width: 4px; }
+.proj-members-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.proj-member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  transition: all var(--duration-fast) var(--ease);
+  cursor: pointer;
+}
+.proj-member-row:hover { border-color: var(--border-hover); }
+
+.proj-member-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(79,70,229,0.15));
+  font-size: 12px; font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.proj-member-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.proj-member-info { flex: 1; min-width: 0; }
+.proj-member-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-display);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.proj-member-role {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--accent-light);
+  background: rgba(37,99,235,0.08);
+  border: 1px solid rgba(37,99,235,0.18);
+  border-radius: var(--radius-pill);
+  padding: 1px 7px;
+  display: inline-block;
+  margin-top: 2px;
+}
+.proj-member-role.owner {
+  color: var(--warning-light);
+  background: rgba(245,158,11,0.08);
+  border-color: rgba(245,158,11,0.22);
+}
+
+.proj-member-actions {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.proj-member-action-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 28px; height: 28px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+}
+.proj-member-action-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.proj-member-action-btn.danger { border-color: rgba(239,68,68,0.25); color: var(--danger-light); }
+.proj-member-action-btn.danger:hover { background: rgba(239,68,68,0.08); }
+
+/* Requests section */
+.proj-requests-section {
+  margin-top: 16px;
+}
+.proj-request-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(245,158,11,0.04);
+  border: 1px solid rgba(245,158,11,0.18);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  transition: all var(--duration-fast) var(--ease);
+}
+.proj-request-row:hover { border-color: rgba(245,158,11,0.30); }
+
+.proj-request-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(37,99,235,0.1));
+  font-size: 11px; font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--warning-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.proj-request-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.proj-request-body { flex: 1; min-width: 0; }
+.proj-request-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-display);
+}
+.proj-request-role-text {
+  font-size: 10px;
+  color: var(--warning-light);
+  font-family: var(--font-mono);
+  margin: 2px 0 4px;
+}
+.proj-request-msg {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.proj-request-btns {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.proj-request-accept-btn {
+  padding: 5px 12px;
+  background: rgba(5,150,105,0.10);
+  border: 1px solid rgba(5,150,105,0.28);
+  color: var(--success-light);
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+}
+.proj-request-accept-btn:hover { background: rgba(5,150,105,0.18); }
+.proj-request-decline-btn {
+  padding: 5px 12px;
+  background: rgba(239,68,68,0.07);
+  border: 1px solid rgba(239,68,68,0.22);
+  color: var(--danger-light);
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+}
+.proj-request-decline-btn:hover { background: rgba(239,68,68,0.14); }
+.proj-request-dm-btn {
+  padding: 5px 12px;
+  background: rgba(37,99,235,0.07);
+  border: 1px solid rgba(37,99,235,0.22);
+  color: var(--accent-light);
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease);
+}
+.proj-request-dm-btn:hover { background: rgba(37,99,235,0.14); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PROJECT MODALS — Task Creation, Request to Join,
+   Workspace Menu, Settings
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.proj-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  z-index: calc(var(--z-modal) + 2);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease);
+}
+.proj-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.proj-modal-sheet {
+  background: var(--panel-solid);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  width: 100%;
+  max-width: 540px;
+  padding: 0;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+  max-height: 88dvh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.proj-modal-sheet::-webkit-scrollbar { width: 4px; }
+.proj-modal-sheet::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.proj-modal-overlay.open .proj-modal-sheet { transform: translateY(0); }
+
+.proj-modal-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+  margin: 10px auto 0;
+}
+.proj-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 10px;
+}
+.proj-modal-title {
+  font-size: 15px;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--text);
+}
+.proj-modal-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 28px; height: 28px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--duration-fast) var(--ease);
+}
+.proj-modal-close:hover { border-color: var(--border-hover); color: var(--text); }
+.proj-modal-body { padding: 0 18px 24px; }
+
+.proj-modal-field { margin-bottom: 14px; }
+.proj-modal-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* Menu options in workspace dropdown */
+.proj-menu-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  font-family: var(--font-display);
+  transition: background var(--duration-fast);
+  border-bottom: 1px solid var(--border);
+}
+.proj-menu-option:last-child { border-bottom: none; }
+.proj-menu-option:hover { background: rgba(37,99,235,0.05); }
+.proj-menu-option.danger { color: var(--danger-light); }
+.proj-menu-option.danger:hover { background: rgba(239,68,68,0.05); }
+.proj-menu-option-icon { font-size: 16px; flex-shrink: 0; }
+
+/* Assignee dropdown in task form */
+.proj-assignee-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 13px;
+  padding: 9px 12px;
+  font-family: var(--font-display);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--duration-fast);
+}
+.proj-assignee-select:focus { border-color: var(--accent); }
+html[data-theme="dev"] .proj-assignee-select option { background: #0C1120; }
+
+/* ── Points float animation (task completion) ── */
+.proj-pts-float {
+  position: fixed;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--success-light);
+  pointer-events: none;
+  z-index: 500;
+  animation: ptsFloatAnim 1.6s ease forwards;
+  text-shadow: 0 0 10px rgba(16,185,129,0.55);
+  padding: 4px 10px;
+  background: rgba(16,185,129,0.10);
+  border: 1px solid rgba(16,185,129,0.3);
+  border-radius: var(--radius-pill);
+}
+
+/* ── Invite link row ── */
+.proj-invite-link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.proj-invite-link-text {
+  flex: 1;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DEV THEME — PROJECTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+html[data-theme="dev"] .projects-top { background: rgba(6,10,20,0.92); }
+html[data-theme="dev"] .projects-tab-bar { background: rgba(6,10,20,0.92); }
+html[data-theme="dev"] .projects-tab.active { color: #7AABF9; border-bottom-color: #4F8EF7; }
+html[data-theme="dev"] .project-card { background: rgba(12,17,32,0.85); }
+html[data-theme="dev"] .project-card:hover { border-color: rgba(79,142,247,0.28); box-shadow: 0 4px 20px rgba(79,142,247,0.08); }
+html[data-theme="dev"] .project-card-cover { background: linear-gradient(135deg, rgba(79,142,247,0.14), rgba(139,92,246,0.09)); border-color: rgba(79,142,247,0.16); }
+html[data-theme="dev"] .project-join-btn { border-color: rgba(79,142,247,0.28); color: #7AABF9; background: rgba(79,142,247,0.08); }
+html[data-theme="dev"] .project-join-btn:hover { background: rgba(79,142,247,0.18); }
+html[data-theme="dev"] .project-role-pill { color: #7AABF9; background: rgba(79,142,247,0.08); border-color: rgba(79,142,247,0.18); }
+html[data-theme="dev"] .proj-create-topbar { background: rgba(6,10,20,0.92); }
+html[data-theme="dev"] .proj-create-body { background: rgba(6,10,20,0.5); }
+html[data-theme="dev"] .proj-type-card { background: rgba(12,17,32,0.8); }
+html[data-theme="dev"] .proj-type-card.selected { border-color: rgba(79,142,247,0.42); background: rgba(79,142,247,0.07); }
+html[data-theme="dev"] .proj-type-card:hover { border-color: rgba(79,142,247,0.22); }
+html[data-theme="dev"] .proj-role-row { background: rgba(12,17,32,0.7); }
+html[data-theme="dev"] .proj-role-row select,
+html[data-theme="dev"] .proj-role-row input[type="number"] { background: rgba(255,255,255,0.04); border-color: rgba(79,142,247,0.14); color: var(--text); }
+html[data-theme="dev"] .proj-ws-header { background: rgba(6,10,20,0.92); }
+html[data-theme="dev"] .proj-ws-tab-bar { background: rgba(6,10,20,0.92); }
+html[data-theme="dev"] .proj-ws-tab.active { color: #7AABF9; border-bottom-color: #4F8EF7; }
+html[data-theme="dev"] .proj-msg-bubble { background: rgba(12,17,32,0.9); border-color: rgba(79,142,247,0.1); }
+html[data-theme="dev"] .proj-msg-row.sent .proj-msg-bubble { background: linear-gradient(135deg, #4F8EF7, #3574E8); box-shadow: 0 4px 16px rgba(79,142,247,0.28); }
+html[data-theme="dev"] .proj-chat-input-area { background: rgba(6,10,20,0.88); }
+html[data-theme="dev"] .proj-chat-input-wrap { background: rgba(255,255,255,0.03); border-color: rgba(79,142,247,0.12); }
+html[data-theme="dev"] .proj-kanban-col-header { background: rgba(12,17,32,0.85); }
+html[data-theme="dev"] .proj-task-card { background: rgba(12,17,32,0.85); }
+html[data-theme="dev"] .proj-task-card:hover { border-color: rgba(79,142,247,0.25); box-shadow: 0 4px 16px rgba(79,142,247,0.07); }
+html[data-theme="dev"] .proj-member-row { background: rgba(12,17,32,0.85); }
+html[data-theme="dev"] .proj-member-role { color: #7AABF9; background: rgba(79,142,247,0.08); border-color: rgba(79,142,247,0.18); }
+html[data-theme="dev"] .proj-request-row { background: rgba(245,158,11,0.04); border-color: rgba(245,158,11,0.15); }
+html[data-theme="dev"] .proj-modal-sheet { background: rgba(9,14,28,0.99); border-color: rgba(79,142,247,0.12); }
+html[data-theme="dev"] .proj-menu-option:hover { background: rgba(79,142,247,0.05); }
+html[data-theme="dev"] .proj-add-task-btn { border-color: rgba(79,142,247,0.22); color: #7AABF9; background: rgba(79,142,247,0.04); }
+html[data-theme="dev"] .proj-add-task-btn:hover { background: rgba(79,142,247,0.09); }
+html[data-theme="dev"] .proj-submit-wrap { background: linear-gradient(to top, rgba(6,10,20,0.98) 70%, transparent); }
+html[data-theme="dev"] .projects-create-btn { background: linear-gradient(135deg, #4F8EF7, #3574E8); box-shadow: 0 4px 18px rgba(79,142,247,0.28); }
+html[data-theme="dev"] .proj-chat-send-btn { background: linear-gradient(135deg, #4F8EF7, #3574E8); box-shadow: 0 4px 14px rgba(79,142,247,0.28); }
+html[data-theme="dev"] .proj-kanban-tasks.drag-over { background: rgba(79,142,247,0.04); border-color: rgba(79,142,247,0.22); }
+html[data-theme="dev"] .proj-board-wrap { background: transparent; }
+html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04); border-color: rgba(79,142,247,0.12); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DESKTOP RESPONSIVE — Projects screens
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (min-width: 1024px) {
+  #projects-screen,
+  #project-create-screen,
+  #project-workspace-screen { height: 100%; }
+
+  .proj-kanban-col { width: 290px; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MOBILE — Project board vertical on very small screens
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 380px) {
+  .proj-kanban { flex-direction: column; min-width: unset; }
+  .proj-kanban-col { width: 100%; }
+  .proj-board-wrap { overflow-x: hidden; overflow-y: auto; }
+}
 
 </style>
 
@@ -11774,6 +13289,468 @@ html[data-theme="dev"] .notif-panel-header::after {
   <!-- ════════════════════════════════════════
        MAIN NAVIGATION BAR — must be last inside #app
        ════════════════════════════════════════ -->
+
+  <!-- ════════════════════════════════════════════════════
+       PROJECTS SCREEN — Discovery & List
+       ════════════════════════════════════════════════════ -->
+  <div id="projects-screen" class="screen">
+
+    <!-- Top bar -->
+    <div class="projects-top">
+      <div class="projects-top-row">
+        <div class="projects-top-title">📁 Projects</div>
+        <button class="projects-create-btn" id="projects-create-btn" type="button">
+          <i data-lucide="plus" class="lucide" width="13" height="13"></i>
+          New Project
+        </button>
+      </div>
+      <!-- Tab bar -->
+      <div class="projects-tab-bar">
+        <button class="projects-tab active" id="proj-tab-public" data-tab="public">
+          🌍 Public
+        </button>
+        <button class="projects-tab" id="proj-tab-private" data-tab="private">
+          🔒 Private Hub
+        </button>
+        <button class="projects-tab" id="proj-tab-mine" data-tab="mine">
+          ⚡ My Projects
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab: Public Projects -->
+    <div class="projects-list-wrap" id="proj-panel-public">
+      <!-- Skeleton -->
+      <div id="proj-public-skel">
+        <div class="skel-project-card">
+          <div class="skel skel-round" style="width:44px;height:44px;flex-shrink:0;"></div>
+          <div style="flex:1">
+            <div class="skel skeleton-line lg" style="width:140px;margin-bottom:6px;"></div>
+            <div class="skel skeleton-line sm" style="width:200px;margin-bottom:8px;"></div>
+            <div class="skel skeleton-line xs" style="width:100px;"></div>
+          </div>
+          <div class="skel skel-pill" style="width:56px;height:26px;flex-shrink:0;"></div>
+        </div>
+        <div class="skel-project-card">
+          <div class="skel skel-round" style="width:44px;height:44px;flex-shrink:0;"></div>
+          <div style="flex:1">
+            <div class="skel skeleton-line lg" style="width:110px;margin-bottom:6px;"></div>
+            <div class="skel skeleton-line sm" style="width:180px;margin-bottom:8px;"></div>
+            <div class="skel skeleton-line xs" style="width:80px;"></div>
+          </div>
+          <div class="skel skel-pill" style="width:56px;height:26px;flex-shrink:0;"></div>
+        </div>
+        <div class="skel-project-card">
+          <div class="skel skel-round" style="width:44px;height:44px;flex-shrink:0;"></div>
+          <div style="flex:1">
+            <div class="skel skeleton-line lg" style="width:160px;margin-bottom:6px;"></div>
+            <div class="skel skeleton-line sm" style="width:220px;margin-bottom:8px;"></div>
+            <div class="skel skeleton-line xs" style="width:90px;"></div>
+          </div>
+          <div class="skel skel-pill" style="width:56px;height:26px;flex-shrink:0;"></div>
+        </div>
+      </div>
+      <div id="proj-public-list"></div>
+    </div>
+
+    <!-- Tab: Private Hub -->
+    <div class="projects-list-wrap" id="proj-panel-private" style="display:none;">
+      <!-- My Private Projects section -->
+      <div id="proj-private-mine-section" style="display:none;">
+        <div class="projects-section-label">My Private Projects</div>
+        <div id="proj-private-mine-list"></div>
+      </div>
+      <!-- Find Private Projects section -->
+      <div class="projects-section-label">Find Private Projects</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;padding:0 2px;">
+        Projects actively seeking new members — send a request to join.
+      </div>
+      <div id="proj-seeking-skel">
+        <div class="skel-project-card">
+          <div class="skel skel-round" style="width:44px;height:44px;flex-shrink:0;"></div>
+          <div style="flex:1">
+            <div class="skel skeleton-line lg" style="width:130px;margin-bottom:6px;"></div>
+            <div class="skel skeleton-line sm" style="width:190px;margin-bottom:8px;"></div>
+            <div class="skel skeleton-line xs" style="width:70px;"></div>
+          </div>
+          <div class="skel skel-pill" style="width:68px;height:26px;flex-shrink:0;"></div>
+        </div>
+        <div class="skel-project-card">
+          <div class="skel skel-round" style="width:44px;height:44px;flex-shrink:0;"></div>
+          <div style="flex:1">
+            <div class="skel skeleton-line lg" style="width:100px;margin-bottom:6px;"></div>
+            <div class="skel skeleton-line sm" style="width:160px;margin-bottom:8px;"></div>
+            <div class="skel skeleton-line xs" style="width:90px;"></div>
+          </div>
+          <div class="skel skel-pill" style="width:68px;height:26px;flex-shrink:0;"></div>
+        </div>
+      </div>
+      <div id="proj-seeking-list"></div>
+    </div>
+
+    <!-- Tab: My Projects (all) -->
+    <div class="projects-list-wrap" id="proj-panel-mine" style="display:none;">
+      <div id="proj-mine-skel">
+        <div class="skel-project-card">
+          <div class="skel skel-round" style="width:44px;height:44px;flex-shrink:0;"></div>
+          <div style="flex:1">
+            <div class="skel skeleton-line lg" style="width:120px;margin-bottom:6px;"></div>
+            <div class="skel skeleton-line sm" style="width:170px;margin-bottom:8px;"></div>
+            <div class="skel skeleton-line xs" style="width:80px;"></div>
+          </div>
+          <div class="skel skel-pill" style="width:48px;height:26px;flex-shrink:0;"></div>
+        </div>
+      </div>
+      <div id="proj-mine-list"></div>
+    </div>
+
+  </div><!-- end #projects-screen -->
+
+
+  <!-- ════════════════════════════════════════════════════
+       PROJECT CREATION SCREEN
+       ════════════════════════════════════════════════════ -->
+  <div id="project-create-screen" class="screen">
+
+    <div class="proj-create-topbar">
+      <button class="proj-create-back" id="proj-create-back" type="button">←</button>
+      <div class="proj-create-topbar-title">✨ Create a Project</div>
+    </div>
+
+    <div class="proj-create-body">
+
+      <!-- Project Name -->
+      <div class="proj-form-section">
+        <label class="proj-form-label" for="proj-name-input">Project Name *</label>
+        <input class="input" type="text" id="proj-name-input" placeholder="e.g. Open Source Music App" maxlength="80" autocomplete="off">
+        <div class="error-text" id="proj-name-error" style="display:none;">⚡ Please enter a project name</div>
+      </div>
+
+      <!-- Description -->
+      <div class="proj-form-section">
+        <label class="proj-form-label" for="proj-desc-input">Description / Goal</label>
+        <textarea class="input" id="proj-desc-input" placeholder="What is this project about? What are you trying to build?" rows="3" maxlength="500"></textarea>
+      </div>
+
+      <!-- Visibility -->
+      <div class="proj-form-section">
+        <label class="proj-form-label">Visibility</label>
+        <div class="proj-type-grid">
+          <div class="proj-type-card selected" id="proj-vis-public">
+            <div class="proj-type-card-icon">🌍</div>
+            <div class="proj-type-card-name">Public</div>
+            <div class="proj-type-card-desc">Anyone can see and join.</div>
+          </div>
+          <div class="proj-type-card" id="proj-vis-private">
+            <div class="proj-type-card-icon">🔒</div>
+            <div class="proj-type-card-name">Private</div>
+            <div class="proj-type-card-desc">Invite or request only.</div>
+          </div>
+        </div>
+        <input type="hidden" id="proj-vis-value" value="public">
+      </div>
+
+      <!-- Private options (shown only when private is selected) -->
+      <div class="proj-form-section" id="proj-private-options" style="display:none;">
+        <label class="proj-seek-row" for="proj-seek-checkbox">
+          <input type="checkbox" id="proj-seek-checkbox">
+          <span class="proj-seek-label">
+            <b>List in Private Hub</b> — Let others discover this project and request to join.
+          </span>
+        </label>
+      </div>
+
+      <!-- Roles Needed -->
+      <div class="proj-form-section">
+        <label class="proj-form-label">Roles Needed</label>
+        <div class="proj-roles-list" id="proj-roles-list">
+          <!-- Roles added dynamically -->
+        </div>
+        <button class="proj-add-role-btn" id="proj-add-role-btn" type="button">
+          + Add Role
+        </button>
+      </div>
+
+      <!-- Cover Image -->
+      <div class="proj-form-section">
+        <label class="proj-form-label">Cover Image <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <div class="proj-cover-preview" id="proj-cover-preview">
+          <div class="proj-cover-placeholder" id="proj-cover-placeholder">
+            <div class="proj-cover-placeholder-icon">🖼</div>
+            <span>Tap to add a cover image</span>
+          </div>
+          <img id="proj-cover-img" src="" alt="Cover" style="display:none;">
+        </div>
+        <input type="file" id="proj-cover-input" accept="image/*" style="display:none;">
+      </div>
+
+      <!-- Tags -->
+      <div class="proj-form-section">
+        <label class="proj-form-label">Tags <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <div class="tag-input-row">
+          <input class="input" type="text" id="proj-tag-input" placeholder="e.g. React, Design, Music..." maxlength="20" autocomplete="off">
+          <button class="tag-add-btn" id="proj-tag-add" type="button">+ Add</button>
+        </div>
+        <div class="tags-wrap" id="proj-tags-wrap"></div>
+      </div>
+
+      <div style="height:80px;"></div>
+    </div>
+
+    <div class="proj-submit-wrap">
+      <button class="btn btn-primary" id="proj-create-submit-btn" type="button">🚀 Create Project</button>
+    </div>
+
+  </div><!-- end #project-create-screen -->
+
+
+  <!-- ════════════════════════════════════════════════════
+       PROJECT WORKSPACE SCREEN
+       ════════════════════════════════════════════════════ -->
+  <div id="project-workspace-screen" class="screen">
+
+    <!-- Header -->
+    <div class="proj-ws-header">
+      <button class="proj-ws-back" id="proj-ws-back" type="button">←</button>
+      <div class="proj-ws-cover-mini" id="proj-ws-cover-mini">📁</div>
+      <div class="proj-ws-info">
+        <div class="proj-ws-name" id="proj-ws-name">Project</div>
+        <div class="proj-ws-sub" id="proj-ws-sub">Loading...</div>
+      </div>
+      <div class="proj-ws-avatars">
+        <div class="proj-ws-avatar-stack" id="proj-ws-avatar-stack"></div>
+      </div>
+      <button class="proj-ws-menu-btn" id="proj-ws-menu-btn" type="button" title="Project options">⋮</button>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="proj-ws-tab-bar">
+      <button class="proj-ws-tab active" id="proj-ws-tab-chat" data-tab="chat">
+        <i data-lucide="message-circle" class="lucide" width="13" height="13"></i> Chat
+      </button>
+      <button class="proj-ws-tab" id="proj-ws-tab-board" data-tab="board">
+        <i data-lucide="layout-dashboard" class="lucide" width="13" height="13"></i> Board
+      </button>
+      <button class="proj-ws-tab" id="proj-ws-tab-members" data-tab="members">
+        <i data-lucide="users" class="lucide" width="13" height="13"></i>
+        Members <span id="proj-ws-requests-badge" style="display:none;background:var(--warning);color:#fff;font-size:8px;border-radius:99px;padding:1px 5px;margin-left:2px;"></span>
+      </button>
+    </div>
+
+    <!-- ── CHAT PANEL ── -->
+    <div class="proj-ws-panel active" id="proj-ws-panel-chat">
+      <!-- Skeleton -->
+      <div id="proj-chat-skel" style="padding:12px;">
+        <div class="skel-msgs-wrap">
+          <div class="skel-msg-row"><div class="skel skel-circle" style="width:26px;height:26px;flex-shrink:0;"></div><div class="skel skel-msg-bubble medium"></div></div>
+          <div class="skel-msg-row right"><div class="skel skel-msg-bubble short"></div></div>
+          <div class="skel-msg-row"><div class="skel skel-circle" style="width:26px;height:26px;flex-shrink:0;"></div><div class="skel skel-msg-bubble long"></div></div>
+          <div class="skel-msg-row right"><div class="skel skel-msg-bubble medium"></div></div>
+          <div class="skel-msg-row"><div class="skel skel-circle" style="width:26px;height:26px;flex-shrink:0;"></div><div class="skel skel-msg-bubble short"></div></div>
+        </div>
+      </div>
+      <div class="proj-chat-msgs" id="proj-chat-msgs" style="display:none;"></div>
+      <div class="proj-typing-bar" id="proj-typing-bar"></div>
+      <!-- Hidden file input for chat images -->
+      <input type="file" id="proj-chat-img-input" accept="image/*" style="display:none;">
+      <!-- Chat input -->
+      <div class="proj-chat-input-area">
+        <button class="proj-chat-img-btn" id="proj-chat-img-btn" type="button" title="Send image">
+          <i data-lucide="image" class="lucide" width="15" height="15"></i>
+        </button>
+        <div class="proj-chat-input-wrap">
+          <textarea class="proj-chat-textarea" id="proj-chat-textarea" placeholder="Message the team..." rows="1" maxlength="1000"></textarea>
+        </div>
+        <button class="proj-chat-send-btn" id="proj-chat-send-btn" type="button" disabled>
+          <i data-lucide="send" class="lucide" width="14" height="14"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── BOARD PANEL ── -->
+    <div class="proj-ws-panel" id="proj-ws-panel-board">
+      <div class="proj-board-wrap">
+        <div class="proj-kanban" id="proj-kanban">
+
+          <!-- TO DO -->
+          <div class="proj-kanban-col col-todo" id="proj-col-todo">
+            <div class="proj-kanban-col-header">
+              <div class="proj-kanban-col-title">
+                <span class="col-dot"></span> To Do
+              </div>
+              <span class="proj-kanban-col-count" id="proj-col-todo-count">0</span>
+            </div>
+            <div class="proj-kanban-tasks" id="proj-tasks-todo" data-col="todo">
+              <div class="proj-task-empty">No tasks yet</div>
+            </div>
+            <button class="proj-add-task-btn" data-col="todo" id="proj-add-task-todo">+ Add Task</button>
+          </div>
+
+          <!-- DOING -->
+          <div class="proj-kanban-col col-doing" id="proj-col-doing">
+            <div class="proj-kanban-col-header">
+              <div class="proj-kanban-col-title">
+                <span class="col-dot"></span> In Progress
+              </div>
+              <span class="proj-kanban-col-count" id="proj-col-doing-count">0</span>
+            </div>
+            <div class="proj-kanban-tasks" id="proj-tasks-doing" data-col="doing">
+              <div class="proj-task-empty">Nothing in progress</div>
+            </div>
+            <button class="proj-add-task-btn" data-col="doing" id="proj-add-task-doing">+ Add Task</button>
+          </div>
+
+          <!-- DONE -->
+          <div class="proj-kanban-col col-done" id="proj-col-done">
+            <div class="proj-kanban-col-header">
+              <div class="proj-kanban-col-title">
+                <span class="col-dot"></span> Done
+              </div>
+              <span class="proj-kanban-col-count" id="proj-col-done-count">0</span>
+            </div>
+            <div class="proj-kanban-tasks" id="proj-tasks-done" data-col="done">
+              <div class="proj-task-empty">No completed tasks</div>
+            </div>
+            <button class="proj-add-task-btn" data-col="done" id="proj-add-task-done">+ Add Task</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MEMBERS PANEL ── -->
+    <div class="proj-ws-panel" id="proj-ws-panel-members">
+      <div class="proj-members-wrap" id="proj-members-wrap">
+        <!-- Members loaded dynamically -->
+        <div id="proj-members-list"></div>
+        <!-- Pending requests (owner only) -->
+        <div class="proj-requests-section" id="proj-requests-section" style="display:none;">
+          <div class="projects-section-label">Pending Requests</div>
+          <div id="proj-requests-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end #project-workspace-screen -->
+
+
+  <!-- ════════════════════════════════════════════════════
+       PROJECT MODALS
+       ════════════════════════════════════════════════════ -->
+
+  <!-- Workspace Menu Modal -->
+  <div class="proj-modal-overlay" id="proj-menu-overlay">
+    <div class="proj-modal-sheet">
+      <div class="proj-modal-handle"></div>
+      <div class="proj-modal-header">
+        <div class="proj-modal-title" id="proj-menu-project-name">Project Options</div>
+        <button class="proj-modal-close" id="proj-menu-close">✕</button>
+      </div>
+      <div id="proj-menu-options">
+        <div class="proj-menu-option" id="proj-menu-settings">
+          <span class="proj-menu-option-icon">⚙️</span> Project Settings
+        </div>
+        <div class="proj-menu-option" id="proj-menu-invite">
+          <span class="proj-menu-option-icon">🔗</span> Copy Invite Link
+        </div>
+        <div class="proj-menu-option" id="proj-menu-leave" style="display:none;">
+          <span class="proj-menu-option-icon">🚪</span> Leave Project
+        </div>
+        <div class="proj-menu-option danger" id="proj-menu-delete" style="display:none;">
+          <span class="proj-menu-option-icon">🗑</span> Delete Project
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Task Modal -->
+  <div class="proj-modal-overlay" id="proj-task-modal-overlay">
+    <div class="proj-modal-sheet">
+      <div class="proj-modal-handle"></div>
+      <div class="proj-modal-header">
+        <div class="proj-modal-title" id="proj-task-modal-title">Add Task</div>
+        <button class="proj-modal-close" id="proj-task-modal-close">✕</button>
+      </div>
+      <div class="proj-modal-body">
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-task-title-input">Task Title *</label>
+          <input class="input" type="text" id="proj-task-title-input" placeholder="What needs to be done?" maxlength="100" autocomplete="off">
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-task-desc-input">Description</label>
+          <textarea class="input" id="proj-task-desc-input" placeholder="Optional details..." rows="2" maxlength="300"></textarea>
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-task-assignee-select">Assign To</label>
+          <select class="proj-assignee-select input" id="proj-task-assignee-select">
+            <option value="">— Unassigned —</option>
+          </select>
+        </div>
+        <input type="hidden" id="proj-task-col-value" value="todo">
+        <input type="hidden" id="proj-task-edit-id" value="">
+        <button class="btn btn-primary" id="proj-task-submit-btn" type="button" style="margin-top:6px;">✅ Save Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request to Join Modal -->
+  <div class="proj-modal-overlay" id="proj-request-modal-overlay">
+    <div class="proj-modal-sheet">
+      <div class="proj-modal-handle"></div>
+      <div class="proj-modal-header">
+        <div class="proj-modal-title">Request to Join</div>
+        <button class="proj-modal-close" id="proj-request-modal-close">✕</button>
+      </div>
+      <div class="proj-modal-body">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;" id="proj-request-project-name"></div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-request-role-select">Applying for Role *</label>
+          <select class="proj-assignee-select input" id="proj-request-role-select">
+            <option value="">— Select a role —</option>
+          </select>
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-request-msg-input">Short Message</label>
+          <textarea class="input" id="proj-request-msg-input" placeholder="Why do you want to join? What can you bring? (max 200 chars)" rows="3" maxlength="200"></textarea>
+        </div>
+        <input type="hidden" id="proj-request-project-id" value="">
+        <button class="btn btn-primary" id="proj-request-submit-btn" type="button" style="margin-top:6px;">📨 Send Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Settings Modal -->
+  <div class="proj-modal-overlay" id="proj-settings-modal-overlay">
+    <div class="proj-modal-sheet">
+      <div class="proj-modal-handle"></div>
+      <div class="proj-modal-header">
+        <div class="proj-modal-title">⚙️ Project Settings</div>
+        <button class="proj-modal-close" id="proj-settings-modal-close">✕</button>
+      </div>
+      <div class="proj-modal-body">
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-settings-name-input">Project Name</label>
+          <input class="input" type="text" id="proj-settings-name-input" maxlength="80" autocomplete="off">
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-settings-desc-input">Description</label>
+          <textarea class="input" id="proj-settings-desc-input" rows="3" maxlength="500"></textarea>
+        </div>
+        <!-- Seeking members toggle (private only) -->
+        <div class="proj-modal-field" id="proj-settings-seek-section" style="display:none;">
+          <label class="proj-seek-row" for="proj-settings-seek-checkbox" style="cursor:pointer;">
+            <input type="checkbox" id="proj-settings-seek-checkbox">
+            <span class="proj-seek-label">
+              <b>List in Private Hub</b> — Let others find and request to join.
+            </span>
+          </label>
+        </div>
+        <button class="btn btn-primary" id="proj-settings-save-btn" type="button" style="margin-top:6px;">💾 Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+
 <div id="main-nav">
     <button class="nav-btn active" id="nav-chat">
       <span class="nav-icon"><i data-lucide="message-circle" class="lucide" width="20" height="20"></i></span>
@@ -11800,6 +13777,10 @@ html[data-theme="dev"] .notif-panel-header::after {
       <span class="nav-label">Rooms</span>
     </button>
 
+    <button class="nav-btn" id="nav-projects">
+      <span class="nav-icon"><i data-lucide="folder-kanban" class="lucide" width="20" height="20"></i></span>
+      <span class="nav-label">Projects</span>
+    </button>
   </div>
 
 </div><!-- end .desktop-main -->
@@ -11860,6 +13841,36 @@ function badgeHTML(s, l, p) { const lc = (l || 'Beginner').toLowerCase(); return
 function generateAvatarUrl(uid) { return `https://api.dicebear.com/7.x/avataaars/svg?seed=${uid}`; }
 function generateChatId(u1, u2) { return u1 < u2 ? `${u1}_${u2}` : `${u2}_${u1}`; }
 function debounce(fn, delay) { let t; return function (...a) { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), delay); }; }
+function rafThrottle(fn) {
+  let pendingFrameId = 0, lastArgs, lastThis;
+  return function (...args) {
+    lastArgs = args; lastThis = this;
+    if (pendingFrameId) return;
+    pendingFrameId = requestAnimationFrame(() => {
+      pendingFrameId = 0;
+      fn.apply(lastThis, lastArgs);
+    });
+  };
+}
+let _lucidePatched = false;
+function optimizeLucideRendering() {
+  if (_lucidePatched || typeof window === 'undefined') return;
+  if (typeof window.lucide === 'undefined' || typeof window.lucide.createIcons !== 'function') return;
+  const originalCreateIcons = window.lucide.createIcons.bind(window.lucide);
+  let queued = false;
+  window.lucide.createIcons = (...args) => {
+    if (args.length > 0) return originalCreateIcons(...args);
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      originalCreateIcons();
+    });
+  };
+  _lucidePatched = true;
+}
+optimizeLucideRendering();
+if (!_lucidePatched) window.addEventListener('load', optimizeLucideRendering, { once: true });
 function getMessageTTL(t) { return EPHEMERAL_CONFIG.TTL[t] || EPHEMERAL_CONFIG.TTL.text; }
 function getExpiryInfo(m) { const t = m.type || 'text', ttl = getMessageTTL(t), ts = m.timestamp; if (!ts) return { remainingMs: ttl, ttlMs: ttl, expired: false, pctRemaining: 1 }; const elapsed = Date.now() - ts, rem = ttl - elapsed; return { remainingMs: Math.max(0, rem), ttlMs: ttl, expired: rem <= 0, pctRemaining: Math.max(0, rem / ttl) }; }
 function formatRemainingTime(ms) { if (ms <= 0) return 'expired'; const m = Math.floor(ms / (60 * 1000)); if (m < 1) return '< 1m'; if (m < 60) return `${m}m`; const h = Math.floor(m / 60); if (h < 24) return `${h}h`; const d = Math.floor(h / 24); return `${d}d`; }
@@ -12114,6 +14125,7 @@ const state = {
   usersCache: new Map(), // stores { data, cachedAt } — use getUserCached() to access with TTL check
   currentPinnedMid: null,
   scrollBottomBtn: null,
+  lastVisibleSentStatusMid: null,
 // ─── Voice Call State ───
 callId: null,
 peerConnection: null,
@@ -12148,9 +14160,10 @@ function initScrollButton() {
   const checkScroll = () => {
     if (!wrap) return;
     const nearBottom = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < CONFIG.SCROLL_THRESHOLD;
-    btn.style.display = nearBottom ? 'none' : 'flex';
+    const next = nearBottom ? 'none' : 'flex';
+    if (btn.style.display !== next) btn.style.display = next;
   };
-  wrap.addEventListener('scroll', checkScroll);
+  wrap.addEventListener('scroll', rafThrottle(checkScroll), { passive: true });
   btn.addEventListener('click', () => {
     wrap.scrollTo({ top: wrap.scrollHeight, behavior: 'smooth' });
   });
@@ -12492,6 +14505,8 @@ onAuthStateChanged(auth, async u => {
         ScreenManager.show('user-list-screen');
 // Start notification listener
       NotifSystem.init(u.uid);
+      // Deep link check for project invites
+      if (typeof ProjectSystem !== 'undefined') setTimeout(() => ProjectSystem.handleDeepLink(), 800);
 // Initialize Follow System
       FollowSystem.init(u.uid);
 // Initialize Stories System
@@ -13801,6 +15816,7 @@ function openChat(pUid, pUser, pSkill, pLevel, pPoints) {
   state.chatPartnerId = pUid; state.chatPartnerUsername = pUser;
   state.chatId = generateChatId(state.currentUser.uid, pUid);
   state.renderedMsgIds = new Set();
+  state.lastVisibleSentStatusMid = null;
   state.currentPinnedMid = null;
 
   const badge = $(`ub-${pUid}`);
@@ -13968,6 +15984,22 @@ const ces = document.getElementById('chat-empty-state'); if (ces) ces.classList.
     return { entries, seenUpdates };
   }
 
+  function syncLatestSentStatus(entries) {
+    let latestSentMessageId = null;
+    for (let i = entries.length - 1; i >= 0; i--) {
+      if (entries[i][1]?.sender === state.currentUser.uid) { latestSentMessageId = entries[i][0]; break; }
+    }
+    if (state.lastVisibleSentStatusMid && state.lastVisibleSentStatusMid !== latestSentMessageId) {
+      const prev = document.getElementById(`msg-${state.lastVisibleSentStatusMid}`)?.querySelector('.status-text');
+      if (prev) prev.style.display = 'none';
+    }
+    if (latestSentMessageId) {
+      const curr = document.getElementById(`msg-${latestSentMessageId}`)?.querySelector('.status-text');
+      if (curr) curr.style.display = 'inline';
+    }
+    state.lastVisibleSentStatusMid = latestSentMessageId;
+  }
+
   function ensureLoadEarlierBtn(wrap) {
     if (document.getElementById('dm-load-earlier-btn') || state.dmAllLoaded) return;
     const btn = document.createElement('button');
@@ -13999,7 +16031,7 @@ const ces = document.getElementById('chat-empty-state'); if (ces) ces.classList.
     const skelMsgs = document.getElementById('chat-skel-msgs');
     if (skelMsgs) skelMsgs.remove();
     const wasAtBottom = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < CONFIG.SCROLL_THRESHOLD;
-    if (!msgs) { wrap.innerHTML = ''; state.renderedMsgIds = new Set(); $('starters').style.display = 'flex'; initialLoad = false; return; }
+    if (!msgs) { wrap.innerHTML = ''; state.renderedMsgIds = new Set(); state.lastVisibleSentStatusMid = null; $('starters').style.display = 'flex'; initialLoad = false; return; }
     $('starters').style.display = 'none';
 
     // Track earliest key for pagination
@@ -14018,11 +16050,7 @@ const ces = document.getElementById('chat-empty-state'); if (ces) ces.classList.
     if (initialLoad && entries.length >= 50) ensureLoadEarlierBtn(wrap);
     initialLoad = false;
 
-    // --- HIDE OLD STATUS TEXTS ---
-    const allStatuses = document.querySelectorAll('#msgs-wrap .msg.sent .status-text');
-    allStatuses.forEach((txt, idx) => {
-      if (idx === allStatuses.length - 1) { txt.style.display = 'inline'; } else { txt.style.display = 'none'; }
-    });
+    syncLatestSentStatus(entries);
 
     if (Object.keys(seenUpdates).length > 0) {
       update(msgsRef, seenUpdates).then(() => {
@@ -20678,7 +22706,7 @@ const ConfirmModal = {
 
   function sizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   sizeCanvas();
-  window.addEventListener('resize', sizeCanvas);
+  window.addEventListener('resize', rafThrottle(sizeCanvas));
 
   const easeOutExpo  = t => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
   const easeOutBack  = (t, s) => { s = s === undefined ? 1.3 : s; const c3 = s + 1; return 1 + c3 * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2); };
@@ -21902,7 +23930,7 @@ const ConfettiEngine = (() => {
   const COLORS = ['#2563EB','#4F46E5','#059669','#10b981','#3B82F6','#6366F1','#0ea5e9'];
 
   function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  window.addEventListener('resize', resize); resize();
+  window.addEventListener('resize', rafThrottle(resize)); resize();
 
   function spawn(n) {
     for (let i = 0; i < n; i++) {
@@ -24263,6 +26291,1442 @@ document.getElementById('comm-share-search').addEventListener('input', (e) => {
     } catch(e) { results.innerHTML='<div style="text-align:center;color:var(--danger-light);padding:12px;">Search failed</div>'; }
   }, 350);
 });
+
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROJECT SYSTEM — Skill-Based Projects & Collaborations
+   Golex 3.0 Addition | ProjectSystem object mirrors RoomSystem pattern
+   ═══════════════════════════════════════════════════════════════════ */
+
+const ProjectSystem = {
+
+  /* ── State ── */
+  currentProjectId: null,
+  currentProjectData: null,
+  currentMembers: {},        // uid -> member data
+  projectTags: [],
+  projectRoles: [],          // [{skill, qty}]
+  coverDataUrl: null,
+
+  // Firebase listeners (cleaned up on leave)
+  _unsubMessages: null,
+  _unsubTasks: null,
+  _unsubMembers: null,
+  _unsubRequests: null,
+  _unsubTyping: null,
+  _typingTimeout: null,
+
+  // Render tracking
+  _renderedMsgIds: new Set(),
+  _lastMsgDate: null,
+  _tasks: {},                // taskId -> task object (local mirror)
+  _dragTaskId: null,
+  _dragFromCol: null,
+  _editingTaskId: null,
+
+  // ──────────────────────────────────────────────────────────────────
+  //  INIT — Wire up all static event listeners
+  // ──────────────────────────────────────────────────────────────────
+  init() {
+
+    // Nav button
+    const navBtn = $('nav-projects');
+    if (navBtn) navBtn.addEventListener('click', () => {
+      ScreenManager.show('projects-screen');
+      this.loadPublicProjects();
+      this.loadMyProjects();
+      this.loadSeekingProjects();
+    });
+
+    // Tab switching on projects-screen
+    $$('.projects-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        $$('.projects-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['proj-panel-public','proj-panel-private','proj-panel-mine'].forEach(id => {
+          const el = $(id); if (el) el.style.display = 'none';
+        });
+        const panelMap = { public: 'proj-panel-public', private: 'proj-panel-private', mine: 'proj-panel-mine' };
+        const panel = $(panelMap[tab]); if (panel) panel.style.display = 'block';
+      });
+    });
+
+    // Create project button
+    const createBtn = $('projects-create-btn');
+    if (createBtn) createBtn.addEventListener('click', () => {
+      this._openCreateScreen();
+    });
+
+    // Back from create screen
+    const createBack = $('proj-create-back');
+    if (createBack) createBack.addEventListener('click', () => {
+      ScreenManager.show('projects-screen');
+    });
+
+    // Visibility toggle on create screen
+    const visPublic = $('proj-vis-public');
+    const visPrivate = $('proj-vis-private');
+    if (visPublic && visPrivate) {
+      visPublic.addEventListener('click', () => {
+        visPublic.classList.add('selected'); visPrivate.classList.remove('selected');
+        $('proj-vis-value').value = 'public';
+        $('proj-private-options').style.display = 'none';
+      });
+      visPrivate.addEventListener('click', () => {
+        visPrivate.classList.add('selected'); visPublic.classList.remove('selected');
+        $('proj-vis-value').value = 'private';
+        $('proj-private-options').style.display = 'block';
+      });
+    }
+
+    // Add role button
+    const addRoleBtn = $('proj-add-role-btn');
+    if (addRoleBtn) addRoleBtn.addEventListener('click', () => this._addRoleRow());
+
+    // Cover image
+    const coverPreview = $('proj-cover-preview');
+    const coverInput = $('proj-cover-input');
+    if (coverPreview && coverInput) {
+      coverPreview.addEventListener('click', () => coverInput.click());
+      coverInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        coverInput.value = '';
+        try {
+          const result = await compressImage(file);
+          this.coverDataUrl = result.dataUrl;
+          const img = $('proj-cover-img');
+          const placeholder = $('proj-cover-placeholder');
+          img.src = result.dataUrl; img.style.display = 'block';
+          if (placeholder) placeholder.style.display = 'none';
+        } catch(err) { Toast.error(err.message || 'Image error'); }
+      });
+    }
+
+    // Tag management on create screen
+    const projTagInput = $('proj-tag-input');
+    const projTagAdd = $('proj-tag-add');
+    if (projTagInput && projTagAdd) {
+      projTagAdd.addEventListener('click', () => this._addProjectTag());
+      projTagInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); this._addProjectTag(); }
+      });
+    }
+
+    // Submit create
+    const submitBtn = $('proj-create-submit-btn');
+    if (submitBtn) submitBtn.addEventListener('click', () => this._createProject());
+
+    // ── Workspace events ──
+    const wsBack = $('proj-ws-back');
+    if (wsBack) wsBack.addEventListener('click', () => {
+      this._leaveWorkspace();
+      ScreenManager.show('projects-screen');
+      this.loadPublicProjects();
+      this.loadMyProjects();
+      this.loadSeekingProjects();
+    });
+
+    // Workspace tabs
+    $$('.proj-ws-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        $$('.proj-ws-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        $$('.proj-ws-panel').forEach(p => p.classList.remove('active'));
+        const panel = $(`proj-ws-panel-${tab}`); if (panel) panel.classList.add('active');
+        if (tab === 'members') this._renderMembersPanel();
+        if (tab === 'board') { if (typeof lucide !== 'undefined') lucide.createIcons(); }
+      });
+    });
+
+    // Workspace menu button
+    const menuBtn = $('proj-ws-menu-btn');
+    if (menuBtn) menuBtn.addEventListener('click', () => this._openMenu());
+
+    // Menu options
+    const menuClose = $('proj-menu-close');
+    if (menuClose) menuClose.addEventListener('click', () => this._closeModal('proj-menu-overlay'));
+    $('proj-menu-overlay')?.addEventListener('click', (e) => { if (e.target === $('proj-menu-overlay')) this._closeModal('proj-menu-overlay'); });
+
+    $('proj-menu-settings')?.addEventListener('click', () => {
+      this._closeModal('proj-menu-overlay');
+      this._openSettingsModal();
+    });
+    $('proj-menu-invite')?.addEventListener('click', () => {
+      this._closeModal('proj-menu-overlay');
+      this._copyInviteLink();
+    });
+    $('proj-menu-leave')?.addEventListener('click', () => {
+      this._closeModal('proj-menu-overlay');
+      this._leaveProject();
+    });
+    $('proj-menu-delete')?.addEventListener('click', () => {
+      this._closeModal('proj-menu-overlay');
+      this._deleteProject();
+    });
+
+    // Chat input
+    const chatTextarea = $('proj-chat-textarea');
+    const chatSendBtn = $('proj-chat-send-btn');
+    if (chatTextarea && chatSendBtn) {
+      chatTextarea.addEventListener('input', () => {
+        chatSendBtn.disabled = !chatTextarea.value.trim();
+        chatTextarea.style.height = 'auto';
+        chatTextarea.style.height = Math.min(chatTextarea.scrollHeight, 110) + 'px';
+        this._sendTypingSignal();
+      });
+      chatTextarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this._sendMessage(); }
+      });
+      chatSendBtn.addEventListener('click', () => this._sendMessage());
+    }
+
+    // Chat image button
+    const chatImgBtn = $('proj-chat-img-btn');
+    const chatImgInput = $('proj-chat-img-input');
+    if (chatImgBtn && chatImgInput) {
+      chatImgBtn.addEventListener('click', () => chatImgInput.click());
+      chatImgInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        chatImgInput.value = '';
+        try {
+          Toast.info('Sending image...');
+          const result = await compressImage(file);
+          await this._sendImageMessage(result.dataUrl);
+        } catch(err) { Toast.error(err.message || 'Could not send image'); }
+      });
+    }
+
+    // Task modals
+    ['proj-add-task-todo','proj-add-task-doing','proj-add-task-done'].forEach(id => {
+      const btn = $(id);
+      if (btn) btn.addEventListener('click', () => {
+        const col = btn.dataset.col;
+        this._openTaskModal(null, col);
+      });
+    });
+
+    $('proj-task-modal-close')?.addEventListener('click', () => this._closeModal('proj-task-modal-overlay'));
+    $('proj-task-modal-overlay')?.addEventListener('click', (e) => { if (e.target === $('proj-task-modal-overlay')) this._closeModal('proj-task-modal-overlay'); });
+    $('proj-task-submit-btn')?.addEventListener('click', () => this._submitTask());
+
+    // Request modal
+    $('proj-request-modal-close')?.addEventListener('click', () => this._closeModal('proj-request-modal-overlay'));
+    $('proj-request-modal-overlay')?.addEventListener('click', (e) => { if (e.target === $('proj-request-modal-overlay')) this._closeModal('proj-request-modal-overlay'); });
+    $('proj-request-submit-btn')?.addEventListener('click', () => this._submitRequest());
+
+    // Settings modal
+    $('proj-settings-modal-close')?.addEventListener('click', () => this._closeModal('proj-settings-modal-overlay'));
+    $('proj-settings-modal-overlay')?.addEventListener('click', (e) => { if (e.target === $('proj-settings-modal-overlay')) this._closeModal('proj-settings-modal-overlay'); });
+    $('proj-settings-save-btn')?.addEventListener('click', () => this._saveSettings());
+
+    // Init drag-and-drop on kanban columns
+    this._initDragDrop();
+
+    // Deep link: check for ?project= param on init
+    this._checkDeepLink();
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  DEEP LINK
+  // ──────────────────────────────────────────────────────────────────
+  _checkDeepLink() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const pid = params.get('project');
+      if (!pid) return;
+      // Will be called after auth — defer
+      this._pendingDeepLinkPid = pid;
+    } catch(e) {}
+  },
+
+  async handleDeepLink() {
+    if (!this._pendingDeepLinkPid || !state.currentUser) return;
+    const pid = this._pendingDeepLinkPid;
+    this._pendingDeepLinkPid = null;
+    try {
+      const snap = await get(ref(db, `projects/${pid}/info`));
+      if (!snap.exists()) { Toast.error('Project not found'); return; }
+      const info = snap.val();
+      const isMember = await this._isMember(pid);
+      if (isMember) {
+        this.openWorkspace(pid, info);
+      } else if (info.visibility === 'public') {
+        await this._joinProject(pid, info);
+        this.openWorkspace(pid, info);
+      } else {
+        // Private — show request flow
+        Toast.info(`"${info.name}" is private. Request to join?`);
+        this._openRequestModal(pid, info);
+      }
+    } catch(e) { Toast.error('Could not open project link'); }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  LOAD LISTS
+  // ──────────────────────────────────────────────────────────────────
+  async loadPublicProjects() {
+    const skel = $('proj-public-skel');
+    const list = $('proj-public-list');
+    if (!list) return;
+    if (skel) skel.style.display = 'block';
+    list.innerHTML = '';
+
+    try {
+      const snap = await get(ref(db, 'projects'));
+      if (skel) skel.style.display = 'none';
+      if (!snap.exists()) { list.innerHTML = this._emptyState('🌍','No public projects yet','Be the first to create one!'); return; }
+      const uid = state.currentUser?.uid;
+      const projects = [];
+      snap.forEach(child => {
+        const info = child.val()?.info;
+        if (info && info.visibility === 'public') projects.push({ id: child.key, ...info });
+      });
+      if (projects.length === 0) { list.innerHTML = this._emptyState('🌍','No public projects yet','Be the first to create one!'); return; }
+      projects.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+      for (const p of projects) {
+        const memberSnap = await get(ref(db, `projects/${p.id}/members/${uid}`)).catch(()=>null);
+        const isMember = memberSnap && memberSnap.exists();
+        const membersSnap = await get(ref(db, `projects/${p.id}/members`)).catch(()=>null);
+        const memberCount = membersSnap && membersSnap.exists() ? Object.keys(membersSnap.val()).length : 0;
+        list.appendChild(this._buildProjectCard(p, isMember, memberCount, false));
+      }
+    } catch(e) {
+      if (skel) skel.style.display = 'none';
+      list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;">Could not load projects</div>`;
+    }
+  },
+
+  async loadMyProjects() {
+    const skel = $('proj-mine-skel');
+    const list = $('proj-mine-list');
+    if (!list || !state.currentUser) return;
+    const uid = state.currentUser.uid;
+    if (skel) skel.style.display = 'block';
+    list.innerHTML = '';
+    try {
+      const snap = await get(ref(db, 'projects'));
+      if (skel) skel.style.display = 'none';
+      if (!snap.exists()) { list.innerHTML = this._emptyState('⚡','No projects yet','Create one or join a public project'); return; }
+      const mine = [];
+      snap.forEach(child => {
+        const data = child.val();
+        if (data && data.members && data.members[uid]) {
+          mine.push({ id: child.key, ...data.info });
+        }
+      });
+      if (mine.length === 0) { list.innerHTML = this._emptyState('⚡','No projects yet','Create one or join a public project'); return; }
+      mine.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+      for (const p of mine) {
+        const membersSnap = await get(ref(db, `projects/${p.id}/members`)).catch(()=>null);
+        const memberCount = membersSnap && membersSnap.exists() ? Object.keys(membersSnap.val()).length : 0;
+        list.appendChild(this._buildProjectCard(p, true, memberCount, false));
+      }
+    } catch(e) {
+      if (skel) skel.style.display = 'none';
+      list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;">Could not load projects</div>`;
+    }
+  },
+
+  async loadSeekingProjects() {
+    const skel = $('proj-seeking-skel');
+    const seekList = $('proj-seeking-list');
+    const privateMineList = $('proj-private-mine-list');
+    const privateMineSection = $('proj-private-mine-section');
+    if (!seekList || !state.currentUser) return;
+    const uid = state.currentUser.uid;
+    if (skel) skel.style.display = 'block';
+    seekList.innerHTML = '';
+    if (privateMineList) privateMineList.innerHTML = '';
+
+    try {
+      const snap = await get(ref(db, 'projects'));
+      if (skel) skel.style.display = 'none';
+      if (!snap.exists()) { seekList.innerHTML = this._emptyState('🔍','No open projects','Private projects seeking members will appear here'); return; }
+
+      const seekingProjects = [];
+      const myPrivate = [];
+      snap.forEach(child => {
+        const data = child.val();
+        const info = data?.info;
+        if (!info) return;
+        const isMember = data.members && data.members[uid];
+        if (info.visibility === 'private') {
+          if (isMember) myPrivate.push({ id: child.key, ...info });
+          else if (info.seekingMembers) seekingProjects.push({ id: child.key, ...info });
+        }
+      });
+
+      // My private projects section
+      if (myPrivate.length > 0 && privateMineSection && privateMineList) {
+        privateMineSection.style.display = 'block';
+        for (const p of myPrivate) {
+          const membersSnap = await get(ref(db, `projects/${p.id}/members`)).catch(()=>null);
+          const memberCount = membersSnap?.exists() ? Object.keys(membersSnap.val()).length : 0;
+          privateMineList.appendChild(this._buildProjectCard(p, true, memberCount, false));
+        }
+      }
+
+      // Seeking projects
+      if (seekingProjects.length === 0) {
+        seekList.innerHTML = this._emptyState('🔍','No projects seeking members','Check back later or create your own');
+        return;
+      }
+      seekingProjects.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+      for (const p of seekingProjects) {
+        const membersSnap = await get(ref(db, `projects/${p.id}/members`)).catch(()=>null);
+        const memberCount = membersSnap?.exists() ? Object.keys(membersSnap.val()).length : 0;
+        // Check if already requested
+        const reqSnap = await get(ref(db, `projects/${p.id}/requests`)).catch(()=>null);
+        let alreadyRequested = false;
+        if (reqSnap?.exists()) {
+          reqSnap.forEach(c => { if (c.val()?.applicantUid === uid && c.val()?.status === 'pending') alreadyRequested = true; });
+        }
+        seekList.appendChild(this._buildProjectCard(p, false, memberCount, true, alreadyRequested));
+      }
+    } catch(e) {
+      if (skel) skel.style.display = 'none';
+      seekList.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;">Could not load</div>`;
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  BUILD PROJECT CARD
+  // ──────────────────────────────────────────────────────────────────
+  _buildProjectCard(p, isMember, memberCount, isSeekingTab, alreadyRequested) {
+    const card = document.createElement('div');
+    card.className = 'project-card';
+
+    const coverHTML = p.coverUrl
+      ? `<div class="project-card-cover"><img src="${escHtml(p.coverUrl)}" alt=""></div>`
+      : `<div class="project-card-cover">${this._projectEmoji(p.name)}</div>`;
+
+    const rolesHTML = (p.rolesNeeded || []).slice(0, 4).map(r =>
+      `<span class="project-role-pill">${escHtml(r.skill)}${r.qty>1?' ×'+r.qty:''}</span>`
+    ).join('');
+
+    const tagsHTML = (p.tags || []).slice(0, 3).map(t =>
+      `<span class="project-card-stat">${escHtml(t)}</span>`
+    ).join('');
+
+    let btnLabel, btnClass;
+    if (isMember) { btnLabel = 'View'; btnClass = 'project-join-btn member'; }
+    else if (isSeekingTab) {
+      btnLabel = alreadyRequested ? 'Requested ✓' : 'Request';
+      btnClass = 'project-join-btn request';
+    } else { btnLabel = 'Join'; btnClass = 'project-join-btn'; }
+
+    card.innerHTML = `
+      ${coverHTML}
+      <div class="project-card-body">
+        <div class="project-card-name">${escHtml(p.name || 'Unnamed Project')}</div>
+        ${p.description ? `<div class="project-card-desc">${escHtml(p.description)}</div>` : ''}
+        <div class="project-card-meta">
+          <span class="project-card-stat">👥 ${memberCount}</span>
+          <span class="project-visibility-badge ${p.visibility}">${p.visibility==='public'?'Public':'Private'}</span>
+          ${tagsHTML}
+        </div>
+        ${rolesHTML ? `<div class="project-role-pills">${rolesHTML}</div>` : ''}
+      </div>
+      <div class="project-card-actions">
+        <button class="${btnClass}" data-pid="${escHtml(p.id)}">${btnLabel}</button>
+      </div>
+    `;
+
+    // Card click — open workspace
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.project-join-btn')) return; // handled by button
+      if (isMember) this.openWorkspace(p.id, p);
+    });
+
+    // Button actions
+    const btn = card.querySelector('.project-join-btn');
+    if (btn) {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (isMember) {
+          this.openWorkspace(p.id, p);
+        } else if (isSeekingTab && !alreadyRequested) {
+          this._openRequestModal(p.id, p);
+        } else if (!isSeekingTab && !isMember) {
+          // Public join
+          try {
+            btn.disabled = true; btn.textContent = 'Joining...';
+            await this._joinProject(p.id, p);
+            btn.textContent = 'View'; btn.className = 'project-join-btn member';
+            isMember = true;
+            Toast.success(`Joined "${p.name}"! 🎉`);
+          } catch(err) { btn.disabled = false; btn.textContent = 'Join'; Toast.error(err.message || 'Could not join'); }
+        }
+      });
+    }
+    return card;
+  },
+
+  _projectEmoji(name) {
+    const n = (name||'').toLowerCase();
+    if (n.includes('music') || n.includes('audio')) return '🎵';
+    if (n.includes('game') || n.includes('gaming')) return '🎮';
+    if (n.includes('design') || n.includes('art')) return '🎨';
+    if (n.includes('code') || n.includes('app') || n.includes('web')) return '💻';
+    if (n.includes('film') || n.includes('video')) return '🎬';
+    if (n.includes('write') || n.includes('blog') || n.includes('book')) return '✍️';
+    return '📁';
+  },
+
+  _emptyState(icon, title, sub) {
+    return `<div class="projects-empty"><div class="projects-empty-icon">${icon}</div><div class="projects-empty-title">${escHtml(title)}</div><div class="projects-empty-sub">${escHtml(sub)}</div></div>`;
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  CREATE SCREEN
+  // ──────────────────────────────────────────────────────────────────
+  _openCreateScreen() {
+    // Reset form
+    const nameInput = $('proj-name-input'); if (nameInput) nameInput.value = '';
+    const descInput = $('proj-desc-input'); if (descInput) descInput.value = '';
+    $('proj-vis-public')?.classList.add('selected');
+    $('proj-vis-private')?.classList.remove('selected');
+    $('proj-vis-value').value = 'public';
+    $('proj-private-options').style.display = 'none';
+    $('proj-seek-checkbox').checked = false;
+    $('proj-roles-list').innerHTML = '';
+    $('proj-cover-img').src = ''; $('proj-cover-img').style.display = 'none';
+    $('proj-cover-placeholder').style.display = 'flex';
+    $('proj-tags-wrap').innerHTML = '';
+    $('proj-name-error').style.display = 'none';
+    this.projectTags = [];
+    this.projectRoles = [];
+    this.coverDataUrl = null;
+    // Add one default role row
+    this._addRoleRow();
+    ScreenManager.show('project-create-screen');
+  },
+
+  _addRoleRow() {
+    const list = $('proj-roles-list'); if (!list) return;
+    const idx = this.projectRoles.length;
+    this.projectRoles.push({ skill: PREDEFINED_SKILLS[0], qty: 1 });
+
+    const row = document.createElement('div');
+    row.className = 'proj-role-row';
+    row.dataset.idx = idx;
+    row.innerHTML = `
+      <select data-idx="${idx}" class="proj-role-skill-select">
+        ${PREDEFINED_SKILLS.map(s => `<option value="${escHtml(s)}" ${s===this.projectRoles[idx].skill?'selected':''}>${escHtml(s)}</option>`).join('')}
+      </select>
+      <input type="number" data-idx="${idx}" class="proj-role-qty-input" value="1" min="1" max="10" title="Quantity needed">
+      <button type="button" class="proj-role-remove-btn" data-idx="${idx}" title="Remove role">✕</button>
+    `;
+    list.appendChild(row);
+
+    row.querySelector('.proj-role-skill-select').addEventListener('change', (e) => {
+      this.projectRoles[e.target.dataset.idx].skill = e.target.value;
+    });
+    row.querySelector('.proj-role-qty-input').addEventListener('change', (e) => {
+      this.projectRoles[e.target.dataset.idx].qty = parseInt(e.target.value) || 1;
+    });
+    row.querySelector('.proj-role-remove-btn').addEventListener('click', (e) => {
+      row.remove();
+      this.projectRoles.splice(parseInt(e.target.dataset.idx), 1, null);
+    });
+  },
+
+  _addProjectTag() {
+    const input = $('proj-tag-input'); if (!input) return;
+    const raw = input.value.trim();
+    const v = raw.replace(/[^a-zA-Z0-9 \-_.+#]/g,'').trim().slice(0,20);
+    if (!v) { if (raw) Toast.info('Only letters, numbers and basic symbols'); return; }
+    if (this.projectTags.map(t=>t.toLowerCase()).includes(v.toLowerCase())) { Toast.info('Tag exists'); return; }
+    if (this.projectTags.length >= CONFIG.MAX_TAGS) { Toast.info(`Max ${CONFIG.MAX_TAGS} tags`); return; }
+    this.projectTags.push(v); input.value = '';
+    this._renderProjectTags();
+  },
+
+  _renderProjectTags() {
+    const wrap = $('proj-tags-wrap'); if (!wrap) return;
+    wrap.innerHTML = '';
+    this.projectTags.forEach((t, i) => {
+      const el = document.createElement('div'); el.className = 'skill-tag';
+      el.innerHTML = `${escHtml(t)}<span class="tag-remove" style="cursor:pointer;margin-left:5px;">✕</span>`;
+      el.querySelector('.tag-remove').addEventListener('click', () => {
+        this.projectTags.splice(i,1); this._renderProjectTags();
+      });
+      wrap.appendChild(el);
+    });
+  },
+
+  async _createProject() {
+    if (!state.currentUser) return;
+    const name = $('proj-name-input')?.value.trim();
+    if (!name) { $('proj-name-error').style.display = 'block'; return; }
+    $('proj-name-error').style.display = 'none';
+
+    const desc = $('proj-desc-input')?.value.trim() || '';
+    const visibility = $('proj-vis-value')?.value || 'public';
+    const seekingMembers = visibility === 'private' && $('proj-seek-checkbox')?.checked;
+    const rolesNeeded = this.projectRoles.filter(r => r && r.skill);
+
+    const btn = $('proj-create-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Creating...'; }
+
+    try {
+      const projRef = push(ref(db, 'projects'));
+      const pid = projRef.key;
+      const uid = state.currentUser.uid;
+      const now = Date.now();
+
+      await set(ref(db, `projects/${pid}/info`), {
+        name, description: desc, visibility, seekingMembers: seekingMembers || false,
+        rolesNeeded: rolesNeeded.length > 0 ? rolesNeeded : [],
+        coverUrl: this.coverDataUrl || null,
+        tags: this.projectTags.length > 0 ? this.projectTags : [],
+        ownerId: uid, createdAt: now
+      });
+
+      // Add owner as first member
+      await set(ref(db, `projects/${pid}/members/${uid}`), {
+        role: 'Owner', joinedAt: now,
+        username: state.username || 'Unknown',
+        pfpUrl: state.pfpUrl || null
+      });
+
+      Toast.success(`Project "${name}" created! 🚀`);
+      // Open workspace immediately
+      const info = { name, description: desc, visibility, seekingMembers, rolesNeeded, coverUrl: this.coverDataUrl||null, tags: this.projectTags, ownerId: uid, createdAt: now };
+      this.openWorkspace(pid, info);
+    } catch(err) {
+      Toast.error(err.message || 'Could not create project');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '🚀 Create Project'; }
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  JOIN / LEAVE
+  // ──────────────────────────────────────────────────────────────────
+  async _isMember(pid) {
+    if (!state.currentUser) return false;
+    const snap = await get(ref(db, `projects/${pid}/members/${state.currentUser.uid}`)).catch(()=>null);
+    return snap && snap.exists();
+  },
+
+  async _joinProject(pid, info) {
+    if (!state.currentUser) throw new Error('Not logged in');
+    const uid = state.currentUser.uid;
+    await set(ref(db, `projects/${pid}/members/${uid}`), {
+      role: 'Member', joinedAt: Date.now(),
+      username: state.username || 'Unknown',
+      pfpUrl: state.pfpUrl || null
+    });
+  },
+
+  async _leaveProject() {
+    if (!this.currentProjectId || !state.currentUser) return;
+    if (this.currentProjectData?.ownerId === state.currentUser.uid) {
+      Toast.error('Owners cannot leave. Delete the project instead.'); return;
+    }
+    if (!confirm('Leave this project?')) return;
+    try {
+      await remove(ref(db, `projects/${this.currentProjectId}/members/${state.currentUser.uid}`));
+      this._leaveWorkspace();
+      ScreenManager.show('projects-screen');
+      this.loadPublicProjects(); this.loadMyProjects();
+      Toast.success('Left the project');
+    } catch(e) { Toast.error('Could not leave project'); }
+  },
+
+  async _deleteProject() {
+    if (!this.currentProjectId || !state.currentUser) return;
+    if (this.currentProjectData?.ownerId !== state.currentUser.uid) return;
+    if (!confirm(`Delete "${this.currentProjectData?.name}"? This cannot be undone.`)) return;
+
+    const pid = this.currentProjectId;
+
+    // Disable the button to prevent double-clicks while deleting
+    const menuBtn = $('proj-menu-delete');
+    if (menuBtn) { menuBtn.style.pointerEvents = 'none'; menuBtn.textContent = 'Deleting…'; }
+
+    try {
+      // We cannot remove(ref(db, `projects/${pid}`)) directly because the top-level
+      // project node has no write rule — only sub-paths do.  Instead we build a
+      // multi-path null-update that covers every known sub-path the owner can write.
+
+      // Fetch sub-collections we don't already have in memory
+      const [msgsSnap, tasksSnap, reqsSnap] = await Promise.all([
+        get(ref(db, `projects/${pid}/messages`)).catch(() => null),
+        get(ref(db, `projects/${pid}/tasks`)).catch(() => null),
+        get(ref(db, `projects/${pid}/requests`)).catch(() => null),
+      ]);
+
+      const updates = {};
+
+      // Project info  (owner has write permission)
+      updates[`projects/${pid}/info`] = null;
+
+      // Each member entry  (owner can write any member)
+      Object.keys(this.currentMembers || {}).forEach(uid => {
+        updates[`projects/${pid}/members/${uid}`] = null;
+      });
+
+      // Each message  (member/owner has per-message write permission)
+      if (msgsSnap?.exists()) {
+        Object.keys(msgsSnap.val()).forEach(mid => {
+          updates[`projects/${pid}/messages/${mid}`] = null;
+        });
+      }
+
+      // Each task  (member/owner has per-task write permission)
+      if (tasksSnap?.exists()) {
+        Object.keys(tasksSnap.val()).forEach(tid => {
+          updates[`projects/${pid}/tasks/${tid}`] = null;
+        });
+      }
+
+      // Each join-request  (owner has write permission)
+      if (reqsSnap?.exists()) {
+        Object.keys(reqsSnap.val()).forEach(rid => {
+          updates[`projects/${pid}/requests/${rid}`] = null;
+        });
+      }
+
+      // Typing indicators are per-user and ephemeral — they expire on their own
+
+      await update(ref(db), updates);
+
+      this._leaveWorkspace();
+      ScreenManager.show('projects-screen');
+      this.loadPublicProjects(); this.loadMyProjects();
+      Toast.success('Project deleted');
+    } catch(e) {
+      Toast.error('Could not delete project: ' + (e.message || 'Permission denied'));
+      if (menuBtn) { menuBtn.style.pointerEvents = ''; menuBtn.textContent = '🗑 Delete Project'; }
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  WORKSPACE
+  // ──────────────────────────────────────────────────────────────────
+  openWorkspace(pid, info) {
+    this._leaveWorkspace(); // cleanup any previous
+    this.currentProjectId = pid;
+    this.currentProjectData = info;
+    this.currentMembers = {};
+    this._renderedMsgIds = new Set();
+    this._lastMsgDate = null;
+    this._tasks = {};
+
+    // Update header UI
+    const coverMini = $('proj-ws-cover-mini');
+    if (coverMini) {
+      if (info.coverUrl) coverMini.innerHTML = `<img src="${escHtml(info.coverUrl)}" alt="">`;
+      else coverMini.textContent = this._projectEmoji(info.name);
+    }
+    const wsName = $('proj-ws-name'); if (wsName) wsName.textContent = info.name || 'Project';
+    const wsSub = $('proj-ws-sub'); if (wsSub) wsSub.textContent = `${info.visibility === 'private' ? '🔒 Private' : '🌍 Public'} · Created ${timeAgo(info.createdAt||Date.now())}`;
+
+    // Reset tabs to chat
+    $$('.proj-ws-tab').forEach(t => t.classList.remove('active'));
+    $('proj-ws-tab-chat')?.classList.add('active');
+    $$('.proj-ws-panel').forEach(p => p.classList.remove('active'));
+    $('proj-ws-panel-chat')?.classList.add('active');
+
+    // Show menu options based on ownership
+    const isOwner = info.ownerId === state.currentUser?.uid;
+    $('proj-menu-leave').style.display = isOwner ? 'none' : 'flex';
+    $('proj-menu-delete').style.display = isOwner ? 'flex' : 'none';
+    $('proj-menu-project-name').textContent = info.name || 'Project';
+
+    // Reset requests badge
+    $('proj-ws-requests-badge').style.display = 'none';
+
+    ScreenManager.show('project-workspace-screen');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Attach listeners
+    this._attachListeners(pid);
+  },
+
+  _attachListeners(pid) {
+    // Members listener
+    this._unsubMembers = onValue(ref(db, `projects/${pid}/members`), (snap) => {
+      this.currentMembers = snap.exists() ? snap.val() : {};
+      this._renderAvatarStack();
+      this._renderMembersPanel();
+    });
+
+    // Messages listener (chat)
+    const msgsRef = ref(db, `projects/${pid}/messages`);
+    const skel = $('proj-chat-skel');
+    const msgsWrap = $('proj-chat-msgs');
+    this._unsubMessages = onValue(msgsRef, (snap) => {
+      if (skel) skel.style.display = 'none';
+      if (msgsWrap) msgsWrap.style.display = 'block';
+      const msgs = snap.exists() ? snap.val() : {};
+      const sorted = Object.entries(msgs).sort((a,b) => (a[1].timestamp||0) - (b[1].timestamp||0));
+      for (const [mid, msg] of sorted) {
+        if (!this._renderedMsgIds.has(mid)) {
+          const el = this._buildChatMessage(mid, msg);
+          if (el && msgsWrap) msgsWrap.appendChild(el);
+          this._renderedMsgIds.add(mid);
+        }
+      }
+      // Scroll to bottom
+      if (msgsWrap) msgsWrap.scrollTop = msgsWrap.scrollHeight;
+    });
+
+    // Tasks listener (kanban)
+    this._unsubTasks = onValue(ref(db, `projects/${pid}/tasks`), (snap) => {
+      this._tasks = snap.exists() ? snap.val() : {};
+      this._renderKanban();
+    });
+
+    // Requests listener (owner only)
+    if (this.currentProjectData?.ownerId === state.currentUser?.uid) {
+      this._unsubRequests = onValue(ref(db, `projects/${pid}/requests`), (snap) => {
+        const requests = snap.exists() ? snap.val() : {};
+        const pending = Object.entries(requests).filter(([,r]) => r.status === 'pending');
+        const badge = $('proj-ws-requests-badge');
+        if (badge) {
+          if (pending.length > 0) { badge.textContent = pending.length; badge.style.display = 'inline'; }
+          else badge.style.display = 'none';
+        }
+        this._renderRequestsPanel(requests);
+      });
+    }
+
+    // Typing listener
+    this._unsubTyping = onValue(ref(db, `projects/${pid}/typing`), (snap) => {
+      const typing = snap.exists() ? snap.val() : {};
+      const uid = state.currentUser?.uid;
+      const others = Object.entries(typing)
+        .filter(([tid, data]) => tid !== uid && data.active && (Date.now() - (data.ts||0)) < 4000)
+        .map(([,data]) => data.username || 'Someone');
+      const bar = $('proj-typing-bar');
+      if (bar) bar.textContent = others.length > 0 ? `${others.join(', ')} ${others.length===1?'is':'are'} typing...` : '';
+    });
+  },
+
+  _leaveWorkspace() {
+    if (this._unsubMessages) { this._unsubMessages(); this._unsubMessages = null; }
+    if (this._unsubTasks) { this._unsubTasks(); this._unsubTasks = null; }
+    if (this._unsubMembers) { this._unsubMembers(); this._unsubMembers = null; }
+    if (this._unsubRequests) { this._unsubRequests(); this._unsubRequests = null; }
+    if (this._unsubTyping) { this._unsubTyping(); this._unsubTyping = null; }
+    clearTimeout(this._typingTimeout);
+    this.currentProjectId = null;
+    this.currentProjectData = null;
+    this.currentMembers = {};
+    this._renderedMsgIds = new Set();
+    this._tasks = {};
+    // Clear chat messages
+    const msgsWrap = $('proj-chat-msgs'); if (msgsWrap) msgsWrap.innerHTML = '';
+    const skel = $('proj-chat-skel'); if (skel) skel.style.display = 'block';
+    const msgsWrap2 = $('proj-chat-msgs'); if (msgsWrap2) msgsWrap2.style.display = 'none';
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  CHAT
+  // ──────────────────────────────────────────────────────────────────
+  _buildChatMessage(mid, msg) {
+    const uid = state.currentUser?.uid;
+    const isSent = msg.senderId === uid;
+    const ts = msg.timestamp || 0;
+
+    // Date divider
+    const dateStr = formatDate(ts);
+    let dateDivider = null;
+    if (dateStr !== this._lastMsgDate) {
+      this._lastMsgDate = dateStr;
+      dateDivider = document.createElement('div');
+      dateDivider.className = 'proj-date-divider';
+      dateDivider.textContent = dateStr;
+    }
+
+    const wrap = document.createElement('div');
+    if (dateDivider) wrap.appendChild(dateDivider);
+
+    const row = document.createElement('div');
+    row.className = `proj-msg-row${isSent ? ' sent' : ''}`;
+    row.id = `proj-msg-${mid}`;
+
+    const pfpUrl = msg.senderPfp || generateAvatarUrl(msg.senderId || 'x');
+    const avatarHtml = `<div class="proj-msg-avatar" data-uid="${escHtml(msg.senderId||'')}"><img src="${escHtml(pfpUrl)}" alt="" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='${escHtml(initials(msg.senderUsername||'?'))}';"></div>`;
+
+    let contentHtml = '';
+    if (msg.type === 'image' && (msg.dataUrl || msg.url)) {
+      const src = msg.dataUrl || msg.url;
+      contentHtml = `<img class="proj-msg-image" src="${escHtml(src)}" alt="image" loading="lazy" onclick="window.open('${escHtml(src)}','_blank')">`;
+    } else {
+      contentHtml = `<div class="proj-msg-bubble">${linkify(msg.text || '')}</div>`;
+    }
+
+    row.innerHTML = `
+      ${!isSent ? avatarHtml : ''}
+      <div class="proj-msg-content">
+        ${!isSent ? `<div class="proj-msg-sender" data-uid="${escHtml(msg.senderId||'')}">${escHtml(msg.senderUsername||'Unknown')}</div>` : ''}
+        ${contentHtml}
+        <div class="proj-msg-time">${formatTime(ts)}</div>
+      </div>
+      ${isSent ? avatarHtml : ''}
+    `;
+
+    // Click avatar/name to view profile
+    row.querySelectorAll('[data-uid]').forEach(el => {
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => {
+        const clickUid = el.dataset.uid; if (!clickUid) return;
+        const member = this.currentMembers[clickUid];
+        const username = member?.username || msg.senderUsername || '';
+        openUserProfileSheet(clickUid, username, 'Explorer', 'Beginner', 0, member?.pfpUrl||'', '', null);
+      });
+    });
+
+    wrap.appendChild(row);
+    return wrap;
+  },
+
+  async _sendMessage() {
+    const textarea = $('proj-chat-textarea'); if (!textarea) return;
+    const text = textarea.value.trim(); if (!text || !this.currentProjectId || !state.currentUser) return;
+    textarea.value = ''; textarea.style.height = 'auto';
+    $('proj-chat-send-btn').disabled = true;
+    try {
+      await push(ref(db, `projects/${this.currentProjectId}/messages`), {
+        senderId: state.currentUser.uid,
+        senderUsername: state.username || 'Unknown',
+        senderPfp: state.pfpUrl || null,
+        type: 'text', text,
+        timestamp: serverTimestamp()
+      });
+    } catch(e) { Toast.error('Message failed'); textarea.value = text; }
+  },
+
+  async _sendImageMessage(dataUrl) {
+    if (!this.currentProjectId || !state.currentUser) return;
+    await push(ref(db, `projects/${this.currentProjectId}/messages`), {
+      senderId: state.currentUser.uid,
+      senderUsername: state.username || 'Unknown',
+      senderPfp: state.pfpUrl || null,
+      type: 'image', dataUrl,
+      timestamp: serverTimestamp()
+    });
+  },
+
+  _sendTypingSignal() {
+    if (!this.currentProjectId || !state.currentUser) return;
+    const uid = state.currentUser.uid;
+    set(ref(db, `projects/${this.currentProjectId}/typing/${uid}`), {
+      active: true, username: state.username || 'Someone', ts: Date.now()
+    }).catch(()=>{});
+    clearTimeout(this._typingTimeout);
+    this._typingTimeout = setTimeout(() => {
+      set(ref(db, `projects/${this.currentProjectId}/typing/${uid}`), { active: false }).catch(()=>{});
+    }, CONFIG.TYPING_TIMEOUT);
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  KANBAN BOARD
+  // ──────────────────────────────────────────────────────────────────
+  _renderKanban() {
+    const cols = { todo: 'proj-tasks-todo', doing: 'proj-tasks-doing', done: 'proj-tasks-done' };
+    const counts = { todo: 0, doing: 0, done: 0 };
+    Object.values(cols).forEach(id => { const el = $(id); if (el) el.innerHTML = ''; });
+
+    const sortedTasks = Object.entries(this._tasks).sort((a,b) => (a[1].createdAt||0) - (b[1].createdAt||0));
+    for (const [tid, task] of sortedTasks) {
+      const col = task.column || 'todo';
+      if (!counts.hasOwnProperty(col)) continue;
+      counts[col]++;
+      const container = $(cols[col]); if (!container) continue;
+      container.appendChild(this._buildTaskCard(tid, task));
+    }
+
+    // Set counts and empty states
+    Object.entries(counts).forEach(([col, count]) => {
+      const countEl = $(`proj-col-${col}-count`); if (countEl) countEl.textContent = count;
+      const container = $(cols[col]);
+      if (container && count === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'proj-task-empty';
+        empty.textContent = col === 'todo' ? 'No tasks yet' : col === 'doing' ? 'Nothing in progress' : 'No completed tasks';
+        container.appendChild(empty);
+      }
+    });
+  },
+
+  _buildTaskCard(tid, task) {
+    const card = document.createElement('div');
+    card.className = `proj-task-card${task.column==='done'?' done-glow':''}`;
+    card.draggable = true;
+    card.dataset.tid = tid;
+
+    const col = task.column || 'todo';
+    const canMoveLeft = col !== 'todo';
+    const canMoveRight = col !== 'done';
+    const colOrder = ['todo','doing','done'];
+    const colIdx = colOrder.indexOf(col);
+
+    const assigneeHtml = task.assigneeUid ? `
+      <div class="proj-task-assignee">
+        <div class="proj-task-assignee-avatar">${escHtml(initials(task.assigneeUsername||'?'))}</div>
+        <span class="proj-task-assignee-name">${escHtml(task.assigneeUsername||'Unknown')}</span>
+      </div>` : `<span style="font-size:10px;color:var(--muted);font-family:var(--font-mono);">Unassigned</span>`;
+
+    card.innerHTML = `
+      <div class="proj-task-title">${escHtml(task.title||'Untitled Task')}</div>
+      ${task.description ? `<div class="proj-task-desc">${escHtml(task.description)}</div>` : ''}
+      <div class="proj-task-footer">
+        ${assigneeHtml}
+        <div class="proj-task-move-btns">
+          ${canMoveLeft ? `<button class="proj-task-move-btn" data-dir="left" data-tid="${tid}" title="Move left">◀</button>` : ''}
+          ${canMoveRight ? `<button class="proj-task-move-btn" data-dir="right" data-tid="${tid}" title="Move right">▶</button>` : ''}
+          <button class="proj-task-move-btn" data-action="edit" data-tid="${tid}" title="Edit task" style="font-size:11px;">✏</button>
+        </div>
+      </div>
+    `;
+
+    // Move buttons
+    card.querySelectorAll('.proj-task-move-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dir = btn.dataset.dir;
+        const action = btn.dataset.action;
+        const t = btn.dataset.tid;
+        if (action === 'edit') { this._openTaskModal(t, col); return; }
+        const newIdx = dir === 'left' ? colIdx - 1 : colIdx + 1;
+        if (newIdx >= 0 && newIdx < 3) this._moveTask(t, colOrder[newIdx]);
+      });
+    });
+
+    // Drag events
+    card.addEventListener('dragstart', (e) => {
+      this._dragTaskId = tid;
+      this._dragFromCol = col;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      this._dragTaskId = null; this._dragFromCol = null;
+    });
+
+    return card;
+  },
+
+  _initDragDrop() {
+    ['proj-tasks-todo','proj-tasks-doing','proj-tasks-done'].forEach(id => {
+      const container = $(id); if (!container) return;
+      const col = container.dataset.col;
+      container.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; container.classList.add('drag-over'); });
+      container.addEventListener('dragleave', () => container.classList.remove('drag-over'));
+      container.addEventListener('drop', (e) => {
+        e.preventDefault(); container.classList.remove('drag-over');
+        if (this._dragTaskId && col && col !== this._dragFromCol) {
+          this._moveTask(this._dragTaskId, col);
+        }
+      });
+    });
+  },
+
+  async _moveTask(tid, newCol) {
+    if (!this.currentProjectId) return;
+    const task = this._tasks[tid]; if (!task) return;
+    const oldCol = task.column || 'todo';
+    if (oldCol === newCol) return;
+
+    try {
+      const updates = { column: newCol };
+      if (newCol === 'done' && oldCol !== 'done') {
+        updates.completedAt = Date.now();
+        // Award points if assignee
+        if (task.assigneeUid) {
+          await update(ref(db, `users/${task.assigneeUid}`), { points: increment(5) }).catch(()=>{});
+          await NotifSystem.push(task.assigneeUid, 'task_completed', `🎉 Task "${task.title}" was completed! +5 pts`);
+          this._showPtsFloat('+5 pts');
+        }
+      } else if (newCol !== 'done' && oldCol === 'done') {
+        updates.completedAt = null;
+      }
+      await update(ref(db, `projects/${this.currentProjectId}/tasks/${tid}`), updates);
+    } catch(e) { Toast.error('Could not move task'); }
+  },
+
+  _showPtsFloat(text) {
+    const board = $('proj-ws-panel-board'); if (!board) return;
+    const rect = board.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'proj-pts-float';
+    el.textContent = text;
+    el.style.left = (rect.left + rect.width/2 - 30) + 'px';
+    el.style.top = (rect.top + 60) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1600);
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  TASK MODAL
+  // ──────────────────────────────────────────────────────────────────
+  _openTaskModal(tid, col) {
+    const titleInput = $('proj-task-title-input');
+    const descInput = $('proj-task-desc-input');
+    const colInput = $('proj-task-col-value');
+    const editIdInput = $('proj-task-edit-id');
+    const titleEl = $('proj-task-modal-title');
+
+    if (tid) {
+      // Edit existing
+      const task = this._tasks[tid]; if (!task) return;
+      if (titleInput) titleInput.value = task.title || '';
+      if (descInput) descInput.value = task.description || '';
+      if (colInput) colInput.value = task.column || col || 'todo';
+      if (editIdInput) editIdInput.value = tid;
+      if (titleEl) titleEl.textContent = 'Edit Task';
+    } else {
+      // New task
+      if (titleInput) titleInput.value = '';
+      if (descInput) descInput.value = '';
+      if (colInput) colInput.value = col || 'todo';
+      if (editIdInput) editIdInput.value = '';
+      if (titleEl) titleEl.textContent = 'Add Task';
+    }
+
+    // Populate assignee select
+    const select = $('proj-task-assignee-select');
+    if (select) {
+      select.innerHTML = '<option value="">— Unassigned —</option>';
+      Object.entries(this.currentMembers).forEach(([uid, member]) => {
+        const opt = document.createElement('option');
+        opt.value = uid;
+        opt.textContent = `@${member.username || 'Unknown'} (${member.role || 'Member'})`;
+        if (tid && this._tasks[tid]?.assigneeUid === uid) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    this._openModal('proj-task-modal-overlay');
+  },
+
+  async _submitTask() {
+    const title = $('proj-task-title-input')?.value.trim();
+    if (!title || !this.currentProjectId || !state.currentUser) {
+      Toast.error('Please enter a task title'); return;
+    }
+    const desc = $('proj-task-desc-input')?.value.trim() || '';
+    const col = $('proj-task-col-value')?.value || 'todo';
+    const tid = $('proj-task-edit-id')?.value || '';
+    const assigneeSelect = $('proj-task-assignee-select');
+    const assigneeUid = assigneeSelect?.value || '';
+    const assigneeUsername = assigneeUid && this.currentMembers[assigneeUid] ? this.currentMembers[assigneeUid].username : '';
+
+    const btn = $('proj-task-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+    try {
+      if (tid) {
+        // Update existing
+        await update(ref(db, `projects/${this.currentProjectId}/tasks/${tid}`), {
+          title, description: desc, assigneeUid: assigneeUid || null,
+          assigneeUsername: assigneeUsername || null
+        });
+      } else {
+        // Create new
+        const taskData = {
+          title, description: desc, column: col,
+          assigneeUid: assigneeUid || null,
+          assigneeUsername: assigneeUsername || null,
+          createdBy: state.currentUser.uid,
+          createdByUsername: state.username || 'Unknown',
+          createdAt: Date.now()
+        };
+        const newTaskRef = await push(ref(db, `projects/${this.currentProjectId}/tasks`), taskData);
+        // Notify assignee if set
+        if (assigneeUid && assigneeUid !== state.currentUser.uid) {
+          await NotifSystem.push(assigneeUid, 'task_assigned', `📋 You were assigned task "${title}" in "${this.currentProjectData?.name||'a project'}"`);
+        }
+      }
+      this._closeModal('proj-task-modal-overlay');
+    } catch(e) { Toast.error(e.message || 'Could not save task'); }
+    finally { if (btn) { btn.disabled = false; btn.textContent = '✅ Save Task'; } }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  MEMBERS PANEL
+  // ──────────────────────────────────────────────────────────────────
+  _renderAvatarStack() {
+    const stack = $('proj-ws-avatar-stack'); if (!stack) return;
+    const entries = Object.entries(this.currentMembers).slice(0, 4);
+    const total = Object.keys(this.currentMembers).length;
+    stack.innerHTML = '';
+    entries.forEach(([uid, m]) => {
+      const el = document.createElement('div');
+      el.className = 'proj-ws-avatar';
+      const pfp = m.pfpUrl || generateAvatarUrl(uid);
+      el.innerHTML = `<img src="${escHtml(pfp)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${escHtml(initials(m.username||'?'))}'" loading="lazy">`;
+      stack.insertBefore(el, stack.firstChild);
+    });
+    if (total > 4) {
+      const more = document.createElement('div');
+      more.className = 'proj-ws-more-count';
+      more.textContent = `+${total - 4}`;
+      stack.insertBefore(more, stack.firstChild);
+    }
+    const sub = $('proj-ws-sub');
+    if (sub) sub.textContent = `${this.currentProjectData?.visibility === 'private' ? '🔒 Private' : '🌍 Public'} · ${total} member${total!==1?'s':''}`;
+  },
+
+  _renderMembersPanel() {
+    if (!$('proj-ws-panel-members')?.classList.contains('active')) return;
+    const list = $('proj-members-list'); if (!list) return;
+    list.innerHTML = '';
+    const isOwner = this.currentProjectData?.ownerId === state.currentUser?.uid;
+    const uid = state.currentUser?.uid;
+
+    Object.entries(this.currentMembers).sort((a,b) => {
+      if (a[1].role === 'Owner') return -1;
+      if (b[1].role === 'Owner') return 1;
+      return (a[1].joinedAt||0) - (b[1].joinedAt||0);
+    }).forEach(([mUid, member]) => {
+      const row = document.createElement('div');
+      row.className = 'proj-member-row';
+      const pfp = member.pfpUrl || generateAvatarUrl(mUid);
+      const isOwnerMember = member.role === 'Owner';
+      row.innerHTML = `
+        <div class="proj-member-avatar"><img src="${escHtml(pfp)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${escHtml(initials(member.username||'?'))}'" loading="lazy"></div>
+        <div class="proj-member-info">
+          <div class="proj-member-name">@${escHtml(member.username||'Unknown')}</div>
+          <span class="proj-member-role${isOwnerMember?' owner':''}">${escHtml(member.role||'Member')}</span>
+        </div>
+        <div class="proj-member-actions">
+          <button class="proj-member-action-btn" data-uid="${escHtml(mUid)}" data-action="dm" title="Send DM" style="font-size:13px;">💬</button>
+          ${isOwner && mUid !== uid ? `<button class="proj-member-action-btn danger" data-uid="${escHtml(mUid)}" data-action="kick" title="Remove member">✕</button>` : ''}
+        </div>
+      `;
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.proj-member-action-btn')) return;
+        openUserProfileSheet(mUid, member.username||'', 'Explorer', 'Beginner', 0, member.pfpUrl||'', '', null);
+      });
+      row.querySelectorAll('.proj-member-action-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const targetUid = btn.dataset.uid;
+          if (btn.dataset.action === 'dm') {
+            const m = this.currentMembers[targetUid];
+            openChat(targetUid, m?.username||'Unknown', 'Explorer', 'Beginner', 0);
+          } else if (btn.dataset.action === 'kick') {
+            if (!confirm(`Remove @${member.username||'this member'} from the project?`)) return;
+            try {
+              await remove(ref(db, `projects/${this.currentProjectId}/members/${targetUid}`));
+              Toast.success('Member removed');
+            } catch(err) { Toast.error('Could not remove member'); }
+          }
+        });
+      });
+      list.appendChild(row);
+    });
+  },
+
+  _renderRequestsPanel(requests) {
+    const section = $('proj-requests-section');
+    const list = $('proj-requests-list');
+    if (!section || !list) return;
+
+    const isOwner = this.currentProjectData?.ownerId === state.currentUser?.uid;
+    if (!isOwner) { section.style.display = 'none'; return; }
+
+    const pending = Object.entries(requests).filter(([,r]) => r.status === 'pending');
+    if (pending.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    list.innerHTML = '';
+
+    pending.forEach(([rid, req]) => {
+      const row = document.createElement('div');
+      row.className = 'proj-request-row';
+      const pfp = req.applicantPfp || generateAvatarUrl(req.applicantUid||'x');
+      row.innerHTML = `
+        <div class="proj-request-avatar"><img src="${escHtml(pfp)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${escHtml(initials(req.applicantUsername||'?'))}'" loading="lazy"></div>
+        <div class="proj-request-body">
+          <div class="proj-request-name">@${escHtml(req.applicantUsername||'Unknown')}</div>
+          <div class="proj-request-role-text">Applying for: ${escHtml(req.desiredRole||'Member')}</div>
+          ${req.message ? `<div class="proj-request-msg">${escHtml(req.message)}</div>` : ''}
+          <div class="proj-request-btns">
+            <button class="proj-request-accept-btn" data-rid="${escHtml(rid)}">✓ Accept</button>
+            <button class="proj-request-decline-btn" data-rid="${escHtml(rid)}">✗ Decline</button>
+            <button class="proj-request-dm-btn" data-rid="${escHtml(rid)}" data-uid="${escHtml(req.applicantUid||'')}">💬 DM</button>
+          </div>
+          <div style="font-size:9px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;">${timeAgo(req.createdAt)}</div>
+        </div>
+      `;
+      row.querySelector('.proj-request-accept-btn').addEventListener('click', () => this._acceptRequest(rid, req));
+      row.querySelector('.proj-request-decline-btn').addEventListener('click', () => this._declineRequest(rid, req));
+      row.querySelector('.proj-request-dm-btn').addEventListener('click', () => {
+        openChat(req.applicantUid, req.applicantUsername||'Unknown', 'Explorer', 'Beginner', 0);
+      });
+      list.appendChild(row);
+    });
+  },
+
+  async _acceptRequest(rid, req) {
+    if (!this.currentProjectId) return;
+    try {
+      const uid = req.applicantUid; if (!uid) return;
+      // Add to members
+      await set(ref(db, `projects/${this.currentProjectId}/members/${uid}`), {
+        role: req.desiredRole || 'Member',
+        joinedAt: Date.now(),
+        username: req.applicantUsername || 'Unknown',
+        pfpUrl: req.applicantPfp || null
+      });
+      // Remove request
+      await remove(ref(db, `projects/${this.currentProjectId}/requests/${rid}`));
+      // Notify
+      await NotifSystem.push(uid, 'project_request_accepted', `🎉 Your request to join "${this.currentProjectData?.name||'a project'}" was accepted!`);
+      Toast.success(`@${req.applicantUsername||'Member'} accepted!`);
+    } catch(e) { Toast.error('Could not accept request'); }
+  },
+
+  async _declineRequest(rid, req) {
+    if (!this.currentProjectId) return;
+    try {
+      await remove(ref(db, `projects/${this.currentProjectId}/requests/${rid}`));
+      await NotifSystem.push(req.applicantUid, 'project_request_declined', `Your request to join "${this.currentProjectData?.name||'a project'}" was not accepted this time.`).catch(()=>{});
+      Toast.info('Request declined');
+    } catch(e) { Toast.error('Could not decline request'); }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  REQUEST TO JOIN FLOW
+  // ──────────────────────────────────────────────────────────────────
+  _openRequestModal(pid, info) {
+    $('proj-request-project-id').value = pid;
+    $('proj-request-project-name').textContent = `Requesting to join: "${info.name||'Project'}"`;
+    // Populate role select
+    const select = $('proj-request-role-select');
+    select.innerHTML = '<option value="">— Select a role —</option>';
+    (info.rolesNeeded || []).forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.skill; opt.textContent = r.skill + (r.qty > 1 ? ` (need ${r.qty})` : '');
+      select.appendChild(opt);
+    });
+    $('proj-request-msg-input').value = '';
+    this._openModal('proj-request-modal-overlay');
+  },
+
+  async _submitRequest() {
+    const pid = $('proj-request-project-id')?.value;
+    const role = $('proj-request-role-select')?.value;
+    const msg = $('proj-request-msg-input')?.value.trim() || '';
+    if (!pid || !role || !state.currentUser) { Toast.error('Please select a role'); return; }
+
+    const btn = $('proj-request-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+    try {
+      const uid = state.currentUser.uid;
+      await push(ref(db, `projects/${pid}/requests`), {
+        applicantUid: uid,
+        applicantUsername: state.username || 'Unknown',
+        applicantPfp: state.pfpUrl || null,
+        desiredRole: role, message: msg,
+        status: 'pending', createdAt: Date.now()
+      });
+      // Notify owner
+      const infoSnap = await get(ref(db, `projects/${pid}/info`)).catch(()=>null);
+      const ownerId = infoSnap?.exists() ? infoSnap.val().ownerId : null;
+      if (ownerId && ownerId !== uid) {
+        await NotifSystem.push(ownerId, 'project_request', `📨 @${state.username||'Someone'} requested to join your project "${infoSnap.val().name||''}" as ${role}`);
+      }
+      this._closeModal('proj-request-modal-overlay');
+      Toast.success('Request sent! The owner will review it.');
+    } catch(e) { Toast.error(e.message || 'Could not send request'); }
+    finally { if (btn) { btn.disabled = false; btn.textContent = '📨 Send Request'; } }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  SETTINGS MODAL
+  // ──────────────────────────────────────────────────────────────────
+  _openSettingsModal() {
+    const info = this.currentProjectData; if (!info) return;
+    $('proj-settings-name-input').value = info.name || '';
+    $('proj-settings-desc-input').value = info.description || '';
+    const seekSection = $('proj-settings-seek-section');
+    const seekCb = $('proj-settings-seek-checkbox');
+    if (info.visibility === 'private') {
+      seekSection.style.display = 'block';
+      seekCb.checked = !!info.seekingMembers;
+    } else { seekSection.style.display = 'none'; }
+    this._openModal('proj-settings-modal-overlay');
+  },
+
+  async _saveSettings() {
+    const name = $('proj-settings-name-input')?.value.trim();
+    if (!name || !this.currentProjectId) { Toast.error('Name required'); return; }
+    const desc = $('proj-settings-desc-input')?.value.trim() || '';
+    const seekingMembers = $('proj-settings-seek-checkbox')?.checked || false;
+
+    const btn = $('proj-settings-save-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+    try {
+      const updates = { name, description: desc };
+      if (this.currentProjectData?.visibility === 'private') updates.seekingMembers = seekingMembers;
+      await update(ref(db, `projects/${this.currentProjectId}/info`), updates);
+      this.currentProjectData = { ...this.currentProjectData, ...updates };
+      $('proj-ws-name').textContent = name;
+      this._closeModal('proj-settings-modal-overlay');
+      Toast.success('Settings saved');
+    } catch(e) { Toast.error(e.message || 'Could not save settings'); }
+    finally { if (btn) { btn.disabled = false; btn.textContent = '💾 Save Settings'; } }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  INVITE LINK
+  // ──────────────────────────────────────────────────────────────────
+  _copyInviteLink() {
+    if (!this.currentProjectId) return;
+    const link = `${window.location.origin}${window.location.pathname}?project=${this.currentProjectId}`;
+    try {
+      navigator.clipboard.writeText(link);
+      Toast.success('Invite link copied! 🔗');
+    } catch(e) {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+      Toast.success('Invite link copied! 🔗');
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  WORKSPACE MENU
+  // ──────────────────────────────────────────────────────────────────
+  _openMenu() { this._openModal('proj-menu-overlay'); },
+
+  // ──────────────────────────────────────────────────────────────────
+  //  MODAL HELPERS
+  // ──────────────────────────────────────────────────────────────────
+  _openModal(id) {
+    const overlay = $(id); if (!overlay) return;
+    overlay.classList.add('open');
+  },
+  _closeModal(id) {
+    const overlay = $(id); if (!overlay) return;
+    overlay.classList.remove('open');
+  },
+
+}; // end ProjectSystem
+
+// ── Initialize ProjectSystem after DOM is ready ──
+ProjectSystem.init();
+
+// ── Hook into NotifSystem typeConfig for project types ──
+(function patchNotifTypes() {
+  // We patch the render function to handle project notification types.
+  // The existing NotifSystem._render will fall back to the default emoji for unknown types.
+  // Since typeConfig is inside a closure, we extend via the data path.
+  // The NotifSystem uses typeConfig inside _render; new types will show default ✉ emoji
+  // which is fine. The push() already supports arbitrary types.
+})();
+
 
 </script>
 
