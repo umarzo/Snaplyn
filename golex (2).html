@@ -10137,6 +10137,10 @@ html[data-theme="dev"] .notif-panel-header::after {
 .projects-list-wrap::-webkit-scrollbar { width: 4px; }
 .projects-list-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
+.proj-work-search-wrap {
+  margin-bottom: 10px;
+}
+
 .projects-section-label {
   font-family: var(--font-mono);
   font-size: 9px;
@@ -10287,6 +10291,16 @@ html[data-theme="dev"] .notif-panel-header::after {
   border-color: rgba(245,158,11,0.28);
   color: var(--warning-light);
 }
+.project-join-btn.pending {
+  background: rgba(79,70,229,0.09);
+  border-color: rgba(79,70,229,0.24);
+  color: var(--accent3-light);
+}
+.project-join-btn.declined {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.24);
+  color: var(--danger-light);
+}
 .project-visibility-badge {
   font-size: 9px;
   font-family: var(--font-mono);
@@ -10304,6 +10318,43 @@ html[data-theme="dev"] .notif-panel-header::after {
   background: rgba(79,70,229,0.08);
   border: 1px solid rgba(79,70,229,0.2);
   color: var(--accent3-light);
+}
+
+.work-ad-card .project-card-name {
+  margin-bottom: 4px;
+}
+.work-ad-owner {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.work-ad-owner-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent-light);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.work-ad-owner-btn:hover { text-decoration: underline; }
+.work-ad-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.work-ad-review-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--accent3-light);
+  background: rgba(79,70,229,0.08);
+  border: 1px solid rgba(79,70,229,0.2);
+  border-radius: var(--radius-pill);
+  padding: 2px 7px;
 }
 
 /* Empty state for projects list */
@@ -13486,6 +13537,9 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
         <button class="projects-tab" id="proj-tab-private" data-tab="private">
           🔒 Private Hub
         </button>
+        <button class="projects-tab" id="proj-tab-work" data-tab="work">
+          <i data-lucide="briefcase" class="lucide" width="12" height="12"></i> Work
+        </button>
         <button class="projects-tab" id="proj-tab-mine" data-tab="mine">
           ⚡ My Projects
         </button>
@@ -13560,6 +13614,30 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
         </div>
       </div>
       <div id="proj-seeking-list"></div>
+    </div>
+
+    <!-- Tab: Work Ads -->
+    <div class="projects-list-wrap" id="proj-panel-work" style="display:none;">
+      <div class="proj-work-search-wrap">
+        <input class="input" type="text" id="proj-work-search-input" placeholder="Search roles, projects, skills..." maxlength="80" autocomplete="off">
+      </div>
+      <div id="proj-work-skel">
+        <div class="skel-project-card">
+          <div class="skel skel-round" style="width:44px;height:44px;flex-shrink:0;"></div>
+          <div style="flex:1">
+            <div class="skel skeleton-line lg" style="width:140px;margin-bottom:6px;"></div>
+            <div class="skel skeleton-line sm" style="width:200px;margin-bottom:8px;"></div>
+            <div class="skel skeleton-line xs" style="width:100px;"></div>
+          </div>
+          <div class="skel skel-pill" style="width:72px;height:26px;flex-shrink:0;"></div>
+        </div>
+      </div>
+      <div id="proj-my-work-ads-section" style="display:none;">
+        <div class="projects-section-label">My Ads</div>
+        <div id="proj-my-work-ads-list"></div>
+      </div>
+      <div class="projects-section-label">Explore Work</div>
+      <div id="proj-work-list"></div>
     </div>
 
     <!-- Tab: My Projects (all) -->
@@ -13802,6 +13880,10 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
           <div class="projects-section-label">Pending Requests</div>
           <div id="proj-requests-list"></div>
         </div>
+        <div class="proj-requests-section" id="proj-work-applicants-section" style="display:none;">
+          <div class="projects-section-label">Work Applicants</div>
+          <div id="proj-work-applicants-list"></div>
+        </div>
       </div>
     </div>
 
@@ -13826,6 +13908,9 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
         </div>
         <div class="proj-menu-option" id="proj-menu-invite">
           <span class="proj-menu-option-icon">🔗</span> Copy Invite Link
+        </div>
+        <div class="proj-menu-option" id="proj-menu-advertise" style="display:none;">
+          <span class="proj-menu-option-icon">💼</span> Advertise Project
         </div>
         <div class="proj-menu-option" id="proj-menu-leave" style="display:none;">
           <span class="proj-menu-option-icon">🚪</span> Leave Project
@@ -13924,6 +14009,100 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
     </div>
   </div>
 
+  <!-- Work Ad Modal -->
+  <div class="proj-modal-overlay" id="proj-work-ad-modal-overlay">
+    <div class="proj-modal-sheet">
+      <div class="proj-modal-handle"></div>
+      <div class="proj-modal-header">
+        <div class="proj-modal-title" id="proj-work-ad-modal-title">Create Work Ad</div>
+        <button class="proj-modal-close" id="proj-work-ad-modal-close">✕</button>
+      </div>
+      <div class="proj-modal-body">
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-work-role-title-input">Role Title *</label>
+          <input class="input" type="text" id="proj-work-role-title-input" maxlength="80" placeholder="e.g. Frontend Developer" autocomplete="off">
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-work-desc-input">Description</label>
+          <textarea class="input" id="proj-work-desc-input" rows="3" maxlength="400" placeholder="What will this person work on?"></textarea>
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label">Skills (max 5)</label>
+          <div class="skill-select-grid" id="proj-work-skills-grid">
+            <div class="skill-select-pill" data-skill="Gamer">🎮 Gamer</div>
+            <div class="skill-select-pill" data-skill="Editor">🎬 Editor</div>
+            <div class="skill-select-pill" data-skill="Designer">🎨 Designer</div>
+            <div class="skill-select-pill" data-skill="Coder">💻 Coder</div>
+            <div class="skill-select-pill" data-skill="Writer">✍️ Writer</div>
+            <div class="skill-select-pill" data-skill="Artist">🖌️ Artist</div>
+            <div class="skill-select-pill" data-skill="Musician">🎵 Musician</div>
+            <div class="skill-select-pill" data-skill="Marketer">📢 Marketer</div>
+            <div class="skill-select-pill" data-skill="Animator">🎞️ Animator</div>
+            <div class="skill-select-pill" data-skill="Photographer">📷 Photographer</div>
+            <div class="skill-select-pill" data-skill="Streamer">📺 Streamer</div>
+            <div class="skill-select-pill" data-skill="Explorer">🔍 Explorer</div>
+          </div>
+          <div class="tag-input-row" style="margin-top:8px;">
+            <input class="input" type="text" id="proj-work-skill-input" placeholder="Add custom skill" maxlength="24" autocomplete="off">
+            <button class="tag-add-btn" id="proj-work-skill-add-btn" type="button">+ Add</button>
+          </div>
+          <div class="tags-wrap" id="proj-work-skill-tags"></div>
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-work-commitment-select">Commitment</label>
+          <select class="proj-assignee-select input" id="proj-work-commitment-select">
+            <option value="One-time Gig">One-time Gig</option>
+            <option value="Short-term (1–4 weeks)">Short-term (1–4 weeks)</option>
+            <option value="Long-term">Long-term</option>
+            <option value="Ongoing">Ongoing</option>
+          </select>
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-work-comp-type-select">Compensation</label>
+          <select class="proj-assignee-select input" id="proj-work-comp-type-select">
+            <option value="Unpaid">Unpaid</option>
+            <option value="Revenue Share">Revenue Share</option>
+            <option value="Paid">Paid</option>
+          </select>
+          <input class="input" type="text" id="proj-work-comp-text-input" maxlength="60" placeholder="e.g. $500 fixed" style="margin-top:8px;display:none;" autocomplete="off">
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-work-visibility-select">Visibility</label>
+          <select class="proj-assignee-select input" id="proj-work-visibility-select">
+            <option value="public">Public</option>
+            <option value="private">Private (review-based)</option>
+          </select>
+        </div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-work-spots-input">Spots Available</label>
+          <input class="input" type="number" id="proj-work-spots-input" min="1" max="10" value="1">
+        </div>
+        <input type="hidden" id="proj-work-edit-ad-id" value="">
+        <button class="btn btn-primary" id="proj-work-ad-submit-btn" type="button" style="margin-top:6px;">📢 Publish Ad</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Private Work Pitch Modal -->
+  <div class="proj-modal-overlay" id="proj-work-pitch-modal-overlay">
+    <div class="proj-modal-sheet">
+      <div class="proj-modal-handle"></div>
+      <div class="proj-modal-header">
+        <div class="proj-modal-title">Apply to Private Role</div>
+        <button class="proj-modal-close" id="proj-work-pitch-modal-close">✕</button>
+      </div>
+      <div class="proj-modal-body">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;" id="proj-work-pitch-role-label"></div>
+        <div class="proj-modal-field">
+          <label class="proj-modal-label" for="proj-work-pitch-input">Pitch (max 200)</label>
+          <textarea class="input" id="proj-work-pitch-input" rows="3" maxlength="200" placeholder="Tell the project owner why you're a good fit."></textarea>
+        </div>
+        <input type="hidden" id="proj-work-pitch-ad-id" value="">
+        <button class="btn btn-primary" id="proj-work-pitch-submit-btn" type="button" style="margin-top:6px;">📨 Send Application</button>
+      </div>
+    </div>
+  </div>
+
 
 <div id="main-nav">
     <button class="nav-btn active" id="nav-chat">
@@ -13965,7 +14144,7 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser, reauthenticateWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getDatabase, ref, get, set, remove, onValue, onChildAdded, push, serverTimestamp, onDisconnect, update, increment, off, query, orderByChild, orderByKey, equalTo, limitToLast, endBefore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { getDatabase, ref, get, set, remove, onValue, onChildAdded, push, serverTimestamp, onDisconnect, update, increment, off, query, orderByChild, orderByKey, equalTo, limitToLast, endBefore, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCAqrHPZxtvIlMrF6O3AIeWPRWdG-mkKKI", authDomain: "golex-51625.firebaseapp.com", databaseURL: "https://golex-51625-default-rtdb.firebaseio.com", projectId: "golex-51625", storageBucket: "golex-51625.firebasestorage.app", messagingSenderId: "526349915922", appId: "1:526349915922:web:0e8968d99f9dd423b345cb" };
 const CONFIG = { MAX_IMAGE_KB:400, MAX_FILE_KB:500, MAX_AUDIO_SECONDS:60, MAX_IMAGE_DIMENSION:800, JPEG_QUALITY:0.6, MAX_TAGS:10, MIN_USERNAME_LENGTH:3, MAX_USERNAME_LENGTH:24, TYPING_TIMEOUT:1500, TOAST_DURATION:2800, MESSAGE_LIMIT:200, DEBOUNCE_MS:150, SCROLL_THRESHOLD:100, PFP_COOLDOWN_DAYS:10, PFP_MAX_KB:200, PFP_DIMENSION:256, HEARTBEAT_INTERVAL:30000, PRESENCE_TIMEOUT:90000 };
@@ -27019,12 +27198,16 @@ const ProjectSystem = {
   projectTags: [],
   projectRoles: [],          // [{skill, qty}]
   coverDataUrl: null,
+  workAdSkills: [],
+  workAdsMap: {},
+  _workSearchQuery: '',
 
   // Firebase listeners (cleaned up on leave)
   _unsubMessages: null,
   _unsubTasks: null,
   _unsubMembers: null,
   _unsubRequests: null,
+  _unsubWorkAds: null,
   _unsubTyping: null,
   _typingTimeout: null,
 
@@ -27048,6 +27231,7 @@ const ProjectSystem = {
       this.loadPublicProjects();
       this.loadMyProjects();
       this.loadSeekingProjects();
+      this.loadWorkAds();
     });
 
     // Tab switching on projects-screen
@@ -27056,11 +27240,12 @@ const ProjectSystem = {
         const tab = btn.dataset.tab;
         $$('.projects-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        ['proj-panel-public','proj-panel-private','proj-panel-mine'].forEach(id => {
+        ['proj-panel-public','proj-panel-private','proj-panel-work','proj-panel-mine'].forEach(id => {
           const el = $(id); if (el) el.style.display = 'none';
         });
-        const panelMap = { public: 'proj-panel-public', private: 'proj-panel-private', mine: 'proj-panel-mine' };
+        const panelMap = { public: 'proj-panel-public', private: 'proj-panel-private', work: 'proj-panel-work', mine: 'proj-panel-mine' };
         const panel = $(panelMap[tab]); if (panel) panel.style.display = 'block';
+        if (tab === 'work') this.loadWorkAds();
       });
     });
 
@@ -27074,6 +27259,7 @@ const ProjectSystem = {
     const createBack = $('proj-create-back');
     if (createBack) createBack.addEventListener('click', () => {
       ScreenManager.show('projects-screen');
+      this.loadWorkAds();
     });
 
     // Visibility toggle on create screen
@@ -27137,6 +27323,7 @@ const ProjectSystem = {
       this.loadPublicProjects();
       this.loadMyProjects();
       this.loadSeekingProjects();
+      this.loadWorkAds();
     });
 
     // Workspace tabs
@@ -27168,6 +27355,10 @@ const ProjectSystem = {
     $('proj-menu-invite')?.addEventListener('click', () => {
       this._closeModal('proj-menu-overlay');
       this._copyInviteLink();
+    });
+    $('proj-menu-advertise')?.addEventListener('click', () => {
+      this._closeModal('proj-menu-overlay');
+      this._openWorkAdModal();
     });
     $('proj-menu-leave')?.addEventListener('click', () => {
       this._closeModal('proj-menu-overlay');
@@ -27232,6 +27423,48 @@ const ProjectSystem = {
     $('proj-settings-modal-close')?.addEventListener('click', () => this._closeModal('proj-settings-modal-overlay'));
     $('proj-settings-modal-overlay')?.addEventListener('click', (e) => { if (e.target === $('proj-settings-modal-overlay')) this._closeModal('proj-settings-modal-overlay'); });
     $('proj-settings-save-btn')?.addEventListener('click', () => this._saveSettings());
+
+    // Work ad modal
+    $('proj-work-ad-modal-close')?.addEventListener('click', () => this._closeModal('proj-work-ad-modal-overlay'));
+    $('proj-work-ad-modal-overlay')?.addEventListener('click', (e) => { if (e.target === $('proj-work-ad-modal-overlay')) this._closeModal('proj-work-ad-modal-overlay'); });
+    $('proj-work-ad-submit-btn')?.addEventListener('click', () => this._submitWorkAd());
+    $('proj-work-comp-type-select')?.addEventListener('change', () => {
+      const isPaid = $('proj-work-comp-type-select')?.value === 'Paid';
+      const field = $('proj-work-comp-text-input');
+      if (field) field.style.display = isPaid ? 'block' : 'none';
+    });
+    $('proj-work-skill-add-btn')?.addEventListener('click', () => this._addWorkAdSkill());
+    $('proj-work-skill-input')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); this._addWorkAdSkill(); }
+    });
+    $('proj-work-skills-grid')?.addEventListener('click', (e) => {
+      const pill = e.target.closest('.skill-select-pill');
+      if (!pill) return;
+      const skill = (pill.dataset.skill || '').trim();
+      if (!skill) return;
+      const exists = this.workAdSkills.some(s => s.toLowerCase() === skill.toLowerCase());
+      if (exists) {
+        this.workAdSkills = this.workAdSkills.filter(s => s.toLowerCase() !== skill.toLowerCase());
+      } else {
+        if (this.workAdSkills.length >= 5) { Toast.info('Maximum 5 skills'); return; }
+        this.workAdSkills.push(skill);
+      }
+      this._renderWorkAdSkills();
+    });
+
+    // Private pitch modal
+    $('proj-work-pitch-modal-close')?.addEventListener('click', () => this._closeModal('proj-work-pitch-modal-overlay'));
+    $('proj-work-pitch-modal-overlay')?.addEventListener('click', (e) => { if (e.target === $('proj-work-pitch-modal-overlay')) this._closeModal('proj-work-pitch-modal-overlay'); });
+    $('proj-work-pitch-submit-btn')?.addEventListener('click', () => this._submitWorkPitch());
+
+    // Work search
+    const workSearchInput = $('proj-work-search-input');
+    if (workSearchInput) {
+      workSearchInput.addEventListener('input', debounce(() => {
+        this._workSearchQuery = (workSearchInput.value || '').trim().toLowerCase();
+        this.loadWorkAds();
+      }, CONFIG.DEBOUNCE_MS));
+    }
 
     // Init drag-and-drop on kanban columns
     this._initDragDrop();
@@ -27400,6 +27633,482 @@ const ProjectSystem = {
     } catch(e) {
       if (skel) skel.style.display = 'none';
       seekList.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;">Could not load</div>`;
+    }
+  },
+
+  async loadWorkAds() {
+    const skel = $('proj-work-skel');
+    const list = $('proj-work-list');
+    const mySection = $('proj-my-work-ads-section');
+    const myList = $('proj-my-work-ads-list');
+    if (!list || !state.currentUser) return;
+    if (skel) skel.style.display = 'block';
+    list.innerHTML = '';
+    if (myList) myList.innerHTML = '';
+    if (mySection) mySection.style.display = 'none';
+
+    try {
+      const snap = await get(ref(db, 'workAds')).catch(() => null);
+      if (skel) skel.style.display = 'none';
+      if (!snap || !snap.exists()) {
+        list.innerHTML = this._emptyState('💼', 'No work ads yet', 'Create one from your project workspace');
+        return;
+      }
+
+      const uid = state.currentUser.uid;
+      const mine = [];
+      const allOpen = [];
+      this.workAdsMap = {};
+      snap.forEach(child => {
+        const ad = child.val() || {};
+        const entry = { id: child.key, ...ad };
+        this.workAdsMap[child.key] = entry;
+        if (ad.ownerId === uid) mine.push(entry);
+        if (ad.status === 'open') allOpen.push(entry);
+      });
+
+      const queryText = this._workSearchQuery || '';
+      const filterFn = (ad) => {
+        if (!queryText) return true;
+        const hay = [
+          ad.projectName || '',
+          ad.ownerUsername || '',
+          ad.roleTitle || '',
+          ad.description || '',
+          ...(Array.isArray(ad.skills) ? ad.skills : [])
+        ].join(' ').toLowerCase();
+        return hay.includes(queryText);
+      };
+
+      const mineFiltered = mine.filter(filterFn).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+      const openFiltered = allOpen.filter(filterFn).sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      if (mySection && myList && mineFiltered.length > 0) {
+        mySection.style.display = 'block';
+        mineFiltered.forEach(ad => {
+          const card = this._buildWorkAdCard(ad, true);
+          myList.appendChild(card);
+        });
+      }
+
+      if (openFiltered.length === 0) {
+        list.innerHTML = this._emptyState('💼', 'No open roles found', queryText ? 'Try a different search query' : 'Check back soon for new opportunities');
+        return;
+      }
+
+      openFiltered.forEach(ad => {
+        const card = this._buildWorkAdCard(ad, false);
+        list.appendChild(card);
+      });
+    } catch (e) {
+      if (skel) skel.style.display = 'none';
+      list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;">Could not load work ads</div>`;
+    }
+  },
+
+  _buildWorkAdCard(ad, isMyAd) {
+    const card = document.createElement('div');
+    card.className = 'project-card work-ad-card';
+    const skills = Array.isArray(ad.skills) ? ad.skills.slice(0, 5) : [];
+    const skillsHtml = skills.map(s => `<span class="project-role-pill">${escHtml(s)}</span>`).join('');
+    const applicant = ad.applicants && state.currentUser ? ad.applicants[state.currentUser.uid] : null;
+    const remaining = Number.isFinite(ad.spotsRemaining) ? ad.spotsRemaining : (parseInt(ad.spotsRemaining, 10) || 0);
+    const spotsText = `${Math.max(0, remaining)}/${parseInt(ad.spotsAvailable, 10) || 0}`;
+    const compText = ad.compensation || 'Unpaid';
+    const commitmentText = ad.commitment || 'Ongoing';
+    const visBadge = ad.visibility === 'private' ? '🔒 Private' : '🌍 Public';
+    const ownerLabel = ad.ownerUsername ? `@${ad.ownerUsername}` : 'Unknown';
+    const applyLabel = ad.visibility === 'private' ? '🔒 Apply' : 'Apply Now';
+    const isClosed = ad.status !== 'open' || remaining <= 0;
+
+    let actionHtml = '';
+    if (isMyAd) {
+      actionHtml = `
+        <button class="project-join-btn request" data-action="edit">Edit</button>
+        <button class="project-join-btn" data-action="close">Close</button>
+        <button class="project-join-btn member" data-action="boost">Boost</button>
+      `;
+    } else if (applicant) {
+      const status = (applicant.status || '').toLowerCase();
+      const map = {
+        accepted: { text: 'You\'re in!', className: 'member' },
+        pending: { text: 'Under Review 🔒', className: 'pending' },
+        declined: { text: 'Declined', className: 'declined' }
+      };
+      const meta = map[status] || { text: `Applied (${status || 'pending'})`, className: 'pending' };
+      actionHtml = `<button class="project-join-btn ${meta.className}" disabled>${escHtml(meta.text)}</button>`;
+    } else if (isClosed) {
+      actionHtml = `<button class="project-join-btn declined" disabled>Closed</button>`;
+    } else {
+      actionHtml = `<button class="project-join-btn" data-action="apply">${escHtml(applyLabel)}</button>`;
+    }
+
+    card.innerHTML = `
+      <div class="project-card-cover">${this._projectEmoji(ad.projectName || ad.roleTitle || 'Work')}</div>
+      <div class="project-card-body">
+        <div class="project-card-name">${escHtml(ad.projectName || 'Project')}</div>
+        <div class="work-ad-owner">by <button class="work-ad-owner-btn" type="button" data-action="owner">${escHtml(ownerLabel)}</button></div>
+        <div class="project-card-desc">${escHtml(ad.roleTitle || 'Role')}</div>
+        ${ad.description ? `<div class="project-card-desc">${escHtml(ad.description)}</div>` : ''}
+        ${skillsHtml ? `<div class="project-role-pills">${skillsHtml}</div>` : ''}
+        <div class="work-ad-meta">
+          <span class="project-card-stat">${escHtml(commitmentText)}</span>
+          <span class="project-card-stat">${escHtml(compText)}</span>
+          <span class="project-card-stat">Spots ${escHtml(spotsText)}</span>
+          <span class="project-visibility-badge ${ad.visibility === 'private' ? 'private' : 'public'}">${escHtml(visBadge)}</span>
+        </div>
+      </div>
+      <div class="project-card-actions">${actionHtml}</div>
+    `;
+
+    card.querySelector('[data-action="owner"]')?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const uid = ad.ownerId;
+      if (!uid) return;
+      const ownerSnap = await get(ref(db, `users/${uid}`)).catch(() => null);
+      const owner = ownerSnap?.exists() ? ownerSnap.val() : {};
+      openUserProfileSheet(uid, owner.username || ad.ownerUsername || '', owner.skill || 'Explorer', owner.level || 'Beginner', owner.points || 0, owner.pfpUrl || '', owner.bio || '', owner.expertise || null, owner.socialIntegrations || null);
+    });
+
+    card.querySelector('[data-action="apply"]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (ad.visibility === 'private') this._openWorkPitchModal(ad.id, ad);
+      else this._applyToWorkAd(ad.id, '');
+    });
+
+    card.querySelector('[data-action="edit"]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this._openWorkAdModal(ad);
+    });
+    card.querySelector('[data-action="close"]')?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await this._closeWorkAd(ad.id);
+    });
+    card.querySelector('[data-action="boost"]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      Toast.info('Boost coming soon');
+    });
+
+    card.addEventListener('click', () => {
+      if (ad.projectId && this.currentProjectId === ad.projectId && this.currentProjectData) {
+        ScreenManager.show('project-workspace-screen');
+      }
+    });
+
+    return card;
+  },
+
+  _addWorkAdSkill() {
+    const input = $('proj-work-skill-input');
+    if (!input) return;
+    const raw = input.value.trim();
+    const value = raw.replace(/[^a-zA-Z0-9 \-_.+#]/g,'').trim().slice(0, 24);
+    if (!value) return;
+    if (this.workAdSkills.some(s => s.toLowerCase() === value.toLowerCase())) { input.value = ''; return; }
+    if (this.workAdSkills.length >= 5) { Toast.info('Maximum 5 skills'); return; }
+    this.workAdSkills.push(value);
+    input.value = '';
+    this._renderWorkAdSkills();
+  },
+
+  _renderWorkAdSkills() {
+    const grid = $('proj-work-skills-grid');
+    const tags = $('proj-work-skill-tags');
+    if (grid) {
+      grid.querySelectorAll('.skill-select-pill').forEach(pill => {
+        const skill = (pill.dataset.skill || '').trim().toLowerCase();
+        const selected = this.workAdSkills.some(s => s.toLowerCase() === skill);
+        pill.classList.toggle('selected', selected);
+      });
+    }
+    if (!tags) return;
+    const customSkills = this.workAdSkills.filter(s => !PREDEFINED_SKILLS.some(ps => ps.toLowerCase() === s.toLowerCase()));
+    tags.innerHTML = customSkills.map(skill => `<div class="skill-tag">${escHtml(skill)}<span class="tag-remove" data-skill="${escHtml(skill)}" style="cursor:pointer;margin-left:5px;">✕</span></div>`).join('');
+    tags.querySelectorAll('.tag-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const skill = btn.dataset.skill || '';
+        this.workAdSkills = this.workAdSkills.filter(s => s.toLowerCase() !== skill.toLowerCase());
+        this._renderWorkAdSkills();
+      });
+    });
+  },
+
+  _openWorkAdModal(existingAd = null) {
+    if (existingAd && (!this.currentProjectId || this.currentProjectId !== existingAd.projectId)) {
+      this.currentProjectId = existingAd.projectId || this.currentProjectId;
+      this.currentProjectData = {
+        ...(this.currentProjectData || {}),
+        ownerId: existingAd.ownerId,
+        name: existingAd.projectName || this.currentProjectData?.name || 'Project'
+      };
+    }
+    if (!this.currentProjectId || !this.currentProjectData || this.currentProjectData.ownerId !== state.currentUser?.uid) {
+      Toast.error('Only project owners can advertise work');
+      return;
+    }
+    $('proj-work-edit-ad-id').value = existingAd?.id || '';
+    $('proj-work-ad-modal-title').textContent = existingAd ? 'Edit Work Ad' : 'Create Work Ad';
+    $('proj-work-role-title-input').value = existingAd?.roleTitle || '';
+    $('proj-work-desc-input').value = existingAd?.description || '';
+    $('proj-work-commitment-select').value = existingAd?.commitment || 'One-time Gig';
+    const compText = (existingAd?.compensation || 'Unpaid');
+    let compType = 'Unpaid';
+    let compExtra = '';
+    if (compText.startsWith('Paid')) {
+      compType = 'Paid';
+      compExtra = compText.replace(/^Paid\s*[-:]\s*/,'').trim();
+    } else if (compText === 'Revenue Share') compType = 'Revenue Share';
+    $('proj-work-comp-type-select').value = compType;
+    $('proj-work-comp-text-input').style.display = compType === 'Paid' ? 'block' : 'none';
+    $('proj-work-comp-text-input').value = compExtra;
+    $('proj-work-visibility-select').value = existingAd?.visibility || 'public';
+    $('proj-work-spots-input').value = Math.min(10, Math.max(1, parseInt(existingAd?.spotsAvailable, 10) || 1));
+    this.workAdSkills = Array.isArray(existingAd?.skills) ? existingAd.skills.slice(0,5) : [];
+    this._renderWorkAdSkills();
+    $('proj-work-skill-input').value = '';
+    $('proj-work-ad-submit-btn').textContent = existingAd ? '💾 Save Ad' : '📢 Publish Ad';
+    this._openModal('proj-work-ad-modal-overlay');
+  },
+
+  async _submitWorkAd() {
+    if (!state.currentUser || !this.currentProjectId || !this.currentProjectData) return;
+    if (this.currentProjectData.ownerId !== state.currentUser.uid) return;
+    const roleTitle = $('proj-work-role-title-input')?.value.trim();
+    if (!roleTitle) { Toast.error('Role title is required'); return; }
+    const description = ($('proj-work-desc-input')?.value || '').trim().slice(0, 400);
+    const commitment = $('proj-work-commitment-select')?.value || 'One-time Gig';
+    const compType = $('proj-work-comp-type-select')?.value || 'Unpaid';
+    const compText = $('proj-work-comp-text-input')?.value.trim() || '';
+    const visibility = $('proj-work-visibility-select')?.value === 'private' ? 'private' : 'public';
+    const spotsAvailable = Math.min(10, Math.max(1, parseInt($('proj-work-spots-input')?.value, 10) || 1));
+    const skills = this.workAdSkills.slice(0, 5);
+    const editId = $('proj-work-edit-ad-id')?.value || '';
+    const btn = $('proj-work-ad-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = editId ? 'Saving...' : 'Publishing...'; }
+
+    try {
+      const uid = state.currentUser.uid;
+      const compensation = compType === 'Paid' ? `Paid${compText ? ` - ${compText}` : ''}` : compType;
+      const now = Date.now();
+      const adId = editId || push(ref(db, 'workAds')).key;
+      let applicants = {};
+      let createdAt = now;
+      if (editId) {
+        const prevSnap = await get(ref(db, `workAds/${editId}`)).catch(() => null);
+        const prev = prevSnap?.exists() ? prevSnap.val() : {};
+        applicants = prev.applicants || {};
+        createdAt = prev.createdAt || now;
+      }
+      const acceptedCount = Object.values(applicants).filter(a => (a?.status || '') === 'accepted').length;
+      const spotsRemaining = Math.max(0, spotsAvailable - acceptedCount);
+      const adData = {
+        projectId: this.currentProjectId,
+        projectName: this.currentProjectData.name || 'Project',
+        ownerId: uid,
+        ownerUsername: state.username || 'Unknown',
+        roleTitle,
+        description,
+        skills,
+        commitment,
+        compensation,
+        visibility,
+        spotsAvailable,
+        spotsRemaining,
+        createdAt,
+        status: spotsRemaining > 0 ? 'open' : 'closed'
+      };
+      if (Object.keys(applicants).length > 0) adData.applicants = applicants;
+      await set(ref(db, `workAds/${adId}`), adData).catch((e) => { throw e; });
+      this._closeModal('proj-work-ad-modal-overlay');
+      Toast.success(editId ? 'Work ad updated' : 'Work ad published');
+      this.loadWorkAds();
+      this._watchProjectWorkApplicants();
+    } catch (e) {
+      Toast.error(e.message || 'Could not save work ad');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = editId ? '💾 Save Ad' : '📢 Publish Ad';
+      }
+    }
+  },
+
+  _openWorkPitchModal(adId, ad) {
+    $('proj-work-pitch-ad-id').value = adId || '';
+    $('proj-work-pitch-input').value = '';
+    $('proj-work-pitch-role-label').textContent = `Applying for ${ad?.roleTitle || 'role'} in ${ad?.projectName || 'project'}`;
+    this._openModal('proj-work-pitch-modal-overlay');
+  },
+
+  async _submitWorkPitch() {
+    const adId = $('proj-work-pitch-ad-id')?.value || '';
+    const pitch = ($('proj-work-pitch-input')?.value || '').trim().slice(0, 200);
+    if (!adId) return;
+    await this._applyToWorkAd(adId, pitch);
+    this._closeModal('proj-work-pitch-modal-overlay');
+  },
+
+  async _decrementSpot(adId) {
+    const tx = await runTransaction(ref(db, `workAds/${adId}/spotsRemaining`), (current) => {
+      const val = Number.isFinite(current) ? current : parseInt(current, 10);
+      if (!Number.isFinite(val) || val <= 0) return;
+      return val - 1;
+    }).catch(() => null);
+    if (!tx || !tx.committed) throw new Error('No spots remaining');
+    const nextVal = tx.snapshot?.val();
+    if ((parseInt(nextVal, 10) || 0) <= 0) {
+      await update(ref(db, `workAds/${adId}`), { status: 'closed' }).catch(() => {});
+    }
+  },
+
+  async _applyToWorkAd(adId, pitch = '') {
+    if (!state.currentUser) return;
+    const uid = state.currentUser.uid;
+    try {
+      const adSnap = await get(ref(db, `workAds/${adId}`)).catch(() => null);
+      if (!adSnap || !adSnap.exists()) { Toast.error('Ad not found'); return; }
+      const ad = adSnap.val() || {};
+      if ((ad.status || 'open') !== 'open') { Toast.info('This ad is closed'); return; }
+      if ((parseInt(ad.spotsRemaining, 10) || 0) <= 0) { Toast.info('No spots remaining'); return; }
+      if ((ad.applicants || {})[uid]) {
+        const st = (ad.applicants[uid].status || 'pending');
+        Toast.info(`Already applied (${st})`);
+        return;
+      }
+
+      const appData = {
+        uid,
+        username: state.username || 'Unknown',
+        pfpUrl: state.pfpUrl || null,
+        pitch: (pitch || '').slice(0, 200),
+        appliedAt: Date.now(),
+        status: ad.visibility === 'private' ? 'pending' : 'accepted'
+      };
+
+      if (ad.visibility === 'private') {
+        await set(ref(db, `workAds/${adId}/applicants/${uid}`), appData).catch((e) => { throw e; });
+        if (ad.ownerId && ad.ownerId !== uid) {
+          await NotifSystem.push(ad.ownerId, 'work_applicant', `📨 @${state.username || 'Someone'} applied for "${ad.roleTitle || 'role'}"`).catch(() => {});
+        }
+        Toast.success('Application sent');
+      } else {
+        await this._decrementSpot(adId);
+        await set(ref(db, `workAds/${adId}/applicants/${uid}`), appData).catch((e) => { throw e; });
+        await set(ref(db, `projects/${ad.projectId}/members/${uid}`), {
+          role: ad.roleTitle || 'Member',
+          joinedAt: Date.now(),
+          username: state.username || 'Unknown',
+          pfpUrl: state.pfpUrl || null
+        }).catch(() => {});
+        if (ad.ownerId && ad.ownerId !== uid) {
+          await NotifSystem.push(ad.ownerId, 'work_applicant_accepted', `✅ @${state.username || 'Someone'} joined "${ad.projectName || 'your project'}"`).catch(() => {});
+        }
+        Toast.success(`You're in!`);
+      }
+      this.loadWorkAds();
+      this._watchProjectWorkApplicants();
+    } catch (e) {
+      Toast.error(e.message || 'Could not apply');
+    }
+  },
+
+  async _closeWorkAd(adId) {
+    if (!state.currentUser) return;
+    const ad = this.workAdsMap[adId];
+    if (!ad || ad.ownerId !== state.currentUser.uid) return;
+    await update(ref(db, `workAds/${adId}`), { status: 'closed' }).catch(() => {});
+    Toast.success('Ad closed');
+    this.loadWorkAds();
+    this._watchProjectWorkApplicants();
+  },
+
+  _watchProjectWorkApplicants() {
+    if (this._unsubWorkAds) { this._unsubWorkAds(); this._unsubWorkAds = null; }
+    const section = $('proj-work-applicants-section');
+    const list = $('proj-work-applicants-list');
+    if (!section || !list || !this.currentProjectId || !state.currentUser) return;
+    if (this.currentProjectData?.ownerId !== state.currentUser.uid) {
+      section.style.display = 'none';
+      return;
+    }
+    this._unsubWorkAds = onValue(ref(db, 'workAds'), (snap) => {
+      const pending = [];
+      if (snap?.exists()) {
+        snap.forEach(child => {
+          const ad = child.val() || {};
+          if (ad.projectId !== this.currentProjectId) return;
+          const applicants = ad.applicants || {};
+          Object.entries(applicants).forEach(([uid, app]) => {
+            if ((app?.status || '') === 'pending') pending.push({ adId: child.key, ad, uid, app });
+          });
+        });
+      }
+      this._renderWorkApplicants(pending);
+    });
+  },
+
+  _renderWorkApplicants(items) {
+    const section = $('proj-work-applicants-section');
+    const list = $('proj-work-applicants-list');
+    if (!section || !list) return;
+    if (!items.length) { section.style.display = 'none'; list.innerHTML = ''; return; }
+    section.style.display = 'block';
+    list.innerHTML = '';
+    items.sort((a,b) => (b.app.appliedAt || 0) - (a.app.appliedAt || 0)).forEach((item) => {
+      const row = document.createElement('div');
+      row.className = 'proj-request-row';
+      const pfp = item.app.pfpUrl || generateAvatarUrl(item.uid || 'x');
+      row.innerHTML = `
+        <div class="proj-request-avatar"><img src="${escHtml(pfp)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${escHtml(initials(item.app.username||'?'))}'" loading="lazy"></div>
+        <div class="proj-request-body">
+          <div class="proj-request-name">@${escHtml(item.app.username || 'Unknown')}</div>
+          <div class="proj-request-role-text">Role: ${escHtml(item.ad.roleTitle || 'Member')}</div>
+          ${item.app.pitch ? `<div class="proj-request-msg">${escHtml(item.app.pitch)}</div>` : ''}
+          <div class="proj-request-btns">
+            <button class="proj-request-accept-btn" data-action="accept">✓ Accept</button>
+            <button class="proj-request-decline-btn" data-action="decline">✗ Decline</button>
+          </div>
+          <div style="font-size:9px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;">${timeAgo(item.app.appliedAt)}</div>
+        </div>
+      `;
+      row.querySelector('[data-action="accept"]')?.addEventListener('click', () => this._reviewWorkApplicant(item, true));
+      row.querySelector('[data-action="decline"]')?.addEventListener('click', () => this._reviewWorkApplicant(item, false));
+      list.appendChild(row);
+    });
+  },
+
+  async _reviewWorkApplicant(item, accept) {
+    if (!state.currentUser || this.currentProjectData?.ownerId !== state.currentUser.uid) return;
+    try {
+      if (accept) {
+        const adSnap = await get(ref(db, `workAds/${item.adId}`)).catch(() => null);
+        const ad = adSnap?.exists() ? adSnap.val() : null;
+        if (!ad) { Toast.error('Ad not found'); return; }
+        if ((parseInt(ad.spotsRemaining, 10) || 0) <= 0) { Toast.info('No spots remaining'); return; }
+        await this._decrementSpot(item.adId);
+        await update(ref(db, `workAds/${item.adId}/applicants/${item.uid}`), {
+          status: 'accepted',
+          reviewedAt: Date.now()
+        }).catch((e) => { throw e; });
+        await set(ref(db, `projects/${this.currentProjectId}/members/${item.uid}`), {
+          role: ad.roleTitle || 'Member',
+          joinedAt: Date.now(),
+          username: item.app.username || 'Unknown',
+          pfpUrl: item.app.pfpUrl || null
+        }).catch(() => {});
+        await NotifSystem.push(item.uid, 'work_application_accepted', `🎉 You were accepted for "${ad.roleTitle || 'a role'}"`).catch(() => {});
+        Toast.success('Applicant accepted');
+      } else {
+        await update(ref(db, `workAds/${item.adId}/applicants/${item.uid}`), {
+          status: 'declined',
+          reviewedAt: Date.now()
+        }).catch((e) => { throw e; });
+        await NotifSystem.push(item.uid, 'work_application_declined', `Your application for "${item.ad.roleTitle || 'a role'}" was declined`).catch(() => {});
+        Toast.info('Applicant declined');
+      }
+      this.loadWorkAds();
+    } catch (e) {
+      Toast.error(e.message || 'Could not review application');
     }
   },
 
@@ -27644,7 +28353,7 @@ const ProjectSystem = {
       await remove(ref(db, `projects/${this.currentProjectId}/members/${state.currentUser.uid}`));
       this._leaveWorkspace();
       ScreenManager.show('projects-screen');
-      this.loadPublicProjects(); this.loadMyProjects();
+      this.loadPublicProjects(); this.loadMyProjects(); this.loadWorkAds();
       Toast.success('Left the project');
     } catch(e) { Toast.error('Could not leave project'); }
   },
@@ -27666,10 +28375,11 @@ const ProjectSystem = {
       // multi-path null-update that covers every known sub-path the owner can write.
 
       // Fetch sub-collections we don't already have in memory
-      const [msgsSnap, tasksSnap, reqsSnap] = await Promise.all([
+      const [msgsSnap, tasksSnap, reqsSnap, workAdsSnap] = await Promise.all([
         get(ref(db, `projects/${pid}/messages`)).catch(() => null),
         get(ref(db, `projects/${pid}/tasks`)).catch(() => null),
         get(ref(db, `projects/${pid}/requests`)).catch(() => null),
+        get(ref(db, 'workAds')).catch(() => null),
       ]);
 
       const updates = {};
@@ -27705,11 +28415,18 @@ const ProjectSystem = {
 
       // Typing indicators are per-user and ephemeral — they expire on their own
 
+      // Related work ads created for this project (owner writes only)
+      if (workAdsSnap?.exists()) {
+        Object.entries(workAdsSnap.val()).forEach(([adId, ad]) => {
+          if ((ad?.projectId || '') === pid) updates[`workAds/${adId}`] = null;
+        });
+      }
+
       await update(ref(db), updates);
 
       this._leaveWorkspace();
       ScreenManager.show('projects-screen');
-      this.loadPublicProjects(); this.loadMyProjects();
+      this.loadPublicProjects(); this.loadMyProjects(); this.loadWorkAds();
       Toast.success('Project deleted');
     } catch(e) {
       Toast.error('Could not delete project: ' + (e.message || 'Permission denied'));
@@ -27748,6 +28465,7 @@ const ProjectSystem = {
     const isOwner = info.ownerId === state.currentUser?.uid;
     $('proj-menu-leave').style.display = isOwner ? 'none' : 'flex';
     $('proj-menu-delete').style.display = isOwner ? 'flex' : 'none';
+    $('proj-menu-advertise').style.display = isOwner ? 'flex' : 'none';
     $('proj-menu-project-name').textContent = info.name || 'Project';
 
     // Reset requests badge
@@ -27808,6 +28526,8 @@ const ProjectSystem = {
       });
     }
 
+    this._watchProjectWorkApplicants();
+
     // Typing listener
     this._unsubTyping = onValue(ref(db, `projects/${pid}/typing`), (snap) => {
       const typing = snap.exists() ? snap.val() : {};
@@ -27825,6 +28545,7 @@ const ProjectSystem = {
     if (this._unsubTasks) { this._unsubTasks(); this._unsubTasks = null; }
     if (this._unsubMembers) { this._unsubMembers(); this._unsubMembers = null; }
     if (this._unsubRequests) { this._unsubRequests(); this._unsubRequests = null; }
+    if (this._unsubWorkAds) { this._unsubWorkAds(); this._unsubWorkAds = null; }
     if (this._unsubTyping) { this._unsubTyping(); this._unsubTyping = null; }
     clearTimeout(this._typingTimeout);
     this.currentProjectId = null;
