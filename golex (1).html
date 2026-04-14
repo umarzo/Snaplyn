@@ -13791,13 +13791,51 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser, reauthenticateWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getDatabase, ref, get, set, remove, onValue, onChildAdded, push, serverTimestamp, onDisconnect, update, increment, off, query, orderByChild, orderByKey, equalTo, limitToLast, endBefore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { getDatabase, ref, get, set, remove, onValue as firebaseOnValue, onChildAdded, push, serverTimestamp, onDisconnect, update, increment, off, query, orderByChild, orderByKey, equalTo, limitToLast, endBefore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyCAqrHPZxtvIlMrF6O3AIeWPRWdG-mkKKI", authDomain: "golex-51625.firebaseapp.com", databaseURL: "https://golex-51625-default-rtdb.firebaseio.com", projectId: "golex-51625", storageBucket: "golex-51625.firebasestorage.app", messagingSenderId: "526349915922", appId: "1:526349915922:web:0e8968d99f9dd423b345cb" };
 const CONFIG = { MAX_IMAGE_KB:400, MAX_FILE_KB:500, MAX_AUDIO_SECONDS:60, MAX_IMAGE_DIMENSION:800, JPEG_QUALITY:0.6, MAX_TAGS:10, MIN_USERNAME_LENGTH:3, MAX_USERNAME_LENGTH:24, TYPING_TIMEOUT:1500, TOAST_DURATION:2800, MESSAGE_LIMIT:200, DEBOUNCE_MS:150, SCROLL_THRESHOLD:100, PFP_COOLDOWN_DAYS:10, PFP_MAX_KB:200, PFP_DIMENSION:256, HEARTBEAT_INTERVAL:30000, PRESENCE_TIMEOUT:90000 };
 const EPHEMERAL_CONFIG = { TTL:{ image:24*60*60*1000, file:48*60*60*1000, audio:12*60*60*1000, text:30*24*60*60*1000 }, CLEANUP_COOLDOWN:60*1000, WARNING_THRESHOLD:0.25, CRITICAL_THRESHOLD:0.10 };
 const PREDEFINED_SKILLS = ['Gamer','Editor','Designer','Coder','Writer','Artist','Musician','Marketer','Animator','Photographer','Streamer','Explorer'];
 const cleanupTimestamps = new Map();
+const listenerRegistry = new Map();
+let listenerRegistryId = 0;
+
+function _resolveListenerPath(target) {
+  try {
+    if (target?._repo?.repoInfo_?.host) {
+      const path = target?._path?.pieces_ || [];
+      return '/' + path.join('/');
+    }
+    if (target?.toString) return String(target.toString());
+  } catch (_) {}
+  return '';
+}
+
+function _registerListener(unsub, path) {
+  if (typeof unsub !== 'function') return null;
+  const id = `l-${++listenerRegistryId}`;
+  listenerRegistry.set(id, { unsub, path });
+  return id;
+}
+
+function cleanupListenerRegistry(filterFn) {
+  listenerRegistry.forEach((entry, id) => {
+    if (typeof filterFn === 'function' && !filterFn(entry)) return;
+    try { entry.unsub(); } catch (_) {}
+    listenerRegistry.delete(id);
+  });
+}
+
+function onValue(target, callback, cancelCallback) {
+  const rawUnsub = firebaseOnValue(target, callback, cancelCallback);
+  const path = _resolveListenerPath(target);
+  const id = _registerListener(rawUnsub, path);
+  return () => {
+    try { if (typeof rawUnsub === 'function') rawUnsub(); } catch (_) {}
+    if (id) listenerRegistry.delete(id);
+  };
+}
 
 /* ─── TTL user cache helper (5-min expiry, max 500 entries) ─── */
 const USER_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -13950,20 +13988,36 @@ function compressImage(f) {
     const r = new FileReader();
     r.onerror = () => rej(new Error('Read fail'));
     r.onload = e => {
+      const originalDataUrl = e.target.result;
+      const maxB = CONFIG.MAX_IMAGE_KB * 1370;
+      if (f.size <= CONFIG.MAX_IMAGE_KB * 1024) {
+        Toast.info('Image already small — sending original');
+        return res({ dataUrl: originalDataUrl, width: 0, height: 0, sizeKB: Math.round(originalDataUrl.length / 1370), quality: 1 });
+      }
       const img = new Image();
-      img.onerror = () => rej(new Error('Decode fail'));
-      img.onload = () => {
-        let w = img.width, h = img.height;
-        const md = CONFIG.MAX_IMAGE_DIMENSION;
-        if (w > md || h > md) { if (w > h) { h = Math.round(h * (md / w)); w = md; } else { w = Math.round(w * (md / h)); h = md; } }
-        const c = document.createElement('canvas'); c.width = w; c.height = h;
-        const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
-        let q = CONFIG.JPEG_QUALITY, du = c.toDataURL('image/jpeg', q);
-        const maxB = CONFIG.MAX_IMAGE_KB * 1370; let att = 0;
-        while (du.length > maxB && q > 0.1 && att < 10) { q -= 0.08; du = c.toDataURL('image/jpeg', q); att++; }
-        res({ dataUrl: du, width: w, height: h, sizeKB: Math.round(du.length / 1370), quality: Math.round(q * 100) / 100 });
+      img.onerror = () => {
+        Toast.info('Compression skipped — sending original image');
+        res({ dataUrl: originalDataUrl, width: 0, height: 0, sizeKB: Math.round(originalDataUrl.length / 1370), quality: 1 });
       };
-      img.src = e.target.result;
+      img.onload = () => {
+        try {
+          let w = img.width, h = img.height;
+          const md = CONFIG.MAX_IMAGE_DIMENSION;
+          if (w > md || h > md) { if (w > h) { h = Math.round(h * (md / w)); w = md; } else { w = Math.round(w * (md / h)); h = md; } }
+          const c = document.createElement('canvas'); c.width = w; c.height = h;
+          const ctx = c.getContext('2d');
+          if (!ctx) throw new Error('Canvas unavailable');
+          ctx.drawImage(img, 0, 0, w, h);
+          let q = CONFIG.JPEG_QUALITY, du = c.toDataURL('image/jpeg', q);
+          let att = 0;
+          while (du.length > maxB && q > 0.1 && att < 10) { q -= 0.08; du = c.toDataURL('image/jpeg', q); att++; }
+          res({ dataUrl: du, width: w, height: h, sizeKB: Math.round(du.length / 1370), quality: Math.round(q * 100) / 100 });
+        } catch (_) {
+          Toast.info('Compression failed — sending original image');
+          res({ dataUrl: originalDataUrl, width: img.width || 0, height: img.height || 0, sizeKB: Math.round(originalDataUrl.length / 1370), quality: 1 });
+        }
+      };
+      img.src = originalDataUrl;
     };
     r.readAsDataURL(f);
   });
@@ -14362,7 +14416,7 @@ function managePresence(uid) {
 
   if (state.heartbeatInterval) clearInterval(state.heartbeatInterval);
   state.heartbeatInterval = setInterval(() => {
-    if (state.currentUser && !document.hidden) {
+    if (state.currentUser) {
       update(ref(db, `users/${uid}`), { lastSeen: serverTimestamp() }).catch(() => {});
     }
   }, CONFIG.HEARTBEAT_INTERVAL);
@@ -14393,11 +14447,9 @@ function managePresence(uid) {
 function isUserTrulyOnline(userData) {
   if (!userData) return false;
   if (userData.status !== 'online') return false;
-  if (userData.lastSeen) {
-    const staleness = Date.now() - userData.lastSeen;
-    if (staleness > CONFIG.PRESENCE_TIMEOUT) return false;
-  }
-  return true;
+  if (!userData.lastSeen) return false;
+  const staleness = Date.now() - userData.lastSeen;
+  return staleness <= CONFIG.PRESENCE_TIMEOUT;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -14578,6 +14630,7 @@ async function doLogout() {
   }
 
   // Stop ALL listeners and clear ALL in-memory state
+  cleanupListenerRegistry();
   cleanupAllListeners();
 
   // Clear locally saved posts from this device (IndexedDB)
@@ -15516,6 +15569,15 @@ function updateOnlineCount() {
 }
 
 function cleanupDirectoryListeners() {
+  cleanupListenerRegistry(entry => {
+    const p = entry.path || '';
+    if (p === '/users' || p === '/users/') return true;
+    for (const uid of state.directoryListeners.keys()) {
+      const cid = generateChatId(state.currentUser?.uid || '', uid);
+      if (cid && (p.includes(`/chats/${cid}/lastMessage`) || p.includes(`/chats/${cid}/messages`))) return true;
+    }
+    return false;
+  });
   if (state.unsubDirectory) { state.unsubDirectory(); state.unsubDirectory = null; }
   state.directoryListeners.forEach(l => l.forEach(u => { try { u(); } catch (e) {} }));
   state.directoryListeners.clear();
@@ -15779,6 +15841,12 @@ function cleanupAllListeners() {
    CHAT: CLEANUP LISTENERS & MARK SEEN
    ═══════════════════════════════════════════════════ */
 function cleanupChatListeners() {
+  const chatPath = state.chatId ? `/chats/${state.chatId}/` : '';
+  const partnerPath = state.chatPartnerId ? `/users/${state.chatPartnerId}` : '';
+  cleanupListenerRegistry(entry => {
+    const p = entry.path || '';
+    return (chatPath && p.includes(chatPath)) || (partnerPath && p.includes(partnerPath));
+  });
   if (state.unsubMessages) { state.unsubMessages(); state.unsubMessages = null; }
   if (state.unsubTyping) { state.unsubTyping(); state.unsubTyping = null; }
   if (state.unsubPartnerData) { state.unsubPartnerData(); state.unsubPartnerData = null; }
@@ -16010,14 +16078,18 @@ const ces = document.getElementById('chat-empty-state'); if (ces) ces.classList.
       if (!state.dmEarliestKey || state.dmAllLoaded) return;
       btn.textContent = 'Loading...'; btn.disabled = true;
       try {
-        const olderSnap = await get(query(msgsRef, orderByKey(), limitToLast(50), endBefore(state.dmEarliestKey)));
+        const olderSnap = await get(query(msgsRef, orderByKey(), endBefore(state.dmEarliestKey), limitToLast(50)));
         if (!olderSnap.exists()) { state.dmAllLoaded = true; btn.remove(); return; }
         const oldMsgs = olderSnap.val();
         const oldKeys = Object.keys(oldMsgs).sort();
         state.dmEarliestKey = oldKeys[0];
         const prevH = wrap.scrollHeight;
+        const prevTop = wrap.scrollTop;
         renderDMBatch(oldMsgs, wrap, true);
-        requestAnimationFrame(() => { wrap.scrollTop = wrap.scrollHeight - prevH; });
+        requestAnimationFrame(() => {
+          if (!wrap || !wrap.isConnected) return;
+          wrap.scrollTop = prevTop + (wrap.scrollHeight - prevH);
+        });
         if (oldKeys.length < 50) { state.dmAllLoaded = true; btn.remove(); }
         else { btn.textContent = '⬆ Load earlier messages'; btn.disabled = false; }
       } catch(e) { btn.textContent = '⬆ Load earlier messages'; btn.disabled = false; }
@@ -16046,7 +16118,8 @@ const ces = document.getElementById('chat-empty-state'); if (ces) ces.classList.
 
     const { entries, seenUpdates } = renderDMBatch(msgs, wrap, false);
 
-    if (initialLoad || wasAtBottom) requestAnimationFrame(() => { wrap.scrollTop = wrap.scrollHeight; });
+    if (wasAtBottom) requestAnimationFrame(() => { wrap.scrollTop = wrap.scrollHeight; });
+    if (initialLoad && entries.length < 50) state.dmAllLoaded = true;
     if (initialLoad && entries.length >= 50) ensureLoadEarlierBtn(wrap);
     initialLoad = false;
 
@@ -19883,9 +19956,25 @@ async function switchCamera() {
 // ─── Create a new WebRTC PeerConnection ───
 function createPeerConnection(callId, isCaller, iceServers) {
   const pc = new RTCPeerConnection({ iceServers });
+  pc._pendingIceCandidates = [];
 
   // One persistent remote stream for the entire call — prevents stale srcObject bugs
   const remoteStream = new MediaStream();
+
+  const nativeSetRemoteDescription = pc.setRemoteDescription.bind(pc);
+  pc.setRemoteDescription = async (...args) => {
+    const out = await nativeSetRemoteDescription(...args);
+    if (pc._pendingIceCandidates?.length > 0 && pc.signalingState !== 'closed') {
+      const pending = [...pc._pendingIceCandidates];
+      pc._pendingIceCandidates.length = 0;
+      for (const c of pending) {
+        try { await pc.addIceCandidate(c); } catch (err) {
+          console.warn('[ICE] Failed queued candidate:', err?.message || err);
+        }
+      }
+    }
+    return out;
+  };
 
   // ── ICE candidate relay ──
   pc.onicecandidate = (event) => {
@@ -20177,16 +20266,20 @@ function _wireReceiver_RenegotiationListeners(callId) {
     console.log('[WebRTC/Neg] Receiver received caller renegotiation offer (nonce:', reneg.nonce, ')');
 
     try {
-      // Guard: prevent our own onnegotiationneeded from firing during this
-      pc._makingOffer = true;
-
       const offer = new RTCSessionDescription(reneg.offer);
 
-      // If receiver was also making an offer, roll it back (impolite peer behavior)
-      if (pc.signalingState === 'have-local-offer') {
+      const collision = pc._makingOffer || pc.signalingState !== 'stable';
+      // If receiver was also making an offer, roll it back
+      if (collision && pc.signalingState === 'have-local-offer') {
         console.log('[WebRTC/Neg] Receiver rolling back own offer to accept caller offer');
         try { await pc.setLocalDescription({ type: 'rollback' }); } catch (e) {}
+      } else if (collision && pc.signalingState !== 'stable') {
+        console.warn('[WebRTC/Neg] Receiver cannot handle caller offer in state:', pc.signalingState);
+        return;
       }
+
+      // Guard: prevent our own onnegotiationneeded from firing during this
+      pc._makingOffer = true;
 
       await pc.setRemoteDescription(offer);
       const answer = await pc.createAnswer();
@@ -20235,7 +20328,12 @@ function _addIceCandidateWithRetry(candidate, maxAttempts) {
   const tryAdd = async (attempts) => {
     if (!state.peerConnection) return;
     const pc = state.peerConnection;
-    if (pc.remoteDescription && pc.signalingState !== 'closed') {
+    if (!pc.remoteDescription) {
+      if (!pc._pendingIceCandidates) pc._pendingIceCandidates = [];
+      pc._pendingIceCandidates.push(candidate);
+      return;
+    }
+    if (pc.signalingState !== 'closed') {
       try {
         await pc.addIceCandidate(candidate);
       } catch (err) {
@@ -20247,8 +20345,6 @@ function _addIceCandidateWithRetry(candidate, maxAttempts) {
       }
     } else if (attempts < maxAttempts) {
       setTimeout(() => tryAdd(attempts + 1), 300);
-    } else {
-      console.warn('[ICE] Gave up waiting for remote description to add candidate');
     }
   };
   tryAdd(0);
@@ -20312,8 +20408,14 @@ async function startCall() {
   });
 
   // Create initial offer
-  const offer = await state.peerConnection.createOffer();
-  await state.peerConnection.setLocalDescription(offer);
+  let offer;
+  state.peerConnection._makingOffer = true;
+  try {
+    offer = await state.peerConnection.createOffer();
+    await state.peerConnection.setLocalDescription(offer);
+  } finally {
+    if (state.peerConnection) state.peerConnection._makingOffer = false;
+  }
 
   // Save call to Firebase
   await set(ref(db, `calls/${callId}`), {
@@ -20433,8 +20535,14 @@ async function acceptCall(callData, callId) {
   await state.peerConnection.setRemoteDescription(offer).catch(console.error);
 
   // Create answer
-  const answer = await state.peerConnection.createAnswer();
-  await state.peerConnection.setLocalDescription(answer);
+  let answer;
+  state.peerConnection._makingOffer = true;
+  try {
+    answer = await state.peerConnection.createAnswer();
+    await state.peerConnection.setLocalDescription(answer);
+  } finally {
+    if (state.peerConnection) state.peerConnection._makingOffer = false;
+  }
 
   // Send answer to caller
   await update(ref(db, `calls/${callId}`), {
@@ -20783,6 +20891,7 @@ function initGuildHeader() {
 }
 
 function cleanupGuildListeners() {
+  cleanupListenerRegistry(entry => (entry.path || '').includes('/guilds/'));
   if (guildState.unsubMessages)    { guildState.unsubMessages();    guildState.unsubMessages = null; }
   if (guildState.unsubMemberCount) { guildState.unsubMemberCount(); guildState.unsubMemberCount = null; }
   if (guildState.unsubTyping)      { guildState.unsubTyping();      guildState.unsubTyping = null; }
@@ -27110,6 +27219,10 @@ const ProjectSystem = {
   },
 
   _leaveWorkspace() {
+    const pid = this.currentProjectId;
+    if (pid) {
+      cleanupListenerRegistry(entry => (entry.path || '').includes(`/projects/${pid}/`));
+    }
     if (this._unsubMessages) { this._unsubMessages(); this._unsubMessages = null; }
     if (this._unsubTasks) { this._unsubTasks(); this._unsubTasks = null; }
     if (this._unsubMembers) { this._unsubMembers(); this._unsubMembers = null; }
