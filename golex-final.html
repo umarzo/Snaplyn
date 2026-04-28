@@ -13024,11 +13024,29 @@ html[data-theme="dev"] .proj-invite-link-row { background: rgba(79,142,247,0.04)
   gap: 4px;
 }
 /* END PRO MEDIA CSS */
-  .nav-btn .nav-label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* Fix overlapping bottom nav labels on small screens */
+@media (max-width: 480px) {
+  .bottom-nav .nav-label,
+  .bottom-nav span,
+  nav.bottom-nav button span {
+    font-size: 9px !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+    text-align: center;
   }
+  .bottom-nav button,
+  .bottom-nav a {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    min-width: 0 !important;
+    flex: 1 1 0 !important;
+  }
+  }
+
 </style>
 </head>
 <body>
