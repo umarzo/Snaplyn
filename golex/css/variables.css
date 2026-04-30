@@ -1,0 +1,366 @@
+:root {
+  /* ══ PREMIUM LIGHT THEME — Golex 3.0 ══ */
+  /* ── Clean White Base ── */
+  --bg: #F7F8FC;
+  --surface: #FFFFFF;
+  --panel: rgba(255, 255, 255, 0.97);
+  --panel-solid: #FFFFFF;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(35, 87, 232, 0.28);
+  --border-focus: rgba(35, 87, 232, 0.52);
+  /* ── Royal Blue (primary accent — custom shifted hue) ── */
+  --accent: #2357E8;
+  --accent-dark: #1A46CC;
+  --accent-light: #3B7CF6;
+  /* ── Emerald (secondary accent) ── */
+  --accent2: #059669;
+  --accent2-light: #10B981;
+  /* ── Violet (tertiary) ── */
+  --accent3: #4F46E5;
+  --accent3-light: #6366F1;
+  /* ── Semantic ── */
+  --danger: #DC2626;
+  --danger-light: #EF4444;
+  --success: #059669;
+  --success-light: #10B981;
+  --warning: #D97706;
+  --warning-light: #F59E0B;
+  /* ── Glow (felt, not hunted for) ── */
+  --glow-accent: rgba(35, 87, 232, 0.22);
+  --glow-accent-soft: rgba(35, 87, 232, 0.15);
+  /* ── Typography ── */
+  --text: #0F172A;
+  --text-secondary: #475569;
+  --muted: #94A3B8;
+  --muted-light: rgba(148, 163, 184, 0.7);
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-brand: 'Syne', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* ── Shape ── */
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 10px;
+  --radius-xs: 7px;
+  --radius-pill: 9999px;
+  /* ── Motion ── */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  /* ── Shadow (layered depth with accent tint — Linear/Vercel style) ── */
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.11), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.13), 0 2px 6px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 20px 56px rgba(15, 23, 42, 0.17), 0 6px 18px rgba(15, 23, 42, 0.10), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  --shadow-glow: 0 0 32px rgba(35, 87, 232, 0.18);
+  --shadow-accent: 0 4px 20px rgba(35, 87, 232, 0.28);
+  --shadow-accent-lg: 0 8px 32px rgba(35, 87, 232, 0.36);
+  /* ── Z-Index ── */
+  --z-bg: 0;
+  --z-overlay-bg: 1;
+  --z-shell: 10;
+  --z-dropdown: 30;
+  --z-modal: 50;
+  --z-lightbox: 100;
+  --z-toast: 200;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DEV THEME — "If Apple Built a Developer OS"
+   Refined · Precise · Premium Dark System
+   Applied via html[data-theme="dev"]
+   ══════════════════════════════════════════════════════════════ */
+html[data-theme="dev"] {
+  /* ── Deep Navy Base ── */
+  --bg: #060A12;
+  --surface: #0C1120;
+  --panel: rgba(9, 14, 28, 0.97);
+  --panel-solid: #0A0F1E;
+  --border: rgba(148, 163, 200, 0.07);
+  --border-hover: rgba(99, 149, 246, 0.30);
+  --border-focus: rgba(99, 149, 246, 0.52);
+  /* ── Cobalt Blue (primary accent) ── */
+  --accent: #4F8EF7;
+  --accent-dark: #3574E8;
+  --accent-light: #7AABF9;
+  /* ── Cyan (secondary) ── */
+  --accent2: #22D3EE;
+  --accent2-light: #67E8F9;
+  /* ── Violet (tertiary) ── */
+  --accent3: #8B5CF6;
+  --accent3-light: #A78BFA;
+  /* ── Semantic ── */
+  --danger: #F43F5E;
+  --danger-light: #FB7185;
+  --success: #10B981;
+  --success-light: #34D399;
+  --warning: #F59E0B;
+  --warning-light: #FCD34D;
+  /* ── Glow (controlled, refined) ── */
+  --glow-accent: rgba(79, 142, 247, 0.18);
+  --glow-accent-soft: rgba(79, 142, 247, 0.06);
+  /* ── Typography ── */
+  --text: #DDE5F4;
+  --text-secondary: #7E94B8;
+  --muted: #3D4F6A;
+  --muted-light: rgba(61, 79, 106, 0.7);
+  --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-brand: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+  /* ── Shadow (deep, precise) ── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.65);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.025);
+  --shadow-glow: 0 0 40px rgba(79, 142, 247, 0.07);
+  --shadow-accent: 0 4px 24px rgba(79, 142, 247, 0.20);
+  --shadow-accent-lg: 0 8px 32px rgba(79, 142, 247, 0.28);
+}
+
+/* ── Dev theme: body background radials ── */
+html[data-theme="dev"] body::before {
+  background: radial-gradient(ellipse at 15% 0%, rgba(79, 142, 247, 0.05), transparent 55%),
+              radial-gradient(ellipse at 88% 95%, rgba(34, 211, 238, 0.03), transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.02), transparent 70%);
+}
+
+/* ── Dev theme: subtle grid overlay (refined, not gimmicky) ── */
+html[data-theme="dev"] body::after {
+  background-image:
+    linear-gradient(rgba(79, 142, 247, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 142, 247, 0.018) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");
+  background-size: 40px 40px, 40px 40px, auto;
+  opacity: 0.7;
+}
+
+/* ── Dev theme: sidebar background ── */
+html[data-theme="dev"] .desktop-sidebar {
+  background: rgba(6, 10, 20, 0.99);
+  border-right-color: rgba(148, 163, 200, 0.06);
+}
+
+/* ── Dev theme: chrome bar removed ── */
+
+/* ── Dev theme: loading logo ── */
+html[data-theme="dev"] .loading-logo {
+  background: linear-gradient(135deg, #7AABF9, #4F8EF7, #22D3EE);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+html[data-theme="dev"] .loading-sub { font-family: 'IBM Plex Mono', monospace; color: rgba(79, 142, 247, 0.55); }
+html[data-theme="dev"] .loading-fill {
+  background: linear-gradient(90deg, transparent, #4F8EF7, #22D3EE, transparent);
+}
+
+/* ── Dev theme: login emblem ── */
+html[data-theme="dev"] .login-emblem {
+  background: linear-gradient(135deg, rgba(79, 142, 247, 0.16), rgba(139, 92, 246, 0.12));
+  border-color: rgba(79, 142, 247, 0.28);
+  box-shadow: 0 0 40px rgba(79, 142, 247, 0.12), inset 0 0 30px rgba(79, 142, 247, 0.04);
+}
+
+/* ── Dev theme: tagline pill ── */
+html[data-theme="dev"] .tagline {
+  color: rgba(79, 142, 247, 0.75);
+  border-color: rgba(79, 142, 247, 0.15);
+  background: rgba(79, 142, 247, 0.05);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── Dev theme: buttons ── */
+html[data-theme="dev"] .btn-primary {
+  background: linear-gradient(135deg, #4F8EF7, #3574E8);
+  color: #FFFFFF;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  box-shadow: 0 4px 24px rgba(79, 142, 247, 0.28);
+}
+html[data-theme="dev"] .btn-primary:hover {
+  box-shadow: 0 8px 32px rgba(79, 142, 247, 0.40);
+}
+html[data-theme="dev"] .btn-ghost {
+  color: var(--muted);
+  border-color: rgba(148, 163, 200, 0.10);
+}
+html[data-theme="dev"] .btn-ghost:hover {
+  border-color: rgba(79, 142, 247, 0.28);
+  color: var(--text);
+  background: rgba(79, 142, 247, 0.04);
+}
+
+/* ── Dev theme: inputs ── */
+html[data-theme="dev"] .input:focus {
+  border-color: rgba(79, 142, 247, 0.48);
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.08);
+  background: rgba(79, 142, 247, 0.03);
+}
+html[data-theme="dev"] .input {
+  background: rgba(255, 255, 255, 0.03);
+}
+html[data-theme="dev"] select.input option { background: #0C1120; }
+
+/* ── Dev theme: skill pills ── */
+html[data-theme="dev"] .skill-select-pill {
+  background: rgba(79, 142, 247, 0.05);
+  border-color: rgba(79, 142, 247, 0.12);
+}
+html[data-theme="dev"] .skill-select-pill:hover {
+  background: rgba(79, 142, 247, 0.10);
+  border-color: rgba(79, 142, 247, 0.30);
+}
+html[data-theme="dev"] .skill-select-pill.selected {
+  background: rgba(79, 142, 247, 0.16);
+  border-color: rgba(79, 142, 247, 0.45);
+  color: #7AABF9;
+}
+
+/* ── Dev theme: nav buttons ── */
+html[data-theme="dev"] .nav-btn.active {
+  background: rgba(79, 142, 247, 0.10);
+  color: #7AABF9;
+}
+html[data-theme="dev"] .nav-btn.active .nav-icon { filter: drop-shadow(0 0 6px rgba(79, 142, 247, 0.45)); }
+
+/* ── Dev theme: chat empty state ── */
+html[data-theme="dev"] .chat-empty-icon {
+  background: linear-gradient(135deg, rgba(79, 142, 247, 0.12), rgba(34, 211, 238, 0.08));
+  border-color: rgba(79, 142, 247, 0.18);
+  box-shadow: 0 0 40px rgba(79, 142, 247, 0.06), inset 0 0 24px rgba(79, 142, 247, 0.03);
+}
+html[data-theme="dev"] .chat-empty-hint {
+  color: rgba(79, 142, 247, 0.65);
+  border-color: rgba(79, 142, 247, 0.12);
+  background: rgba(79, 142, 247, 0.04);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── Dev theme: avatar button ── */
+html[data-theme="dev"] .avatar-btn {
+  border-color: rgba(79, 142, 247, 0.55);
+  box-shadow: 0 0 16px rgba(79, 142, 247, 0.18);
+}
+html[data-theme="dev"] .avatar-btn:hover {
+  box-shadow: 0 0 24px rgba(79, 142, 247, 0.35);
+  border-color: #7AABF9;
+}
+
+/* ── Dev theme: profile modal ── */
+html[data-theme="dev"] #profile-modal {
+  background: rgba(6, 10, 20, 0.98);
+}
+
+/* ── Dev theme: orbitPulse keyframe override ── */
+html[data-theme="dev"] * {
+  --orbit-glow: rgba(79, 142, 247, 0.16), rgba(34, 211, 238, 0.07);
+}
+
+/* ── Dev theme: connection bar ── */
+html[data-theme="dev"] #connection-bar.online {
+  background: rgba(16, 185, 129, 0.06);
+  border-color: rgba(16, 185, 129, 0.18);
+  color: #34D399;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   THEME TOGGLE SWITCH (profile modal topbar)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ══════════════════════════════════════════════════════════
+   @property — Registers key CSS variables as typed/animatable.
+   This lets the browser interpolate variable values directly
+   so transitions work even on properties derived from vars.
+   Chrome 85+ / Edge 85+ / Safari 16.4+
+   ══════════════════════════════════════════════════════════ */
+@property --bg            { syntax: '<color>'; inherits: true; initial-value: #F7F8FC; }
+@property --surface       { syntax: '<color>'; inherits: true; initial-value: #FFFFFF; }
+@property --panel-solid   { syntax: '<color>'; inherits: true; initial-value: #FFFFFF; }
+@property --text          { syntax: '<color>'; inherits: true; initial-value: #0F172A; }
+@property --text-secondary{ syntax: '<color>'; inherits: true; initial-value: #475569; }
+@property --muted         { syntax: '<color>'; inherits: true; initial-value: #94A3B8; }
+@property --accent        { syntax: '<color>'; inherits: true; initial-value: #2357E8; }
+@property --accent-dark   { syntax: '<color>'; inherits: true; initial-value: #1A46CC; }
+@property --accent-light  { syntax: '<color>'; inherits: true; initial-value: #3B7CF6; }
+@property --accent2       { syntax: '<color>'; inherits: true; initial-value: #059669; }
+@property --accent2-light { syntax: '<color>'; inherits: true; initial-value: #10B981; }
+@property --danger        { syntax: '<color>'; inherits: true; initial-value: #DC2626; }
+@property --success       { syntax: '<color>'; inherits: true; initial-value: #059669; }
+@property --warning       { syntax: '<color>'; inherits: true; initial-value: #D97706; }
+
+/* ── View Transitions API — smooth crossfade for theme switch ──
+   Chrome 111+ / Edge 111+ — primary transition path.
+   Browser captures before/after screenshots and crossfades them,
+   so the UI is ALWAYS visible with no flicker or blank state.
+   ── */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: 550ms cubic-bezier(0.4, 0, 0.2, 1) both golex-theme-out;
+  }
+  ::view-transition-new(root) {
+    animation: 550ms cubic-bezier(0.4, 0, 0.2, 1) both golex-theme-in;
+  }
+}
+@keyframes golex-theme-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes golex-theme-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── CSS-transition fallback — used only when View Transitions
+   API is unavailable. The class is added BEFORE the theme
+   attribute changes so transitions start from the OLD values.
+   The timing is handled in JS with requestAnimationFrame to
+   ensure the browser flushes styles between the two operations.
+   ── */
+html.theme-transitioning {
+  /* Transition the registered @property variables directly */
+  transition:
+    --bg             650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --surface        650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --panel-solid    650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --text           650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --text-secondary 650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --muted          650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent         650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent-dark    650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent-light   650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent2        650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --accent2-light  650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --danger         650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --success        650ms cubic-bezier(0.4, 0, 0.2, 1),
+    --warning        650ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  /* Also transition computed properties for browsers without @property */
+  transition:
+    background-color 650ms cubic-bezier(0.4, 0, 0.2, 1),
+    color            650ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color     650ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow       650ms cubic-bezier(0.4, 0, 0.2, 1),
+    fill             650ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke           650ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ── During fallback transition: suppress backdrop-filter repaint
+   which causes the GPU compositing "gray flash" seen in screenshots ── */
+html.theme-transitioning #app {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.theme-transitioning body::before,
+html.theme-transitioning body::after {
+  transition: opacity 650ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
