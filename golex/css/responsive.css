@@ -1,0 +1,803 @@
+@media (max-height: 680px) { .login-emblem { width: 60px; height: 60px; font-size: 24px; } .login-emblem img { width: 40px; height: 40px; } .login-title { font-size: 24px; } .loading-logo { font-size: 36px; } }
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  #user-list-screen { padding: 20px 24px 12px; }
+  .screen { padding: 28px 28px; }
+  #chat-screen, #explore-screen, #downloads-screen, #create-screen { padding: 0; }
+}
+
+/* Mobile: sidebar is just a transparent wrapper, main is too */
+@media (max-width: 599px) {
+  .desktop-sidebar,
+  .desktop-main {
+    display: contents;
+  }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+
+/* ═══════════════════════════════════════════════════════════════════
+   GOLEX MOBILE LAYOUT SYSTEM v2 — Flagship Small Screen Redesign
+   Inspired by the clarity of the 1-on-1 Chat UI:
+   every pixel earns its place, content leads, chrome steps back.
+   
+   ≤599px → Mobile   (primary)
+   ≤399px → Compact  (extra-small safety net)
+   ≡ All changes preserve or improve ≥600px behaviour ≡
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 599px) {
+
+  /* ────────────────────────────────────────────────────────
+     1. CHROME BAR — slimmer, logo stays prominent
+     ──────────────────────────────────────────────────────── */
+  .chrome {
+    padding: 7px 14px 7px;
+    min-height: 0;
+  }
+  .chrome-logo {
+    font-size: 14px;
+    gap: 5px;
+  }
+  .chrome-logo::before {
+    font-size: 10px;
+  }
+  /* Version string wastes space on mobile */
+  .chrome-version {
+    display: none;
+  }
+  .chrome-dot {
+    width: 8px;
+    height: 8px;
+  }
+  .chrome-dots {
+    gap: 5px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     2. BASE SCREEN — less generous padding
+     ──────────────────────────────────────────────────────── */
+  .screen {
+    padding: 14px 14px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     3. BOTTOM NAV — compact but fully touch-accessible
+        Maintains 44px+ tap zone per WCAG via padding
+     ──────────────────────────────────────────────────────── */
+  #main-nav {
+    padding: 3px 2px 8px;
+    gap: 0;
+  }
+  .nav-btn {
+    min-width: 44px;
+    padding: 6px 7px 5px;
+    gap: 2px;
+    border-radius: var(--radius-xs);
+  }
+  .nav-btn .nav-icon {
+    font-size: 19px;
+  }
+  .nav-btn .nav-label {
+    font-size: 8px;
+    letter-spacing: 0.2px;
+  }
+  .nav-btn.create-btn {
+    padding: 7px 13px;
+    margin: -1px 0;
+    gap: 5px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     4. EXPLORE — biggest problem area, full rethink
+        Stack: stories (shrunk) → title-less search row
+               → compact filter pills → compact tabs
+        Net saving: ~55–70px of vertical header chrome
+     ──────────────────────────────────────────────────────── */
+
+  /* Stories: smaller bubbles, tighter scroll */
+  #stories-scroll {
+    padding: 5px 10px 5px;
+    gap: 8px;
+  }
+  .story-bubble {
+    width: 42px;
+    height: 42px;
+  }
+  .story-bubble-inner {
+    font-size: 13px;
+  }
+  .story-add-inner {
+    font-size: 17px;
+  }
+  .story-label {
+    font-size: 7.5px;
+    max-width: 42px;
+    letter-spacing: 0;
+  }
+
+  /* Explore top: remove top/side whitespace */
+  .explore-top {
+    padding: 6px 10px 0;
+  }
+  .explore-top-row {
+    margin-bottom: 5px;
+    gap: 6px;
+  }
+
+  /* Hide "🌍 Feed" / "👥 People" title on mobile —
+     the tab bar already communicates this */
+  .explore-top-row h2 {
+    display: none;
+  }
+
+  /* Search input: full-width, good font size */
+  .explore-top-row .explore-search-wrap input {
+    font-size: 13px;
+    padding: 7px 10px 7px 27px;
+  }
+  .explore-top-row .explore-search-wrap::before {
+    font-size: 13px;
+    left: 8px;
+  }
+
+  /* Sort dropdown: more compact */
+  .explore-top-row .feed-sort-btn {
+    font-size: 10px;
+    padding: 5px 7px;
+  }
+
+  /* Filter pills row: more compact */
+  .explore-filters {
+    padding: 0 0 5px;
+    gap: 4px;
+  }
+  .filter-pill {
+    padding: 3px 10px;
+    font-size: 10.5px;
+    border-radius: var(--radius-pill);
+  }
+
+  /* Tab bar: tighter */
+  .explore-tab-bar {
+    padding: 0;
+  }
+  .explore-tab {
+    font-size: 10px;
+    padding: 5px 10px;
+    letter-spacing: 0.2px;
+  }
+
+  /* Posts feed: reclaim bottom padding to match actual nav height */
+  #posts-feed {
+    padding: 6px 8px 68px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     5. COMMUNITIES — 3 rows of header → 2 tight rows
+     ──────────────────────────────────────────────────────── */
+
+  /* Reduce outer padding */
+  .communities-top {
+    padding: 8px 12px 0;
+  }
+  .communities-top-row {
+    gap: 7px;
+    margin-bottom: 7px;
+    align-items: center;
+  }
+
+  /* Hide the large "Communities" title — search speaks for itself */
+  .communities-top-row h2 {
+    display: none;
+  }
+
+  /* Search: slightly more compact */
+  .communities-search {
+    font-size: 13px;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Create button: compact pill */
+  .community-create-btn {
+    font-size: 11px;
+    padding: 7px 11px;
+  }
+
+  /* Filter pills row */
+  .communities-filter-row {
+    gap: 5px;
+    padding-bottom: 5px;
+  }
+
+  /* Toggle row: tighter */
+  .communities-toggle-row {
+    padding: 2px 0 6px;
+    gap: 5px;
+  }
+  .comm-toggle-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+
+  /* Communities list: reduce bottom padding */
+  #communities-list {
+    padding: 0 12px 68px;
+    gap: 7px;
+  }
+  .community-card {
+    padding: 11px 12px;
+    gap: 10px;
+    border-radius: var(--radius-md);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     6. ROOMS — oversized header, needs tightening
+     ──────────────────────────────────────────────────────── */
+
+  /* Top block: 18px 20px → 10px 14px saves ~16px */
+  .rooms-top {
+    padding: 10px 14px 8px;
+  }
+  .rooms-top-row {
+    margin-bottom: 8px;
+  }
+  .rooms-top-title {
+    font-size: 15px;
+  }
+  .rooms-create-btn {
+    font-size: 11px;
+    padding: 7px 12px;
+    gap: 5px;
+  }
+
+  /* Room cards: tighter */
+  .room-card {
+    padding: 11px 14px;
+    margin: 0 8px 5px;
+  }
+  .room-card-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  /* Section label: tighter */
+  .rooms-section-label {
+    margin: 0 14px 6px;
+    padding-top: 10px;
+  }
+
+  /* List scroll: reduce bottom padding */
+  .rooms-list-wrap {
+    padding-bottom: 68px;
+  }
+
+  /* Room create/chat screens */
+  .room-create-topbar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .room-create-body {
+    padding: 18px 14px 90px;
+  }
+  .room-submit-wrap {
+    padding: 12px 16px 20px;
+  }
+  .room-chat-topbar {
+    padding: 9px 12px;
+    gap: 8px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     7. USER LIST / DMs — compact but readable header
+     ──────────────────────────────────────────────────────── */
+
+  /* Directory header */
+  .dir-header {
+    margin-bottom: 10px;
+  }
+  .dir-title {
+    font-size: 19px;
+  }
+  .dir-count {
+    font-size: 10px;
+  }
+
+  /* Search bar */
+  .search-wrap {
+    margin-bottom: 7px;
+  }
+  .search-wrap .input {
+    padding-left: 34px;
+    font-size: 13px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  .search-icon {
+    left: 12px;
+    font-size: 12px;
+  }
+
+  /* Filter row: compacted inputs */
+  .filter-row {
+    gap: 6px;
+    margin-bottom: 9px;
+  }
+  .filter-row .input {
+    font-size: 12px;
+    padding: 8px 28px 8px 10px;
+  }
+  .toggle-pill {
+    font-size: 11px;
+    padding: 0 9px;
+    height: 36px;
+  }
+
+  /* User item: tighter */
+  .user-item {
+    padding: 10px 11px;
+    gap: 10px;
+    margin-bottom: 5px;
+  }
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+  .user-name {
+    font-size: 13px;
+  }
+  .user-preview {
+    font-size: 11px;
+  }
+
+  /* Recs section: tighter */
+  #recs-wrap {
+    margin-bottom: 10px;
+  }
+  .rec-card {
+    min-width: 106px;
+    padding: 10px 12px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     8. GUILD / COMMUNITIES CHAT — already good, fine-tune
+     ──────────────────────────────────────────────────────── */
+
+  .guild-header {
+    padding: 6px 12px;
+    gap: 7px;
+  }
+  .guild-header-icon {
+    font-size: 16px;
+  }
+  .guild-header-name {
+    font-size: 12px;
+  }
+  .guild-member-count {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  /* Guild messages: tighter */
+  .guild-msg {
+    padding: 2px 12px;
+  }
+
+  /* Guild input: already close to reference quality */
+  .guild-input-area {
+    padding: 7px 10px 11px;
+    gap: 5px;
+  }
+  .guild-input-area .input {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  .guild-input-area .icon-btn {
+    width: 33px;
+    height: 33px;
+  }
+  .guild-send-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     9. 1-on-1 CHAT — reference standard, minimal tweaks
+     ──────────────────────────────────────────────────────── */
+
+  .chat-topbar {
+    padding: 9px 12px;
+    gap: 9px;
+  }
+  .back-btn {
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+  .icon-btn {
+    padding: 7px 9px;
+  }
+  #msgs-wrap {
+    padding: 10px 12px 8px;
+    gap: 5px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     10. CREATE SCREEN — padding:0 already; tighten inner elements
+     ──────────────────────────────────────────────────────── */
+  .content-type-btn {
+    padding: 10px 4px;
+  }
+  .content-type-icon {
+    font-size: 18px;
+  }
+  .content-type-label {
+    font-size: 9px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     11. PEOPLE TAB (inside Explore)
+     ──────────────────────────────────────────────────────── */
+  .people-filter-row {
+    padding: 6px 10px 5px;
+    gap: 5px;
+  }
+  .people-skill-pill {
+    font-size: 10.5px;
+    padding: 4px 10px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     12. POST CARDS — give messages room to breathe
+     ──────────────────────────────────────────────────────── */
+  .post-card {
+    padding: 12px 11px 10px;
+    margin-bottom: 7px;
+    border-radius: var(--radius-md);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     13. PROFILE MODAL — full-screen on mobile
+     ──────────────────────────────────────────────────────── */
+  #profile-modal {
+    padding: 0;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     14. NOTIFICATION PANEL — tighter padding
+     ──────────────────────────────────────────────────────── */
+  #notif-list {
+    padding: 8px 10px;
+  }
+  .notif-item {
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
+  /* ────────────────────────────────────────────────────────
+     15. DOWNLOADS SCREEN — padding:0 already; handled internally
+     ──────────────────────────────────────────────────────── */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXTRA-SMALL DEVICES ≤399px (very small Android phones)
+   Extra safety net — ensures nothing overflows or crowds
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 399px) {
+
+  /* Chrome: ultra-compact */
+  .chrome {
+    padding: 5px 12px 5px;
+  }
+  .chrome-logo {
+    font-size: 13px;
+  }
+  .chrome-dots {
+    gap: 4px;
+  }
+  .chrome-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  /* Nav: fit all 5 items */
+  .nav-btn {
+    min-width: 38px;
+    padding: 5px 5px 4px;
+  }
+  .nav-btn .nav-icon {
+    font-size: 18px;
+  }
+  .nav-btn .nav-label {
+    font-size: 7px;
+  }
+  .nav-btn.create-btn {
+    padding: 6px 9px;
+  }
+
+  /* Stories: smallest size before illegibility */
+  #stories-scroll {
+    padding: 4px 8px 4px;
+    gap: 7px;
+  }
+  .story-bubble {
+    width: 36px;
+    height: 36px;
+  }
+  .story-bubble-inner {
+    font-size: 11px;
+  }
+  .story-label {
+    font-size: 7px;
+    max-width: 36px;
+  }
+
+  /* Explore: ultra-compact tabs */
+  .explore-top {
+    padding: 4px 8px 0;
+  }
+  .explore-tab {
+    font-size: 9.5px;
+    padding: 4px 8px;
+  }
+  .filter-pill {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  .explore-top-row .feed-sort-btn {
+    font-size: 9.5px;
+    padding: 4px 5px;
+  }
+
+  /* Communities: max compact */
+  .communities-top {
+    padding: 6px 10px 0;
+  }
+  .communities-search {
+    font-size: 12px;
+    padding: 6px 9px;
+  }
+  .community-create-btn {
+    font-size: 10px;
+    padding: 6px 9px;
+  }
+  .comm-toggle-btn {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+
+  /* Rooms: max compact */
+  .rooms-top {
+    padding: 8px 12px 6px;
+  }
+  .rooms-top-title {
+    font-size: 14px;
+  }
+  .rooms-create-btn {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+  .room-card {
+    padding: 10px 12px;
+    margin: 0 6px 5px;
+  }
+
+  /* User list */
+  .dir-title {
+    font-size: 17px;
+  }
+  .filter-row {
+    flex-wrap: wrap;
+  }
+  .filter-row .input {
+    font-size: 11px;
+    padding: 7px 24px 7px 9px;
+  }
+  .user-item {
+    padding: 9px 10px;
+  }
+  .user-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  /* Post cards */
+  .post-card {
+    padding: 10px 10px 9px;
+  }
+}
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE LAYOUT PATCH — Create Screen Inner Elements
+   These are in a separate style block for specificity reasons.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 599px) {
+
+  /* Create screen mode tabs: reduce overhead */
+  .create-mode-tabs {
+    padding: 10px 12px 0;
+    gap: 6px;
+  }
+  .create-mode-tab {
+    font-size: 11px;
+    padding: 7px 10px;
+  }
+
+  /* Create screen header: tighter */
+  .create-header {
+    padding: 12px 14px 0;
+  }
+  .create-header h2 {
+    font-size: 18px;
+  }
+  .create-microcopy {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  /* Create screen body: side padding slightly tighter, bottom = nav height */
+  .create-body {
+    padding: 0 14px 68px;
+    gap: 12px;
+  }
+
+  /* Community creation form: tighter padding */
+  #create-community-form {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  /* Share type row: compact */
+  .create-share-type-row {
+    margin-bottom: 12px;
+  }
+  .create-share-type-btn {
+    padding: 8px 8px;
+    font-size: 11px;
+  }
+
+  /* Section labels in create: less space */
+  .create-section-label {
+    margin-bottom: 5px;
+  }
+
+  /* Input and textarea in create: match mobile input standard */
+  #create-textarea {
+    font-size: 14px;
+    padding: 10px 12px;
+    min-height: 90px;
+  }
+
+  /* Room create form body */
+  .room-create-body {
+    padding: 16px 13px 88px;
+  }
+  .room-form-section {
+    margin-bottom: 16px;
+  }
+
+  /* Room type cards grid: tighter */
+  .room-type-card {
+    padding: 12px 10px;
+  }
+  .room-type-card-icon {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .room-type-card-name {
+    font-size: 12px;
+  }
+  .room-type-card-desc {
+    font-size: 10px;
+  }
+
+  /* Community creation screen */
+  .comm-create-body {
+    padding: 12px 14px 80px;
+  }
+
+  /* Leaderboard panel: tighter */
+  #leaderboard-panel {
+    padding-bottom: 68px;
+  }
+
+  /* Post card header: tighter avatar area */
+  .post-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Chat input area: match guild input quality */
+  .chat-input-area {
+    padding: 7px 10px 11px;
+    gap: 5px;
+  }
+  .chat-input-area .input {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  /* Rooms chat input */
+  .room-input-area {
+    padding: 7px 10px 11px;
+    gap: 5px;
+  }
+
+  /* Back buttons: accessible size */
+  .back-btn {
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+
+  /* Recs horizontal scroll: slightly shorter cards */
+  .recs-scroll {
+    padding-bottom: 2px;
+    gap: 6px;
+  }
+  .rec-card {
+    min-width: 100px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+  }
+  .rec-name {
+    font-size: 11px;
+  }
+  .rec-skill {
+    font-size: 9px;
+  }
+
+  /* Profile completion banner: compact */
+  #profile-completion-banner {
+    padding: 8px 12px;
+    font-size: 11px;
+    margin-bottom: 9px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Guild reaction picker: reposition to avoid overflow */
+  .guild-reaction-picker {
+    bottom: calc(100% + 4px);
+  }
+
+  /* Section separator: tighter */
+  .section-sep {
+    margin: 8px 0 6px;
+  }
+
+  /* Profile modal body if present */
+  .profile-body {
+    padding: 14px 14px;
+  }
+}
+
+@media (max-width: 399px) {
+  /* Create tabs: ultra-compact */
+  .create-mode-tabs {
+    padding: 8px 10px 0;
+  }
+  .create-mode-tab {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+  .create-header {
+    padding: 10px 12px 0;
+  }
+  .create-body {
+    padding: 0 12px 68px;
+  }
+  #create-community-form {
+    padding: 10px;
+  }
+  /* Post avatar: ultra-small */
+  .post-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+}
+
+

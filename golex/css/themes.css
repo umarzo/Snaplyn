@@ -1,0 +1,1180 @@
+/* ══════════════════════════════════════════════════════════════
+   DEV THEME — "If Apple Built a Developer OS"
+   Refined · Precise · Premium Dark System
+   Applied via html[data-theme="dev"]
+   ══════════════════════════════════════════════════════════════ */
+html[data-theme="dev"] {
+  /* ── Deep Navy Base ── */
+  --bg: #060A12;
+  --surface: #0C1120;
+  --panel: rgba(9, 14, 28, 0.97);
+  --panel-solid: #0A0F1E;
+  --border: rgba(148, 163, 200, 0.07);
+  --border-hover: rgba(99, 149, 246, 0.30);
+  --border-focus: rgba(99, 149, 246, 0.52);
+  /* ── Cobalt Blue (primary accent) ── */
+  --accent: #4F8EF7;
+  --accent-dark: #3574E8;
+  --accent-light: #7AABF9;
+  /* ── Cyan (secondary) ── */
+  --accent2: #22D3EE;
+  --accent2-light: #67E8F9;
+  /* ── Violet (tertiary) ── */
+  --accent3: #8B5CF6;
+  --accent3-light: #A78BFA;
+  /* ── Semantic ── */
+  --danger: #F43F5E;
+  --danger-light: #FB7185;
+  --success: #10B981;
+  --success-light: #34D399;
+  --warning: #F59E0B;
+  --warning-light: #FCD34D;
+  /* ── Glow (controlled, refined) ── */
+  --glow-accent: rgba(79, 142, 247, 0.18);
+  --glow-accent-soft: rgba(79, 142, 247, 0.06);
+  /* ── Typography ── */
+  --text: #DDE5F4;
+  --text-secondary: #7E94B8;
+  --muted: #3D4F6A;
+  --muted-light: rgba(61, 79, 106, 0.7);
+  --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-brand: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
+  /* ── Shadow (deep, precise) ── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.65);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.025);
+  --shadow-glow: 0 0 40px rgba(79, 142, 247, 0.07);
+  --shadow-accent: 0 4px 24px rgba(79, 142, 247, 0.20);
+  --shadow-accent-lg: 0 8px 32px rgba(79, 142, 247, 0.28);
+}
+
+/* ── Dev theme: body background radials ── */
+html[data-theme="dev"] body::before {
+  background: radial-gradient(ellipse at 15% 0%, rgba(79, 142, 247, 0.05), transparent 55%),
+              radial-gradient(ellipse at 88% 95%, rgba(34, 211, 238, 0.03), transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.02), transparent 70%);
+}
+
+/* ── Dev theme: subtle grid overlay (refined, not gimmicky) ── */
+html[data-theme="dev"] body::after {
+  background-image:
+    linear-gradient(rgba(79, 142, 247, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 142, 247, 0.018) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");
+  background-size: 40px 40px, 40px 40px, auto;
+  opacity: 0.7;
+}
+
+/* ── Dev theme: sidebar background ── */
+html[data-theme="dev"] .desktop-sidebar {
+  background: rgba(6, 10, 20, 0.99);
+  border-right-color: rgba(148, 163, 200, 0.06);
+}
+
+/* ── Dev theme: chrome bar ── */
+html[data-theme="dev"] .chrome {
+  background: rgba(6, 10, 20, 0.82);
+  border-bottom-color: rgba(148, 163, 200, 0.07);
+}
+
+/* ── Dev theme: logo gradient ── */
+html[data-theme="dev"] .chrome-logo {
+  background: linear-gradient(135deg, #7AABF9, #4F8EF7, #22D3EE);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1.5px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+}
+html[data-theme="dev"] .chrome-logo::before {
+  content: '▸';
+  -webkit-text-fill-color: #4F8EF7;
+  filter: drop-shadow(0 0 6px rgba(79, 142, 247, 0.5));
+}
+
+/* ── Dev theme: loading logo ── */
+html[data-theme="dev"] .loading-logo {
+  background: linear-gradient(135deg, #7AABF9, #4F8EF7, #22D3EE);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+html[data-theme="dev"] .loading-sub { font-family: 'IBM Plex Mono', monospace; color: rgba(79, 142, 247, 0.55); }
+html[data-theme="dev"] .loading-fill {
+  background: linear-gradient(90deg, transparent, #4F8EF7, #22D3EE, transparent);
+}
+
+/* ── Dev theme: login emblem ── */
+html[data-theme="dev"] .login-emblem {
+  background: linear-gradient(135deg, rgba(79, 142, 247, 0.16), rgba(139, 92, 246, 0.12));
+  border-color: rgba(79, 142, 247, 0.28);
+  box-shadow: 0 0 40px rgba(79, 142, 247, 0.12), inset 0 0 30px rgba(79, 142, 247, 0.04);
+}
+
+/* ── Dev theme: tagline pill ── */
+html[data-theme="dev"] .tagline {
+  color: rgba(79, 142, 247, 0.75);
+  border-color: rgba(79, 142, 247, 0.15);
+  background: rgba(79, 142, 247, 0.05);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── Dev theme: buttons ── */
+html[data-theme="dev"] .btn-primary {
+  background: linear-gradient(135deg, #4F8EF7, #3574E8);
+  color: #FFFFFF;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  box-shadow: 0 4px 24px rgba(79, 142, 247, 0.28);
+}
+html[data-theme="dev"] .btn-primary:hover {
+  box-shadow: 0 8px 32px rgba(79, 142, 247, 0.40);
+}
+html[data-theme="dev"] .btn-ghost {
+  color: var(--muted);
+  border-color: rgba(148, 163, 200, 0.10);
+}
+html[data-theme="dev"] .btn-ghost:hover {
+  border-color: rgba(79, 142, 247, 0.28);
+  color: var(--text);
+  background: rgba(79, 142, 247, 0.04);
+}
+
+/* ── Dev theme: inputs ── */
+html[data-theme="dev"] .input:focus {
+  border-color: rgba(79, 142, 247, 0.48);
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.08);
+  background: rgba(79, 142, 247, 0.03);
+}
+html[data-theme="dev"] .input {
+  background: rgba(255, 255, 255, 0.03);
+}
+html[data-theme="dev"] select.input option { background: #0C1120; }
+
+/* ── Dev theme: skill pills ── */
+html[data-theme="dev"] .skill-select-pill {
+  background: rgba(79, 142, 247, 0.05);
+  border-color: rgba(79, 142, 247, 0.12);
+}
+html[data-theme="dev"] .skill-select-pill:hover {
+  background: rgba(79, 142, 247, 0.10);
+  border-color: rgba(79, 142, 247, 0.30);
+}
+html[data-theme="dev"] .skill-select-pill.selected {
+  background: rgba(79, 142, 247, 0.16);
+  border-color: rgba(79, 142, 247, 0.45);
+  color: #7AABF9;
+}
+
+/* ── Dev theme: nav buttons ── */
+html[data-theme="dev"] .nav-btn.active {
+  background: rgba(79, 142, 247, 0.10);
+  color: #7AABF9;
+}
+html[data-theme="dev"] .nav-btn.active .nav-icon { filter: drop-shadow(0 0 6px rgba(79, 142, 247, 0.45)); }
+
+/* ── Dev theme: chat empty state ── */
+html[data-theme="dev"] .chat-empty-icon {
+  background: linear-gradient(135deg, rgba(79, 142, 247, 0.12), rgba(34, 211, 238, 0.08));
+  border-color: rgba(79, 142, 247, 0.18);
+  box-shadow: 0 0 40px rgba(79, 142, 247, 0.06), inset 0 0 24px rgba(79, 142, 247, 0.03);
+}
+html[data-theme="dev"] .chat-empty-hint {
+  color: rgba(79, 142, 247, 0.65);
+  border-color: rgba(79, 142, 247, 0.12);
+  background: rgba(79, 142, 247, 0.04);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* ── Dev theme: avatar button ── */
+html[data-theme="dev"] .avatar-btn {
+  border-color: rgba(79, 142, 247, 0.55);
+  box-shadow: 0 0 16px rgba(79, 142, 247, 0.18);
+}
+html[data-theme="dev"] .avatar-btn:hover {
+  box-shadow: 0 0 24px rgba(79, 142, 247, 0.35);
+  border-color: #7AABF9;
+}
+
+/* ── Dev theme: profile modal ── */
+html[data-theme="dev"] #profile-modal {
+  background: rgba(6, 10, 20, 0.98);
+}
+
+/* ── Dev theme: orbitPulse keyframe override ── */
+html[data-theme="dev"] * {
+  --orbit-glow: rgba(79, 142, 247, 0.16), rgba(34, 211, 238, 0.07);
+}
+
+/* ── Dev theme: connection bar ── */
+html[data-theme="dev"] #connection-bar.online {
+  background: rgba(16, 185, 129, 0.06);
+  border-color: rgba(16, 185, 129, 0.18);
+  color: #34D399;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   THEME TOGGLE SWITCH (profile modal topbar)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.theme-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.theme-toggle-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.3s;
+  user-select: none;
+}
+.theme-toggle-label.active-label { color: var(--accent); }
+
+/* The pill track */
+.theme-toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  flex-shrink: 0;
+}
+.theme-toggle-track:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 12px var(--glow-accent-soft);
+}
+
+/* Filled state when dev mode is active */
+html[data-theme="dev"] .theme-toggle-track {
+  background: rgba(79, 142, 247, 0.12);
+  border-color: rgba(79, 142, 247, 0.38);
+  box-shadow: 0 0 16px rgba(79, 142, 247, 0.14);
+}
+
+/* The knob */
+.theme-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  line-height: 1;
+}
+.theme-toggle-knob::after {
+  content: '☀';
+  font-size: 9px;
+  line-height: 1;
+  color: rgba(0,0,0,0.4);
+  transition: content 0.3s, opacity 0.3s;
+  opacity: 0.6;
+}
+
+html[data-theme="dev"] .theme-toggle-knob {
+  transform: translateX(20px);
+  background: #4F8EF7;
+  box-shadow: 0 0 10px rgba(79, 142, 247, 0.55), 0 0 20px rgba(79, 142, 247, 0.22);
+}
+html[data-theme="dev"] .theme-toggle-knob::after {
+  content: '◈';
+  color: #FFFFFF;
+  opacity: 1;
+}
+
+html[data-theme="dev"] .theme-toggle-label {
+  color: rgba(79, 142, 247, 0.55);
+}
+html[data-theme="dev"] .theme-toggle-label.active-label {
+  color: #7AABF9;
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   DEV THEME — ADDITIONAL COMPONENT OVERRIDES
+   Ensures premium dark treatment for all refactored components
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Dev: Chrome ── */
+html[data-theme="dev"] .chrome-logo {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
+/* ── Dev: Room cards ── */
+html[data-theme="dev"] .room-card {
+  background: rgba(12, 17, 32, 0.85);
+  box-shadow: none;
+}
+html[data-theme="dev"] .room-card::before {
+  background: linear-gradient(135deg, rgba(79, 142, 247, 0.03), transparent);
+}
+html[data-theme="dev"] .room-card:hover {
+  border-color: rgba(79, 142, 247, 0.22);
+  background: rgba(79, 142, 247, 0.04);
+  box-shadow: 0 4px 20px rgba(79, 142, 247, 0.08);
+}
+html[data-theme="dev"] .room-card-icon {
+  background: linear-gradient(135deg, rgba(79, 142, 247, 0.14), rgba(34, 211, 238, 0.09));
+  border-color: rgba(79, 142, 247, 0.16);
+}
+html[data-theme="dev"] .room-entry-pill {
+  background: rgba(79, 142, 247, 0.08);
+  color: #7AABF9;
+  border-color: rgba(79, 142, 247, 0.16);
+}
+html[data-theme="dev"] .room-type-card {
+  background: rgba(12, 17, 32, 0.8);
+}
+html[data-theme="dev"] .room-type-card:hover { border-color: rgba(79, 142, 247, 0.22); }
+html[data-theme="dev"] .room-type-card.selected {
+  border-color: rgba(79, 142, 247, 0.40);
+  background: rgba(79, 142, 247, 0.07);
+  box-shadow: 0 0 16px rgba(79, 142, 247, 0.10);
+}
+html[data-theme="dev"] .rooms-top {
+  background: rgba(6, 10, 20, 0.8);
+}
+html[data-theme="dev"] .rooms-create-btn {
+  background: linear-gradient(135deg, #4F8EF7, #3574E8);
+  box-shadow: 0 4px 18px rgba(79, 142, 247, 0.28);
+}
+html[data-theme="dev"] .rooms-create-btn:hover {
+  box-shadow: 0 6px 24px rgba(79, 142, 247, 0.40);
+}
+html[data-theme="dev"] .room-submit-wrap {
+  background: linear-gradient(to top, rgba(6, 10, 20, 0.98) 70%, transparent);
+}
+html[data-theme="dev"] .room-create-topbar {
+  background: rgba(6, 10, 20, 0.85);
+}
+
+/* ── Dev: Input ── */
+html[data-theme="dev"] .input {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* ── Dev: Skill pills ── */
+html[data-theme="dev"] .skill-tag {
+  background: rgba(79, 142, 247, 0.09);
+  border-color: rgba(79, 142, 247, 0.20);
+  color: #7AABF9;
+}
+html[data-theme="dev"] .tag-add-btn {
+  background: rgba(79, 142, 247, 0.09);
+  border-color: rgba(79, 142, 247, 0.20);
+  color: #7AABF9;
+}
+html[data-theme="dev"] .tag-add-btn:hover {
+  background: rgba(79, 142, 247, 0.16);
+  border-color: rgba(79, 142, 247, 0.35);
+}
+html[data-theme="dev"] .goal-pill.selected {
+  background: rgba(16, 185, 129, 0.10);
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+/* ── Dev: Badges ── */
+html[data-theme="dev"] .badge-advanced {
+  background: rgba(79, 142, 247, 0.10);
+  color: #7AABF9;
+  border-color: rgba(79, 142, 247, 0.22);
+}
+html[data-theme="dev"] .badge-intermediate {
+  background: rgba(16, 185, 129, 0.09);
+  border-color: rgba(16, 185, 129, 0.22);
+}
+
+/* ── Dev: User list ── */
+html[data-theme="dev"] .user-item:hover {
+  background: rgba(79, 142, 247, 0.05);
+  border-color: rgba(79, 142, 247, 0.16);
+}
+html[data-theme="dev"] .user-avatar {
+  background: linear-gradient(135deg, rgba(79, 142, 247, 0.20), rgba(139, 92, 246, 0.15));
+  color: #7AABF9;
+}
+
+/* ── Dev: Rec cards ── */
+html[data-theme="dev"] .rec-card {
+  background: rgba(12, 17, 32, 0.8);
+  border-color: rgba(148, 163, 200, 0.08);
+  box-shadow: none;
+}
+html[data-theme="dev"] .rec-card:hover {
+  background: rgba(79, 142, 247, 0.05);
+  border-color: rgba(79, 142, 247, 0.20);
+  box-shadow: 0 8px 24px rgba(79, 142, 247, 0.08);
+}
+html[data-theme="dev"] .rec-skill { color: #7AABF9; opacity: 0.72; }
+
+/* ── Dev: Chat components ── */
+html[data-theme="dev"] .chat-topbar {
+  background: rgba(6, 10, 20, 0.88);
+}
+html[data-theme="dev"] .back-btn:hover {
+  background: rgba(79, 142, 247, 0.08);
+  border-color: rgba(79, 142, 247, 0.25);
+}
+html[data-theme="dev"] .icon-btn:hover {
+  background: rgba(79, 142, 247, 0.07);
+  border-color: rgba(79, 142, 247, 0.22);
+}
+html[data-theme="dev"] .chat-input-area {
+  background: rgba(6, 10, 20, 0.88);
+}
+html[data-theme="dev"] .chat-attach-btn:hover {
+  background: rgba(79, 142, 247, 0.06);
+  border-color: rgba(79, 142, 247, 0.22);
+}
+html[data-theme="dev"] .attach-opt:hover { background: rgba(79, 142, 247, 0.08); }
+html[data-theme="dev"] #chat-search-bar {
+  background: rgba(6, 10, 20, 0.80);
+}
+html[data-theme="dev"] #img-preview-bar {
+  background: rgba(6, 10, 20, 0.88);
+}
+html[data-theme="dev"] #reply-preview {
+  background: rgba(79, 142, 247, 0.04);
+}
+html[data-theme="dev"] .msg-reply-ctx {
+  background: rgba(79, 142, 247, 0.05);
+}
+html[data-theme="dev"] .msg-reply-ctx:hover { background: rgba(79, 142, 247, 0.10); }
+html[data-theme="dev"] .msg.sent .msg-bubble {
+  box-shadow: 0 3px 14px rgba(79, 142, 247, 0.22);
+}
+html[data-theme="dev"] .msg-action-btn:hover { background: rgba(79, 142, 247, 0.09); }
+html[data-theme="dev"] .reaction-chip:hover,
+html[data-theme="dev"] .reaction-chip.mine {
+  background: rgba(79, 142, 247, 0.10);
+  border-color: rgba(79, 142, 247, 0.28);
+}
+html[data-theme="dev"] .msg-file-bubble:hover {
+  border-color: rgba(79, 142, 247, 0.28);
+  background: rgba(79, 142, 247, 0.04);
+}
+html[data-theme="dev"] .upload-spinner { border-color: rgba(79, 142, 247, 0.14); }
+html[data-theme="dev"] .starter {
+  background: rgba(79, 142, 247, 0.07);
+  border-color: rgba(79, 142, 247, 0.16);
+  color: #7AABF9;
+}
+html[data-theme="dev"] .starter:hover {
+  background: rgba(79, 142, 247, 0.12);
+  border-color: rgba(79, 142, 247, 0.30);
+}
+
+/* ── Dev: Profile modal ── */
+html[data-theme="dev"] #profile-modal {
+  background: rgba(6, 10, 20, 0.98) !important;
+  scrollbar-color: rgba(79, 142, 247, 0.12) transparent;
+}
+html[data-theme="dev"] .modal-topbar {
+  background: rgba(6, 10, 20, 0.96);
+}
+html[data-theme="dev"] .modal-avatar {
+  box-shadow: 0 0 30px rgba(79, 142, 247, 0.18);
+}
+html[data-theme="dev"] .modal-avatar:hover {
+  box-shadow: 0 0 40px rgba(79, 142, 247, 0.30);
+}
+html[data-theme="dev"] .stat-chip {
+  background: rgba(79, 142, 247, 0.05);
+  border-color: rgba(79, 142, 247, 0.12);
+}
+html[data-theme="dev"] #cleanup-status {
+  background: rgba(79, 142, 247, 0.04);
+  border-color: rgba(79, 142, 247, 0.10);
+  color: #7AABF9;
+}
+
+/* ── Dev: Avatar ── */
+html[data-theme="dev"] .avatar-btn {
+  border-color: rgba(79, 142, 247, 0.55) !important;
+  box-shadow: 0 0 16px rgba(79, 142, 247, 0.18) !important;
+}
+
+/* ── Dev: Rooms list scrollbar ── */
+html[data-theme="dev"] .rooms-list-wrap {
+  scrollbar-color: rgba(79, 142, 247, 0.18) transparent;
+}
+html[data-theme="dev"] .rooms-list-wrap::-webkit-scrollbar-thumb {
+  background: rgba(79, 142, 247, 0.18);
+}
+
+/* ── Dev: Drop overlay ── */
+html[data-theme="dev"] #drop-overlay {
+  background: rgba(79, 142, 247, 0.07);
+  border-color: rgba(79, 142, 247, 0.35);
+}
+
+/* ── Dev: Lightbox ── */
+html[data-theme="dev"] #lightbox-download {
+  background: rgba(79, 142, 247, 0.16);
+  border-color: rgba(79, 142, 247, 0.30);
+}
+html[data-theme="dev"] #lightbox-download:hover { background: rgba(79, 142, 247, 0.28); }
+
+/* ── Dev: scroll to bottom btn ── */
+html[data-theme="dev"] #scroll-bottom-btn {
+  background: #4F8EF7;
+  box-shadow: var(--shadow-accent);
+}
+
+/* ── Dev: Expand overlay ── */
+html[data-theme="dev"] #golex-expand-overlay {
+  background: rgba(6, 10, 20, 0.98);
+}
+
+
+/* ── Light theme: expand overlay text ── */
+html:not([data-theme="dev"]) #golex-expand-overlay .expand-tagline {
+  color: var(--text-secondary);
+}
+html:not([data-theme="dev"]) #golex-expand-overlay .expand-dismiss {
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+html:not([data-theme="dev"]) #golex-expand-overlay .expand-dismiss:hover {
+  border-color: var(--border-hover);
+}
+
+/* ── Light theme: chat message area bg ── */
+html:not([data-theme="dev"]) #chat-area {
+  background: #F0F4FA;
+}
+
+/* ── Light theme: received bubble ── */
+html:not([data-theme="dev"]) .msg.received .msg-bubble {
+  background: #FFFFFF;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Light theme: main nav bg ── */
+html:not([data-theme="dev"]) #main-nav {
+  background: rgba(248, 249, 252, 0.95);
+}
+
+/* ── Light theme: explore/guild/create screen topbars ── */
+html:not([data-theme="dev"]) .screen-topbar,
+html:not([data-theme="dev"]) .explore-topbar,
+html:not([data-theme="dev"]) .guild-topbar {
+  background: rgba(255, 255, 255, 0.90);
+  border-bottom-color: rgba(15, 23, 42, 0.07);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   GOLEX COMPLETE THEME FIX PATCH — Light/Warm & Dev/Dark Parity
+   Applied after all existing rules for maximum specificity.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── FIX 1: Vertical Line Bug — Scrollbar track bleed ──
+   Root cause: rgba(255,255,255,0.08) thumb on light bg + transparent track
+   shows as a dark native strip on Android Chrome.
+   Fix: use theme-appropriate scrollbar colors + min-width track
+─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.30); border-radius: 4px; }
+html[data-theme="dev"] ::-webkit-scrollbar-thumb { background: rgba(79, 142, 247, 0.18); }
+
+/* Override all list scrollbar thumbs to be theme-aware */
+#users-list { scrollbar-color: rgba(148,163,184,0.30) transparent !important; }
+html[data-theme="dev"] #users-list { scrollbar-color: rgba(79,142,247,0.18) transparent !important; }
+#users-list::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.30); }
+html[data-theme="dev"] #users-list::-webkit-scrollbar-thumb { background: rgba(79,142,247,0.18); }
+
+/* ── FIX 2: Navigation Bar Dev Mode — was stuck whitish ─────────── */
+html[data-theme="dev"] #main-nav {
+  background: rgba(6, 10, 20, 0.97) !important;
+  border-top-color: rgba(148, 163, 200, 0.07) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+html[data-theme="dev"] .nav-btn:hover {
+  background: rgba(79, 142, 247, 0.08);
+  color: var(--text);
+}
+
+/* ── FIX 3: Notifications Panel — was always dark ──────────────── */
+#notif-panel {
+  background: var(--panel-solid);
+}
+html[data-theme="dev"] #notif-panel {
+  background: rgba(8, 12, 24, 0.99);
+}
+.notif-panel-header {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .notif-panel-header {
+  background: rgba(6, 10, 20, 0.96) !important;
+}
+
+/* Notification items — light mode fix */
+.notif-item {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .notif-item {
+  background: rgba(255,255,255,0.025) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.notif-item.unread {
+  background: rgba(37,99,235,0.06) !important;
+  border-color: rgba(37,99,235,0.22) !important;
+}
+html[data-theme="dev"] .notif-item.unread {
+  background: rgba(79,142,247,0.07) !important;
+  border-color: rgba(79,142,247,0.22) !important;
+}
+.notif-item:hover {
+  background: rgba(37,99,235,0.05) !important;
+  border-color: rgba(37,99,235,0.22) !important;
+}
+html[data-theme="dev"] .notif-item:hover {
+  background: rgba(79,142,247,0.05) !important;
+}
+.notif-section-label {
+  border-bottom: 1px solid var(--border) !important;
+}
+#notif-list { scrollbar-color: rgba(148,163,184,0.30) transparent; }
+html[data-theme="dev"] #notif-list { scrollbar-color: rgba(79,142,247,0.18) transparent; }
+
+/* ── FIX 4: Saved Panel — was always dark ───────────────────────── */
+#saved-panel {
+  background: var(--panel-solid) !important;
+}
+html[data-theme="dev"] #saved-panel {
+  background: rgba(8, 12, 24, 0.99) !important;
+}
+.saved-panel-header {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .saved-panel-header {
+  background: rgba(6, 10, 20, 0.96) !important;
+}
+
+/* ── FIX 5: User Profile Sheet — text invisible in light mode ────── */
+.user-profile-sheet-inner {
+  background: var(--panel-solid) !important;
+  color: var(--text);
+  box-shadow: 0 -20px 80px rgba(0,0,0,0.12), 0 0 0 1px var(--border) !important;
+}
+html[data-theme="dev"] .user-profile-sheet-inner {
+  background: linear-gradient(160deg, #0d1124 0%, #090c1a 100%) !important;
+  box-shadow: 0 -20px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(37,99,235,0.1) !important;
+}
+.ups-drag-handle {
+  background: var(--muted-light) !important;
+}
+html[data-theme="dev"] .ups-drag-handle {
+  background: rgba(255,255,255,0.12) !important;
+}
+.ups-avatar-inner {
+  border-color: var(--panel-solid) !important;
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .ups-avatar-inner {
+  border-color: #090c1a !important;
+  background: var(--panel-solid) !important;
+}
+.ups-story-badge {
+  border-color: var(--panel-solid) !important;
+}
+html[data-theme="dev"] .ups-story-badge {
+  border-color: #090c1a !important;
+}
+.ups-stat-card {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .ups-stat-card {
+  background: rgba(255,255,255,0.03) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.ups-divider {
+  background: var(--border) !important;
+}
+html[data-theme="dev"] .ups-divider {
+  background: rgba(255,255,255,0.05) !important;
+}
+.ups-qa-btn {
+  border-color: var(--border) !important;
+  background: var(--surface) !important;
+  color: var(--text-secondary) !important;
+}
+.ups-qa-btn:hover {
+  background: rgba(37,99,235,0.04) !important;
+  border-color: var(--border-hover) !important;
+  color: var(--text) !important;
+}
+html[data-theme="dev"] .ups-qa-btn {
+  border-color: rgba(255,255,255,0.07) !important;
+  background: rgba(255,255,255,0.03) !important;
+  color: var(--text-secondary) !important;
+}
+html[data-theme="dev"] .ups-qa-btn:hover {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  color: var(--text) !important;
+}
+.ups-qa-btn.danger {
+  color: rgba(239,68,68,0.7) !important;
+  border-color: rgba(239,68,68,0.15) !important;
+  background: rgba(239,68,68,0.04) !important;
+}
+.ups-qa-btn.danger:hover {
+  background: rgba(239,68,68,0.1) !important;
+  border-color: rgba(239,68,68,0.35) !important;
+  color: var(--danger-light) !important;
+}
+.ups-post-card {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .ups-post-card {
+  background: rgba(255,255,255,0.025) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* UPS tab bar */
+.ups-tab-btn {
+  color: var(--muted) !important;
+  background: none !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+}
+.ups-tab-btn.active {
+  color: var(--text) !important;
+  border-bottom-color: var(--accent) !important;
+}
+
+/* ── FIX 6: Modals with hardcoded dark backgrounds ─────────────── */
+.confirm-modal-box {
+  background: var(--panel-solid) !important;
+}
+html[data-theme="dev"] .confirm-modal-box {
+  background: rgba(8, 12, 24, 0.99) !important;
+}
+.confirm-modal-cancel {
+  background: var(--surface) !important;
+  color: var(--text-secondary) !important;
+}
+html[data-theme="dev"] .confirm-modal-cancel {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+.report-modal-box {
+  background: var(--panel-solid) !important;
+}
+html[data-theme="dev"] .report-modal-box {
+  background: rgba(8, 12, 24, 0.99) !important;
+}
+.report-reason-btn {
+  background: var(--surface) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .report-reason-btn {
+  background: rgba(255,255,255,0.025) !important;
+}
+
+.feedback-modal-box {
+  background: var(--panel-solid) !important;
+}
+html[data-theme="dev"] .feedback-modal-box {
+  background: rgba(8, 12, 24, 0.99) !important;
+}
+.feedback-modal-cancel-btn {
+  background: var(--surface) !important;
+  color: var(--text-secondary) !important;
+}
+html[data-theme="dev"] .feedback-modal-cancel-btn {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* ── FIX 7: Notification Toast Banner ─────────────────────────── */
+#notif-toast-banner {
+  background: var(--panel-solid) !important;
+  border-color: rgba(37,99,235,0.30) !important;
+  color: var(--text) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
+}
+html[data-theme="dev"] #notif-toast-banner {
+  background: rgba(8, 12, 24, 0.97) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5) !important;
+}
+
+/* ── FIX 8: User Info Panel in Chat (DM sidebar) ─────────────── */
+#user-info-panel {
+  background: var(--panel-solid) !important;
+}
+html[data-theme="dev"] #user-info-panel {
+  background: rgba(8, 12, 24, 0.97) !important;
+}
+.info-panel-header {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .info-panel-header {
+  background: rgba(6, 10, 20, 0.95) !important;
+}
+.info-stat-row {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .info-stat-row {
+  background: rgba(255,255,255,0.025) !important;
+}
+.info-panel-close {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .info-panel-close {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* ── FIX 9: Post Cards — hardcoded white on dark bg in dev mode ── */
+.post-card {
+  background: var(--surface) !important;
+}
+
+/* ── FIX 10: Create screen components ─────────────────────────── */
+.create-audio-zone {
+  background: var(--surface) !important;
+}
+.create-link-preview {
+  background: var(--surface) !important;
+}
+
+/* ── FIX 11: Guild Chat Components ───────────────────────────── */
+/* Guild message bubbles (received) — white-on-white in light mode */
+.guild-msg-text {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+html[data-theme="dev"] .guild-msg-text {
+  background: rgba(255,255,255,0.055) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+/* Sent bubbles keep their gradient */
+.guild-msg.mine .guild-msg-text {
+  background: linear-gradient(145deg, var(--accent), #9A6428) !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.guild-msg-skill-tag {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .guild-msg-skill-tag {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+.guild-msg-deleted {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .guild-msg-deleted {
+  background: rgba(255,255,255,0.025) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Guild reaction picker — always dark popup */
+.guild-reaction-picker {
+  background: var(--panel-solid) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+html[data-theme="dev"] .guild-reaction-picker {
+  background: rgba(8, 12, 24, 0.98) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Guild hover action bar */
+.guild-msg-actions {
+  background: var(--panel-solid) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+html[data-theme="dev"] .guild-msg-actions {
+  background: rgba(8, 12, 24, 0.97) !important;
+  border-color: rgba(255,255,255,0.09) !important;
+}
+
+/* Guild input area border-top */
+.guild-input-area {
+  border-top-color: var(--border) !important;
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .guild-input-area {
+  background: rgba(6, 10, 20, 0.88) !important;
+  border-top-color: rgba(255,255,255,0.05) !important;
+}
+
+/* Guild chat input field inside guild-input-area */
+.guild-input-area .input {
+  background: var(--bg) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+html[data-theme="dev"] .guild-input-area .input {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ── FIX 12: Onboarding cards — light mode ─────────────────────── */
+.skill-card {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .skill-card {
+  background: rgba(255,255,255,0.025) !important;
+}
+.level-card {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .level-card {
+  background: rgba(255,255,255,0.025) !important;
+}
+.goal-pill, .avail-pill {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .goal-pill, html[data-theme="dev"] .avail-pill {
+  background: rgba(255,255,255,0.03) !important;
+}
+.goal-pill:hover, .avail-pill:hover {
+  border-color: var(--border-hover) !important;
+}
+html[data-theme="dev"] .goal-pill:hover, html[data-theme="dev"] .avail-pill:hover {
+  border-color: rgba(255,255,255,0.15) !important;
+}
+
+/* ── FIX 13: Toggle pills, user items, lb rows ─────────────────── */
+.toggle-pill {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .toggle-pill {
+  background: rgba(255,255,255,0.025) !important;
+}
+
+.user-item {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .user-item {
+  background: rgba(255,255,255,0.02) !important;
+}
+
+.lb-row {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .lb-row {
+  background: rgba(255,255,255,0.025) !important;
+}
+
+/* ── FIX 14: Level-up overlay adapts to theme ──────────────────── */
+html[data-theme="dev"] #levelup-overlay {
+  background: rgba(6, 10, 20, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+/* ── FIX 15: Chrome bell button in light mode ─────────────────── */
+.chrome-bell-btn {
+  background: rgba(15,23,42,0.04) !important;
+  border-color: rgba(15,23,42,0.08) !important;
+}
+html[data-theme="dev"] .chrome-bell-btn {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ── FIX 16: back-btn and icon-btn base transparency fix ─────── */
+.back-btn {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .back-btn {
+  background: rgba(255,255,255,0.04) !important;
+}
+
+/* ── FIX 17: Chat search bar theme adaptation ─────────────────── */
+#chat-search-bar {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] #chat-search-bar {
+  background: rgba(6, 10, 20, 0.80) !important;
+}
+
+/* ── FIX 18: Vault modal and question cards ─────────────────────── */
+.vault-question-card {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .vault-question-card {
+  background: rgba(255,255,255,0.025) !important;
+}
+
+/* ── FIX 19: UPS cover — adapt border to theme ─────────────────── */
+html:not([data-theme="dev"]) .user-profile-sheet-inner {
+  border-color: rgba(37,99,235,0.15) !important;
+}
+
+/* ── FIX 20: Endorse count row ─────────────────────────────────── */
+.endorse-count-row {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .endorse-count-row {
+  background: rgba(255,255,255,0.02) !important;
+}
+
+/* ── FIX 21: Profile modal light mode bg ───────────────────────── */
+html:not([data-theme="dev"]) #profile-modal {
+  background: rgba(248, 249, 252, 0.98) !important;
+  color: var(--text) !important;
+}
+
+/* ── FIX 22: create-share-type-btn light mode ─────────────────── */
+.create-share-type-btn {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .create-share-type-btn {
+  background: rgba(255,255,255,0.03) !important;
+}
+.content-type-btn {
+  background: var(--surface) !important;
+}
+html[data-theme="dev"] .content-type-btn {
+  background: rgba(255,255,255,0.025) !important;
+}
+
+/* ── FIX 23: Desktop sidebar light-mode scrollbar ─────────────── */
+html:not([data-theme="dev"]) .desktop-sidebar {
+  background: rgba(248, 249, 252, 0.99);
+}
+html[data-theme="dev"] .desktop-sidebar {
+  background: rgba(6, 10, 20, 0.99);
+}
+
+/* ── FIX 24: Image preview bar (chat attach) ──────────────────── */
+#img-preview-bar {
+  background: var(--surface) !important;
+  border-top-color: var(--border) !important;
+}
+html[data-theme="dev"] #img-preview-bar {
+  background: rgba(6, 10, 20, 0.88) !important;
+}
+
+/* ── FIX 25: Chat input area ───────────────────────────────────── */
+.chat-input-area {
+  background: var(--surface) !important;
+  border-top-color: var(--border) !important;
+}
+html[data-theme="dev"] .chat-input-area {
+  background: rgba(6, 10, 20, 0.88) !important;
+  border-top-color: rgba(255,255,255,0.05) !important;
+}
+
+/* ── FIX 26: Msg file bubble light mode ────────────────────────── */
+.msg-file-bubble {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .msg-file-bubble {
+  background: rgba(255,255,255,0.025) !important;
+}
+
+/* ── FIX 27: Reaction chips light mode ─────────────────────────── */
+.reaction-chip {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .reaction-chip {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ── FIX 28: Guild reaction chips ─────────────────────────────── */
+.guild-reaction-chip {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+html[data-theme="dev"] .guild-reaction-chip {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.09) !important;
+}
+
+/* ── FIX 29: Skeleton shimmer light mode ──────────────────────── */
+html:not([data-theme="dev"]) .skel-animate {
+  background: linear-gradient(90deg, rgba(15,23,42,0.06) 25%, rgba(15,23,42,0.10) 50%, rgba(15,23,42,0.06) 75%);
+  background-size: 400% 100%;
+}
+
+/* ── FIX 30: Room submit wrap ─────────────────────────────────── */
+html:not([data-theme="dev"]) .room-submit-wrap {
+  background: linear-gradient(to top, rgba(248,249,252,0.98) 70%, transparent);
+}
+
+/* ── FIX 31: Vault modal adapts correctly ─────────────────────── */
+html:not([data-theme="dev"]) #vault-modal,
+html:not([data-theme="dev"]) #vault-decrypt-modal {
+  background: var(--panel-solid) !important;
+  color: var(--text);
+}
+
+/* ── FIX 32: Stories bar — dev theme dark background ──────────── */
+html[data-theme="dev"] #stories-bar-wrap {
+  background: rgba(6, 10, 20, 0.92) !important;
+  border-bottom-color: rgba(148, 163, 200, 0.07) !important;
+}
+
+/* ── FIX 33: Guild header — dev theme dark background ─────────── */
+html[data-theme="dev"] .guild-header {
+  background: rgba(6, 10, 20, 0.92) !important;
+  border-bottom-color: rgba(148, 163, 200, 0.07) !important;
+}
+
+/* ── FIX 34: Explore top header — dev theme dark background ───── */
+html[data-theme="dev"] .explore-top {
+  background: rgba(6, 10, 20, 0.92) !important;
+  border-bottom-color: rgba(148, 163, 200, 0.07) !important;
+}
+
+/* ── FIX 35: Chat search bar — dev theme dark ─────────────────── */
+html[data-theme="dev"] #chat-search-bar {
+  background: rgba(6, 10, 20, 0.92) !important;
+  border-bottom-color: rgba(148, 163, 200, 0.07) !important;
+}
+
+/* ── FIX 36: Notif panel header sticky fade — dev theme ──────── */
+html[data-theme="dev"] .notif-panel-header::after {
+  background: rgba(6, 10, 20, 0.92) !important;
+}
+
+/* ── FIX 37: Intro overlay — force paint containment to stop
+   pseudo-element orbs from bleeding past right edge ────────────── */
+#golex-intro-overlay { contain: paint; }
+
