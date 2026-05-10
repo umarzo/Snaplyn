@@ -2452,6 +2452,18 @@ html[data-theme="dev"] #user-list-screen::-webkit-scrollbar-thumb { background: 
 .dir-top-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
 .dir-top-bar-row .search-wrap { flex: 1; min-width: 0; margin-bottom: 0; }
 .dir-skill-filter { width: 110px; min-width: 80px; flex-shrink: 1; margin: 0 !important; }
+/* ── Unified directory search combo bar ── */
+.dir-search-combo { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 14px; transition: border-color var(--duration-fast); box-shadow: 0 1px 4px rgba(15,23,42,0.06); }
+.dir-search-combo:focus-within { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--glow-accent-soft); }
+.dir-search-icon { display: flex; align-items: center; justify-content: center; padding: 0 10px 0 13px; color: var(--muted); flex-shrink: 0; }
+.dir-combo-input { flex: 1; border: none; outline: none; background: transparent; font-family: var(--font-display); font-size: 13.5px; color: var(--text); padding: 10px 6px 10px 0; min-width: 0; }
+.dir-combo-input::placeholder { color: var(--muted); }
+.dir-combo-sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+.dir-combo-select { border: none; outline: none; background: transparent; font-family: var(--font-display); font-size: 12px; color: var(--text-secondary); padding: 10px 8px 10px 10px; cursor: pointer; flex-shrink: 0; appearance: none; -webkit-appearance: none; }
+.dir-combo-select:focus { color: var(--accent); }
+.dir-online-btn { display: flex; align-items: center; gap: 5px; border: none; background: transparent; font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding: 10px 13px 10px 10px; cursor: pointer; flex-shrink: 0; transition: all var(--duration-fast); letter-spacing: 0.3px; outline: none; }
+.dir-online-btn:hover { color: var(--success-light); background: rgba(16,185,129,0.06); }
+.dir-online-btn.active { color: var(--success-light); background: rgba(16,185,129,0.08); }
 .search-wrap { position: relative; margin-bottom: 10px; flex-shrink: 0; }
 .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; pointer-events: none; }
 .search-wrap .input { padding-left: 38px; }
@@ -2488,7 +2500,7 @@ html[data-theme="dev"] #user-list-screen::-webkit-scrollbar-thumb { background: 
 .status-pip { position: absolute; bottom: -1px; right: -1px; width: 11px; height: 11px; border-radius: 50%; background: var(--muted); border: 2.5px solid var(--surface); transition: all var(--duration-normal); }
 .status-pip.online { background: var(--success); box-shadow: 0 0 8px var(--success); }
 .user-body { flex: 1; min-width: 0; }
-.user-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.user-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; row-gap: 3px; }
 .user-name { font-size: 14px; font-weight: 700; }
 .user-preview { font-size: 12px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .unread-badge { background: var(--accent); color: white; font-size: 10px; font-weight: 700; font-family: var(--font-mono); min-width: 18px; height: 18px; border-radius: 10px; display: none; align-items: center; justify-content: center; padding: 0 5px; flex-shrink: 0; animation: scaleIn var(--duration-fast) var(--ease-spring); }
@@ -2709,10 +2721,10 @@ html[data-theme="dev"] #user-list-screen::-webkit-scrollbar-thumb { background: 
 .preview-send:hover { opacity: 0.9; }
 .preview-send:disabled { opacity: 0.4; pointer-events: none; }
 
-#reaction-picker { position: absolute; z-index: var(--z-modal); background: rgba(20, 18, 16, 0.97); border: 1px solid var(--border); border-radius: 14px; padding: 8px 10px; display: none; gap: 6px; box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6); font-size: 20px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+#reaction-picker { position: absolute; z-index: var(--z-modal); background: var(--panel-solid); border: 1px solid var(--border-hover); border-radius: 14px; padding: 8px 10px; display: none; gap: 6px; box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18); font-size: 20px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 #reaction-picker.open { display: flex; animation: scaleIn var(--duration-fast) var(--ease); }
-#reaction-picker span { cursor: pointer; transition: transform var(--duration-fast); padding: 2px; border-radius: var(--radius-xs); line-height: 1; user-select: none; }
-#reaction-picker span:hover { transform: scale(1.35); background: rgba(255, 255, 255, 0.06); }
+#reaction-picker span { cursor: pointer; transition: transform var(--duration-fast); padding: 2px; border-radius: var(--radius-xs); line-height: 1; user-select: none; color: var(--text); }
+#reaction-picker span:hover { transform: scale(1.35); background: rgba(35, 87, 232, 0.08); }
 
 #lightbox { position: absolute; inset: 0; z-index: var(--z-lightbox); background: rgba(0, 0, 0, 0.94); display: none; align-items: center; justify-content: center; flex-direction: column; gap: 12px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 #lightbox.open { display: flex; animation: fadeIn var(--duration-fast) var(--ease); }
@@ -3278,14 +3290,19 @@ html[data-theme="dev"] #user-list-screen::-webkit-scrollbar-thumb { background: 
   z-index: 20;
   /* Ensure nav stays above iOS rubber-banding */
   isolation: isolate;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+#main-nav::-webkit-scrollbar { display: none; }
 #main-nav.visible { display: flex; }
 .nav-btn {
   display: flex; flex-direction: column; align-items: center;
-  gap: 2px; padding: 6px 12px; border: none; background: none;
+  gap: 2px; padding: 6px 10px; border: none; background: none;
   cursor: pointer; border-radius: var(--radius-sm);
   transition: all var(--duration-fast) var(--ease);
-  color: var(--muted); min-width: 60px;
+  color: var(--muted); min-width: 52px; flex-shrink: 0;
   outline: none; -webkit-tap-highlight-color: transparent;
 }
 .nav-btn .nav-icon { font-size: 20px; line-height: 1; transition: transform var(--duration-fast) var(--ease-spring); }
@@ -3652,13 +3669,13 @@ html[data-theme="dev"] #user-list-screen::-webkit-scrollbar-thumb { background: 
 .guild-reaction-picker {
   position: absolute;
   bottom: calc(100% + 6px);
-  background: rgba(10, 14, 26, 0.98);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--panel-solid);
+  border: 1px solid var(--border-hover);
   border-radius: var(--radius-md);
   padding: 6px 8px;
   display: none;
   gap: 2px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   z-index: 50;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -3678,13 +3695,14 @@ html[data-theme="dev"] #user-list-screen::-webkit-scrollbar-thumb { background: 
   border: none;
   cursor: pointer;
   font-size: 20px;
+  color: var(--text);
   padding: 4px 5px;
   border-radius: var(--radius-xs);
   transition: transform 0.12s var(--ease-spring);
   line-height: 1;
   outline: none;
 }
-.guild-reaction-opt:hover { transform: scale(1.4); }
+.guild-reaction-opt:hover { transform: scale(1.4); background: rgba(35,87,232,0.08); }
 
 /* ── Hover action bar ── */
 .guild-msg-actions {
@@ -3692,13 +3710,13 @@ html[data-theme="dev"] #user-list-screen::-webkit-scrollbar-thumb { background: 
   top: -36px;
   opacity: 0;
   pointer-events: none;
-  background: rgba(10, 14, 26, 0.97);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: var(--panel-solid);
+  border: 1px solid var(--border-hover);
   border-radius: var(--radius-md);
   padding: 3px 4px;
   display: flex;
   gap: 1px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   z-index: 20;
   transition: opacity var(--duration-fast);
   backdrop-filter: blur(10px);
@@ -5741,6 +5759,10 @@ html[data-theme="dev"] .skel-post-card {
   #user-list-screen { padding: 20px 24px 12px; }
   .screen { padding: 28px 28px; }
   #chat-screen, #explore-screen, #downloads-screen, #create-screen { padding: 0; }
+  /* User card chips: prevent overlap on short-width tablets */
+  .user-top { gap: 4px; }
+  .badge { font-size: 8px; padding: 2px 6px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+  .user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 /* Mobile: sidebar is just a transparent wrapper, main is too */
@@ -11508,6 +11530,24 @@ html[data-theme="dev"] .toggle-pill {
   background: rgba(255,255,255,0.025) !important;
 }
 
+/* ── Dir search combo: dev theme overrides ── */
+html[data-theme="dev"] .dir-search-combo {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.08);
+}
+html[data-theme="dev"] .dir-combo-select {
+  color-scheme: dark;
+}
+html[data-theme="dev"] .dir-online-btn:hover {
+  background: rgba(16,185,129,0.12);
+}
+html[data-theme="dev"] .dir-online-btn.active {
+  background: rgba(16,185,129,0.14);
+}
+html[data-theme="dev"] .dir-combo-sep {
+  background: rgba(255,255,255,0.08);
+}
+
 .user-item {
   background: var(--surface) !important;
 }
@@ -11924,6 +11964,15 @@ html[data-theme="dev"] .notif-panel-header::after {
     width: 30px;
     height: 30px;
     font-size: 11px;
+  }
+  /* Nav: tighten on tiny phones so all 8 buttons are reachable */
+  .nav-btn {
+    min-width: 44px;
+    padding: 6px 7px;
+  }
+  .nav-btn .nav-icon svg {
+    width: 18px !important;
+    height: 18px !important;
   }
 }
 
@@ -15118,7 +15167,7 @@ html[data-theme="dev"] .guild-msg-skill-tag {
 
   </div><!-- end #username-screen -->
 
-  <div id="user-list-screen" class="screen" role="main"><div class="dir-header"><div><div class="dir-title">Directory</div><div class="dir-count" id="online-count">Loading...</div></div><img class="avatar-btn" id="profile-icon-btn" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Your Profile" loading="lazy"></div><div id="profile-completion-banner" role="alert"><span><i data-lucide="triangle-alert" class="lucide" width="16" height="16"></i></span><span>Complete your profile for better matches</span></div><div class="dir-top-bar-row"><div class="search-wrap" style="flex:1;min-width:0;margin-bottom:0;"><span class="search-icon" aria-hidden="true"><i data-lucide="search" class="lucide" width="16" height="16"></i></span><input class="input" type="text" id="search-users-input" placeholder="Search people..." autocomplete="off"></div><input class="input dir-skill-filter" type="text" id="search-skill-input" placeholder="Skill..." autocomplete="off"><label class="toggle-pill"><input type="checkbox" id="online-filter-toggle"> Online</label></div><div id="recs-wrap"><div class="section-label"><i data-lucide="sparkles" class="lucide" width="16" height="16"></i> Recommended for you</div><div class="recs-scroll" id="recs-list">
+  <div id="user-list-screen" class="screen" role="main"><div class="dir-header"><div><div class="dir-title">Directory</div><div class="dir-count" id="online-count">Loading...</div></div><img class="avatar-btn" id="profile-icon-btn" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Your Profile" loading="lazy"></div><div id="profile-completion-banner" role="alert"><span><i data-lucide="triangle-alert" class="lucide" width="16" height="16"></i></span><span>Complete your profile for better matches</span></div><div class="dir-search-combo"><span class="dir-search-icon" aria-hidden="true"><i data-lucide="search" class="lucide" width="15" height="15"></i></span><input class="dir-combo-input" type="text" id="search-users-input" placeholder="Search people..." autocomplete="off"><div class="dir-combo-sep"></div><select class="dir-combo-select" id="search-skill-input" aria-label="Filter by skill"><option value="">All Skills</option><option>Gamer</option><option>Editor</option><option>Designer</option><option>Coder</option><option>Writer</option><option>Artist</option><option>Musician</option><option>Marketer</option><option>Animator</option><option>Photographer</option><option>Streamer</option><option>Explorer</option></select><div class="dir-combo-sep"></div><button class="dir-online-btn" id="dir-online-btn" aria-pressed="false" title="Show online users only"><i data-lucide="wifi" class="lucide" width="13" height="13"></i><span>Online</span></button><input type="checkbox" id="online-filter-toggle" style="display:none"></div><div id="recs-wrap"><div class="section-label"><i data-lucide="sparkles" class="lucide" width="16" height="16"></i> Recommended for you</div><div class="recs-scroll" id="recs-list">
     <!-- Skeleton recommendation pills -->
     <div class="skel-rec-pill" id="skel-rec-1"><div class="skel skel-circle" style="width:26px;height:26px;"></div><div class="skel skeleton-line" style="width:60px;height:8px;margin:0;"></div></div>
     <div class="skel-rec-pill" id="skel-rec-2"><div class="skel skel-circle" style="width:26px;height:26px;"></div><div class="skel skeleton-line" style="width:50px;height:8px;margin:0;"></div></div>
@@ -15351,6 +15400,39 @@ html[data-theme="dev"] .guild-msg-skill-tag {
       <div class="field">
         <label>Connected Platforms</label>
         <div id="modal-social-display"></div>
+        <button class="edit-expertise-btn" id="modal-social-edit-btn" type="button" style="margin-top:8px;">
+          <i data-lucide="pencil" class="lucide" width="16" height="16"></i> <span id="modal-social-edit-label">Edit Connections</span>
+        </button>
+        <div id="modal-social-edit-panel" style="display:none;margin-top:12px;">
+          <div class="social-proof-grid">
+            <div class="social-proof-connect-card">
+              <div class="social-proof-connect-head">
+                <div class="social-proof-connect-title"><i data-lucide="github" class="lucide" width="16" height="16"></i> GitHub</div>
+                <span class="social-proof-status-pill" id="modal-github-status">Not connected</span>
+              </div>
+              <div class="social-proof-connect-actions">
+                <button class="social-proof-mini-btn" type="button" id="modal-github-connect-btn">Connect</button>
+                <button class="social-proof-mini-btn" type="button" id="modal-github-fetch-btn">Fetch Data</button>
+              </div>
+              <input class="social-proof-input" id="modal-github-username" type="text" placeholder="GitHub username (e.g. octocat)" maxlength="39" autocomplete="off">
+              <input class="social-proof-input" id="modal-github-token" type="password" placeholder="Optional OAuth token (session-only)" maxlength="200" autocomplete="off">
+              <div class="social-proof-helper">Connect your GitHub to show repos and contributions.</div>
+            </div>
+            <div class="social-proof-connect-card">
+              <div class="social-proof-connect-head">
+                <div class="social-proof-connect-title"><i data-lucide="dribbble" class="lucide" width="16" height="16"></i> Dribbble</div>
+                <span class="social-proof-status-pill" id="modal-dribbble-status">Not connected</span>
+              </div>
+              <div class="social-proof-connect-actions">
+                <button class="social-proof-mini-btn" type="button" id="modal-dribbble-connect-btn">Connect</button>
+                <button class="social-proof-mini-btn" type="button" id="modal-dribbble-fetch-btn">Fetch Data</button>
+              </div>
+              <input class="social-proof-input" id="modal-dribbble-username" type="text" placeholder="Dribbble username" maxlength="60" autocomplete="off">
+              <input class="social-proof-input" id="modal-dribbble-token" type="password" placeholder="Optional OAuth token (session-only)" maxlength="200" autocomplete="off">
+              <div class="social-proof-helper">Connect your Dribbble to showcase shots and projects.</div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="field">
         <label>Primary Skill</label>
@@ -17919,11 +18001,14 @@ function getAllScreens() {
 }
 /* ── Batched lucide render — prevents multiple full DOM scans in one frame ── */
 let _lucideRAF = 0;
-function lucideCreate() {
+function lucideCreate(node) {
   if (_lucideRAF) return;
   _lucideRAF = requestAnimationFrame(() => {
     _lucideRAF = 0;
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof lucide !== 'undefined') {
+      const target = node || document.querySelector('.screen.active') || document.body;
+      lucide.createIcons({ nodes: [target] });
+    }
   });
 }
 
@@ -19575,6 +19660,75 @@ const SocialIntegrationsModule = (() => {
 
 setTimeout(() => { try { SocialIntegrationsModule.init(); } catch(_) {} }, 0);
 
+/* ── Profile modal social integrations edit panel ── */
+(function() {
+  function _normHandle(s, max) { return (s || '').replace(/^[@\/]+/, '').trim().slice(0, max || 60); }
+  function syncModalSocialStatus() {
+    const gh = state.socialIntegrations?.github;
+    const dr = state.socialIntegrations?.dribbble;
+    const ghEl = document.getElementById('modal-github-status');
+    const drEl = document.getElementById('modal-dribbble-status');
+    const ghIn = document.getElementById('modal-github-username');
+    const drIn = document.getElementById('modal-dribbble-username');
+    if (ghEl) { ghEl.textContent = gh?.connected ? 'Connected' : 'Not connected'; ghEl.style.color = gh?.connected ? 'var(--success-light)' : ''; }
+    if (drEl) { drEl.textContent = dr?.connected ? 'Connected' : 'Not connected'; drEl.style.color = dr?.connected ? 'var(--success-light)' : ''; }
+    if (ghIn && gh?.username) ghIn.value = gh.username;
+    if (drIn && dr?.username) drIn.value = dr.username;
+  }
+  document.getElementById('modal-social-edit-btn')?.addEventListener('click', () => {
+    const panel = document.getElementById('modal-social-edit-panel');
+    const lbl = document.getElementById('modal-social-edit-label');
+    if (!panel) return;
+    const open = panel.style.display !== 'none';
+    panel.style.display = open ? 'none' : 'block';
+    if (lbl) lbl.textContent = open ? 'Edit Connections' : 'Hide';
+    if (!open) { syncModalSocialStatus(); if (typeof lucide !== 'undefined') lucide.createIcons({ nodes: [panel] }); }
+  });
+  document.getElementById('modal-github-connect-btn')?.addEventListener('click', async () => {
+    const u = _normHandle(document.getElementById('modal-github-username')?.value, 39);
+    if (!u) { Toast.error('Enter a GitHub username'); return; }
+    if (!state.socialIntegrations) state.socialIntegrations = {};
+    if (!state.socialIntegrations.github) state.socialIntegrations.github = {};
+    state.socialIntegrations.github.username = u;
+    state.socialIntegrations.github.connected = true;
+    // mirror to onboarding inputs if they exist
+    const onbIn = document.getElementById('github-username-input');
+    if (onbIn) onbIn.value = u;
+    syncModalSocialStatus();
+    Toast.success('GitHub connected — click Fetch Data to load repos');
+  });
+  document.getElementById('modal-github-fetch-btn')?.addEventListener('click', () => {
+    const u = _normHandle(document.getElementById('modal-github-username')?.value, 39);
+    if (!u) { Toast.error('Enter a GitHub username first'); return; }
+    const onbIn = document.getElementById('github-username-input');
+    if (onbIn) onbIn.value = u;
+    const fetchBtn = document.getElementById('github-fetch-btn');
+    if (fetchBtn) fetchBtn.click();
+    else Toast.info('Use the onboarding step to fetch GitHub data');
+  });
+  document.getElementById('modal-dribbble-connect-btn')?.addEventListener('click', async () => {
+    const u = _normHandle(document.getElementById('modal-dribbble-username')?.value, 60);
+    if (!u) { Toast.error('Enter a Dribbble username'); return; }
+    if (!state.socialIntegrations) state.socialIntegrations = {};
+    if (!state.socialIntegrations.dribbble) state.socialIntegrations.dribbble = {};
+    state.socialIntegrations.dribbble.username = u;
+    state.socialIntegrations.dribbble.connected = true;
+    const onbIn = document.getElementById('dribbble-username-input');
+    if (onbIn) onbIn.value = u;
+    syncModalSocialStatus();
+    Toast.success('Dribbble connected — click Fetch Data to load shots');
+  });
+  document.getElementById('modal-dribbble-fetch-btn')?.addEventListener('click', () => {
+    const u = _normHandle(document.getElementById('modal-dribbble-username')?.value, 60);
+    if (!u) { Toast.error('Enter a Dribbble username first'); return; }
+    const onbIn = document.getElementById('dribbble-username-input');
+    if (onbIn) onbIn.value = u;
+    const fetchBtn = document.getElementById('dribbble-fetch-btn');
+    if (fetchBtn) fetchBtn.click();
+    else Toast.info('Use the onboarding step to fetch Dribbble data');
+  });
+})();
+
 
 // ── STEP 5 FINAL SUBMIT: Save everything to Firebase (same logic as before)
 $('save-username-btn').addEventListener('click', async () => {
@@ -20236,8 +20390,16 @@ const applyFilters = debounce(() => {
 }, CONFIG.DEBOUNCE_MS);
 
 $('search-users-input').addEventListener('input', applyFilters);
-$('search-skill-input').addEventListener('input', applyFilters);
+$('search-skill-input').addEventListener('change', applyFilters);
 $('online-filter-toggle').addEventListener('change', applyFilters);
+document.getElementById('dir-online-btn')?.addEventListener('click', () => {
+  const cb = $('online-filter-toggle');
+  cb.checked = !cb.checked;
+  cb.dispatchEvent(new Event('change'));
+  const btn = document.getElementById('dir-online-btn');
+  btn.setAttribute('aria-pressed', cb.checked ? 'true' : 'false');
+  btn.classList.toggle('active', cb.checked);
+});
 
 
 /* ═══════════════════════════════════════════════════
