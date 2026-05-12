@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deploy Golex Pay Worker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+  .card {
+    max-width: 480px;
+    margin: 0 auto;
+    background: #1a1a24;
+    border: 1px solid #2e2e42;
+    border-radius: 16px;
+    padding: 28px 22px;
+  }
+  .logo { font-size: 28px; margin-bottom: 4px; }
+  h1 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #8888aa; margin-bottom: 28px; }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    background: #f59e0b22;
+    border: 1.5px solid #f59e0b88;
+    color: #f59e0b;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-body label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #aaaacc;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .step-body .hint {
+    font-size: 12px;
+    color: #6666888;
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+  .step-body a { color: #818cf8; text-decoration: none; }
+
+  input {
+    width: 100%;
+    background: #12121c;
+    border: 1.5px solid #2e2e42;
+    border-radius: 10px;
+    color: #e8e8f0;
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color .2s;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  input:focus { border-color: #818cf8; }
+  input::placeholder { color: #44445a; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #2e2e42;
+    margin: 24px 0;
+  }
+
+  #deploy-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    border: none;
+    border-radius: 12px;
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    letter-spacing: .01em;
+  }
+  #deploy-btn:active { transform: scale(.98); }
+  #deploy-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  #status {
+    margin-top: 20px;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    display: none;
+  }
+  #status.info    { background: #1e1e3a; border: 1px solid #3a3a6a; color: #a0a0e8; }
+  #status.success { background: #0d2a1a; border: 1px solid #1a5c35; color: #4ade80; }
+  #status.error   { background: #2a0d0d; border: 1px solid #5c1a1a; color: #f87171; }
+
+  .worker-url-box {
+    margin-top: 14px;
+    background: #12121c;
+    border: 1.5px solid #1a5c35;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: #4ade80;
+    word-break: break-all;
+    display: none;
+  }
+  .copy-btn {
+    margin-top: 10px;
+    width: 100%;
+    background: #1a3a2a;
+    border: 1px solid #2a6a4a;
+    border-radius: 8px;
+    color: #4ade80;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px;
+    cursor: pointer;
+  }
+  .next-step {
+    margin-top: 16px;
+    background: #1a1a2a;
+    border: 1px solid #2e2e50;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 13px;
+    color: #aaaacc;
+    line-height: 1.7;
+    display: none;
+  }
+  .next-step strong { color: #e8e8f0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">⚡</div>
+  <h1>Deploy Golex Pay Worker</h1>
+  <p class="sub">Deploys your Cashfree backend to Cloudflare in one tap — no copy-pasting code.</p>
+
+  <!-- Step 1 -->
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <label>Cloudflare Account ID</label>
+      <p class="hint">
+        Open <a href="https://dash.cloudflare.com" target="_blank">dash.cloudflare.com</a>
+        → scroll down the right sidebar → copy your <strong>Account ID</strong>
+      </p>
+      <input id="account-id" type="text" placeholder="e.g. a1b2c3d4e5f6...">
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <label>Cloudflare API Token</label>
+      <p class="hint">
+        Go to <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank">My Profile → API Tokens</a>
+        → Create Token → use the <strong>"Edit Cloudflare Workers"</strong> template → create &amp; copy the token.
+      </p>
+      <input id="api-token" type="password" placeholder="Paste API token here">
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <label>Cashfree App ID</label>
+      <input id="cf-app-id" type="text" placeholder="128037382add03cfc96ab7af2973730821">
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <label>Cashfree Secret Key</label>
+      <input id="cf-secret" type="password" placeholder="cfsk_ma_prod_...">
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <button id="deploy-btn" onclick="deploy()">🚀 Deploy Worker Now</button>
+
+  <div id="status"></div>
+  <div id="worker-url-box" class="worker-url-box"></div>
+  <button id="copy-btn" class="copy-btn" style="display:none" onclick="copyUrl()">📋 Copy Worker URL</button>
+  <div id="next-step" class="next-step"></div>
+</div>
+
+<script>
+let deployedUrl = '';
+
+function setStatus(msg, type = 'info') {
+  const el = document.getElementById('status');
+  el.innerHTML = msg;
+  el.className = type;
+  el.style.display = 'block';
+}
+
+async function deploy() {
+  const accountId = document.getElementById('account-id').value.trim();
+  const apiToken  = document.getElementById('api-token').value.trim();
+  const appId     = document.getElementById('cf-app-id').value.trim();
+  const secret    = document.getElementById('cf-secret').value.trim();
+
+  if (!accountId || !apiToken || !appId || !secret) {
+    setStatus('⚠️ Please fill in all four fields.', 'error'); return;
+  }
+
+  const btn = document.getElementById('deploy-btn');
+  btn.disabled = true;
+  btn.textContent = 'Deploying…';
+  document.getElementById('worker-url-box').style.display = 'none';
+  document.getElementById('copy-btn').style.display = 'none';
+  document.getElementById('next-step').style.display = 'none';
+
+  const scriptName = 'golex-pay';
+
+  /* ── Worker source (embedded — no paste needed) ─────────────────── */
+  const workerCode = `
+const CASHFREE_API = 'https://api.cashfree.com/pg/orders';
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+export default {
+  async fetch(request, env) {
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
+    if (request.method !== 'POST') return r({ error: 'Method not allowed' }, 405);
+    let body;
+    try { body = await request.json(); } catch { return r({ error: 'Invalid JSON' }, 400); }
+    if (!body.order_amount || !body.customer_details?.customer_email) return r({ error: 'Missing fields' }, 400);
+    let cfRes;
+    try {
+      cfRes = await fetch(CASHFREE_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-version': '2023-08-01',
+          'x-client-id': env.CASHFREE_APP_ID,
+          'x-client-secret': env.CASHFREE_SECRET_KEY,
+        },
+        body: JSON.stringify(body),
+      });
+    } catch (e) { return r({ error: 'Cashfree unreachable: ' + e.message }, 502); }
+    const data = await cfRes.json();
+    return new Response(JSON.stringify(data), { status: cfRes.status, headers: { ...CORS, 'Content-Type': 'application/json' } });
+  }
+};
+function r(obj, status = 200) {
+  return new Response(JSON.stringify(obj), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
+}
+`.trim();
+
+  try {
+    /* ── 1. Deploy the worker script ─────────────────────────────── */
+    setStatus('⏳ Step 1/3 — Uploading worker script…', 'info');
+
+    const form = new FormData();
+    const metadata = JSON.stringify({
+      main_module: 'worker.js',
+      compatibility_date: '2024-01-01'
+    });
+    form.append('metadata', new Blob([metadata], { type: 'application/json' }), 'metadata.json');
+    form.append('worker.js', new Blob([workerCode], { type: 'application/javascript+module' }), 'worker.js');
+
+    const deployRes = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${scriptName}`,
+      { method: 'PUT', headers: { 'Authorization': `Bearer ${apiToken}` }, body: form }
+    );
+    const deployData = await deployRes.json();
+    if (!deployData.success) {
+      const err = deployData.errors?.[0]?.message || JSON.stringify(deployData.errors);
+      throw new Error('Script upload failed: ' + err);
+    }
+
+    /* ── 2. Set CASHFREE_APP_ID secret ───────────────────────────── */
+    setStatus('⏳ Step 2/3 — Setting Cashfree App ID…', 'info');
+    await putSecret(accountId, apiToken, scriptName, 'CASHFREE_APP_ID', appId);
+
+    /* ── 3. Set CASHFREE_SECRET_KEY secret ───────────────────────── */
+    setStatus('⏳ Step 3/3 — Setting Cashfree Secret Key…', 'info');
+    await putSecret(accountId, apiToken, scriptName, 'CASHFREE_SECRET_KEY', secret);
+
+    /* ── Done! ───────────────────────────────────────────────────── */
+    deployedUrl = `https://${scriptName}.${accountId.substring(0,8).toLowerCase()}.workers.dev`;
+
+    // Get actual subdomain from Cloudflare
+    try {
+      const subRes = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/subdomain`,
+        { headers: { 'Authorization': `Bearer ${apiToken}` } }
+      );
+      const subData = await subRes.json();
+      if (subData.success && subData.result?.subdomain) {
+        deployedUrl = `https://${scriptName}.${subData.result.subdomain}.workers.dev`;
+      }
+    } catch (_) {}
+
+    setStatus('✅ Worker deployed successfully! Your Worker URL is:', 'success');
+
+    const urlBox = document.getElementById('worker-url-box');
+    urlBox.textContent = deployedUrl;
+    urlBox.style.display = 'block';
+
+    document.getElementById('copy-btn').style.display = 'block';
+
+    const nextStep = document.getElementById('next-step');
+    nextStep.innerHTML = `
+      <strong>Last step:</strong> Open your <code>gz13.html</code>, find this line:<br><br>
+      <code>WORKER_URL: 'YOUR_WORKER_URL'</code><br><br>
+      Replace <code>YOUR_WORKER_URL</code> with the URL above, save, and re-upload to your host. You're live! 🎉
+    `;
+    nextStep.style.display = 'block';
+
+  } catch (e) {
+    setStatus('❌ Error: ' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🚀 Deploy Worker Now';
+}
+
+async function putSecret(accountId, apiToken, scriptName, name, text) {
+  const res = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/${scriptName}/secrets`,
+    {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${apiToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, text, type: 'secret_text' })
+    }
+  );
+  const data = await res.json();
+  if (!data.success) {
+    const err = data.errors?.[0]?.message || JSON.stringify(data.errors);
+    throw new Error(`Secret "${name}" failed: ` + err);
+  }
+}
+
+function copyUrl() {
+  if (!deployedUrl) return;
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(deployedUrl)
+      .then(() => { document.getElementById('copy-btn').textContent = '✅ Copied!'; setTimeout(() => { document.getElementById('copy-btn').textContent = '📋 Copy Worker URL'; }, 2000); })
+      .catch(() => fallbackCopy());
+  } else { fallbackCopy(); }
+}
+
+function fallbackCopy() {
+  const el = document.createElement('textarea');
+  el.value = deployedUrl;
+  el.style.position = 'fixed';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.focus(); el.select();
+  try { document.execCommand('copy'); document.getElementById('copy-btn').textContent = '✅ Copied!'; } catch {}
+  document.body.removeChild(el);
+  setTimeout(() => { document.getElementById('copy-btn').textContent = '📋 Copy Worker URL'; }, 2000);
+}
+</script>
+</body>
+</html>
