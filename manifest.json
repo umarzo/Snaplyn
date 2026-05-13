@@ -1,4 +1,4 @@
-"{
+{
   "name": "Golex",
   "short_name": "Golex",
   "description": "Skill-based network for builders, creators, and collaborators.",
@@ -22,4 +22,4 @@
       "purpose": "any maskable"
     }
   ]
-}"
+}
