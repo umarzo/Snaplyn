@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "xyz.snaplyn.twa",
+        "sha256_cert_fingerprints": ["DF:34:1F:32:6E:8B:79:EE:A4:C8:80:F6:C4:25:62:83:11:72:F3:57:4C:1B:E5:4F:ED:65:7E:E8:44:0C:4A:B5"]
+      }
+    }]
